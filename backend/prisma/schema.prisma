@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+  model Company {
+    id             Int    @id @default(autoincrement())
+    name           String
+    ticker         String
+    tenk_url       String
+    fivek_urls     String 
+    earnings_calls String 
+    daily_price    Int 
+    recent_news    String[] 
+    createdAt DateTime @default(now())
+  }
+
+  model User { 
+    id         Int    @id @default(autoincrement())
+    email      String  @unique
+    password   Int      
+    
+  }
+
+
+
+  model Card {
+    id          Int   @id @default(autoincrement())
+    author      String 
+    imageURL    String 
+    upvotes     Int 
+    boardId     Int
+    title       String 
+    description String 
+    board       Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+    pinned      Boolean  @default(false)
+    createdAt DateTime @default(now())
+    comments    Comments[]
+  }
+
+  model Comments { 
+    id          Int   @id @default(autoincrement())
+    author      String 
+    comment     String 
+    cardId      Int 
+    createdAt DateTime @default(now())
+    card        Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  }

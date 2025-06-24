@@ -1,0 +1,3 @@
+const PORT = 3000;
+DATABASE_URL =
+  "postgresql://postgres:Sebastian@7@localhost:5432/Capstone?schema=public";
