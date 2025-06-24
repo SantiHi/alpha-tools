@@ -3,11 +3,10 @@ import InputBox from "./components/InputBox";
 
 const Login = () => {
   const navigate = useNavigate();
-
   return (
     <div className="flex flex-col">
       <header>
-        <div className="text-center text-8xl m-20 font-bold text-indigo-50 text-shadow-lg">
+        <div className="text-center text-8xl m-15 font-bold text-indigo-50 text-shadow-lg">
           Alpha-Edge
         </div>
       </header>
@@ -15,13 +14,13 @@ const Login = () => {
         <h3 className="font-bold text-3xl p-3 text-center"> Welcome Back</h3>
         <InputBox
           placeholder={"Username*"}
-          label={"Username:"}
-          id={"username"}
+          label={"Username"}
+          name={"username"}
         />
         <InputBox
           placeholder={"Password*"}
-          label={"Password:"}
-          id={"password"}
+          label={"Password"}
+          name={"password"}
         />
         <button
           id="login"
