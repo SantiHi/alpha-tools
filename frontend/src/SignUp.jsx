@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import InputBox from "./components/InputBox";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const SignUp = () => {
   const navigate = useNavigate();
 
   return (
@@ -12,29 +12,44 @@ const Login = () => {
         </div>
       </header>
       <form className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 shadow-slate-900 w-150 m-auto">
-        <h3 className="font-bold text-3xl p-3 text-center"> Welcome Back</h3>
+        <h3 className="font-bold text-3xl p-1 text-center">Sign Up</h3>
+        <p className="font-bold text-sm p-3 text-center">
+          Please sign up to continue{" "}
+        </p>
         <InputBox
-          placeholder={"Username*"}
-          label={"Username:"}
-          id={"username"}
+          placeholder={"ex: Santiago Criado"}
+          label={"Name"}
+          id={"name"}
         />
         <InputBox
-          placeholder={"Password*"}
-          label={"Password:"}
-          id={"password"}
+          placeholder={"ex: 1234"}
+          label={"Set Password"}
+          id={"new-password"}
+        />
+        <InputBox
+          placeholder={"ex: Cool-Dude-1"}
+          label={"Username"}
+          id={"name"}
+        />
+        <InputBox
+          placeholder={"bobby@gmail.com"}
+          label={"email"}
+          id={"email"}
         />
         <button
+          id="signup"
+          className="m-2 bg-green-400 shadow-xl/10 shadow-slate-900"
+        >
+          Sign-Up
+        </button>
+        <button
+          onClick={() => {
+            navigate("/");
+          }}
           id="login"
           className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900"
         >
-          Login
-        </button>
-        <button
-          id="signup"
-          className="m-2 bg-green-400 shadow-xl/10 shadow-slate-900 text-black"
-          onClick={() => navigate("/signup")}
-        >
-          Sign-Up
+          back to login
         </button>
       </form>
       <footer className="fixed flex flex-row justify-center bottom-0 text-center text-2xl self-center w-full bg-indigo-50 h-15 pt-3 font-medium object-center">
@@ -53,4 +68,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
