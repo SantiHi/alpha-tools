@@ -24,37 +24,14 @@ datasource db {
     earnings_calls String 
     daily_price    Int 
     recent_news    String[] 
-    createdAt DateTime @default(now())
+    created_at DateTime @default(now())
   }
 
   model User { 
-    id         Int    @id @default(autoincrement())
-    email      String  @unique
-    password   Int      
-    
-  }
-
-
-
-  model Card {
-    id          Int   @id @default(autoincrement())
-    author      String 
-    imageURL    String 
-    upvotes     Int 
-    boardId     Int
-    title       String 
-    description String 
-    board       Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
-    pinned      Boolean  @default(false)
-    createdAt DateTime @default(now())
-    comments    Comments[]
-  }
-
-  model Comments { 
-    id          Int   @id @default(autoincrement())
-    author      String 
-    comment     String 
-    cardId      Int 
-    createdAt DateTime @default(now())
-    card        Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    id              Int    @id @default(autoincrement())
+    username        String  @unique
+    name            String
+    email           String  @unique 
+    password        Int      
+    search_history  String[] 
   }

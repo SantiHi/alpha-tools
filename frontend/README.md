@@ -1,12 +1,12 @@
-# React + Vite
+# Pocket Analyst - Alpha Edge
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The Pocket Analyst MVP is designed to provide users with a comprehensive platform for accessing and analyzing financial data, tracking companies and sectors, and creating personalized investment portfolios. This platform aims to empower users with the tools necessary to make informed financial decisions by offering a range of core features and functionalities.
 
-Currently, two official plugins are available:
+# Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Access to financial documents such as 10-K, 5-K, and earnings call transcripts directly from the SEC database
+- Company tracking with updates on new filings, news, and stock performance
+- Personalized portfolio creation with statistics and analysis on portfolio performance
+- Real-time stock prices and relevant data fetched using the Finnhub API
+- Data visualization tools for analyzing and visualizing financial data
+- Collaboration and sharing features for portfolios and analyses
