@@ -1,6 +1,7 @@
 import InputBox from "./components/InputBox";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "./utils/reused";
+import { MIN_PASSWORD_LENGTH } from "./utils/constants";
 import { useState } from "react";
 
 const RESULT_SUCCESS = "Thank you for signing up, redirecting to login...";
@@ -36,7 +37,7 @@ const SignUp = () => {
       return;
     }
 
-    if (formData.password.length < 8) {
+    if (formData.password.length < MIN_PASSWORD_LENGTH) {
       alert("Please make sure passwords are longer than 8 characters");
     }
 
@@ -74,31 +75,32 @@ const SignUp = () => {
           Please sign up to continue{" "}
         </p>
         <InputBox
-          placeholder={"ex: Santiago Criado"}
-          label={"Name"}
+          placeholder={"John Doe"}
+          label={"Full Name"}
           name={"name"}
           value={formData.name}
           handleFormChange={handleFormChange}
         />
+
         <InputBox
-          placeholder={"ex: 1234"}
-          label={"Set Password"}
+          placeholder={"johndoe@gmail.com"}
+          label={"Email"}
+          name={"email"}
+          value={formData.email}
+          handleFormChange={handleFormChange}
+        />
+        <InputBox
+          placeholder={"Password"}
+          label={"Password"}
           name={"password"}
           value={formData.password}
           handleFormChange={handleFormChange}
         />
         <InputBox
-          placeholder={"ex: Cool-Dude-1"}
-          label={"New Username"}
+          placeholder={"Username"}
+          label={"Username"}
           name={"username"}
           value={formData.username}
-          handleFormChange={handleFormChange}
-        />
-        <InputBox
-          placeholder={"bobby@gmail.com"}
-          label={"Email"}
-          name={"email"}
-          value={formData.email}
           handleFormChange={handleFormChange}
         />
         <button
@@ -112,6 +114,7 @@ const SignUp = () => {
         {submitResult != null && (
           <p className="text-center font-bold ">{submitResult}</p>
         )}
+
         <button
           onClick={() => {
             navigate("/");
@@ -119,21 +122,9 @@ const SignUp = () => {
           id="login"
           className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900"
         >
-          back to login
+          Back to login
         </button>
       </form>
-      <footer className="fixed flex flex-row justify-center bottom-0 text-center text-2xl self-center w-full bg-indigo-50 h-15 pt-3 font-medium object-center">
-        Santiago Criado |
-        <a href="https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project">
-          <img
-            className="h-5 w-5 m-1.75 transition-transform duration-200 ease-in-out hover:scale-125 hover:cursor-pointer "
-            src={
-              "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
-            }
-            alt="GitHub"
-          />
-        </a>
-      </footer>
     </div>
   );
 };

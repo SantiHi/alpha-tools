@@ -1,7 +1,32 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { handleLogin, BASE_URL } from "./utils/reused";
 import InputBox from "./components/InputBox";
 
-const Login = () => {
+const LOGIN_SUCCESS = "password accepted";
+
+const Login = ({ attemptLogin }) => {
+  const [formData, setFormData] = useState({
+    password: "",
+    username: "",
+  });
+
+  const [submitResult, setSubmitResult] = useState(null);
+
+  const handleFormChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const submitLoginAttempt = async (e) => {
+    e.preventDefault();
+    if (formData.password == "" || formData.username == "") {
+      setSubmitResult("please fill out all forms");
+      return;
+    }
+    await handleLogin(formData, setSubmitResult, attemptLogin);
+  };
+
   const navigate = useNavigate();
   return (
     <div className="flex flex-col">
@@ -13,21 +38,35 @@ const Login = () => {
       <form className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 shadow-slate-900 w-150 m-auto">
         <h3 className="font-bold text-3xl p-3 text-center"> Welcome Back</h3>
         <InputBox
-          placeholder={"Username*"}
-          label={"Username"}
-          name={"username"}
+          placeholder="Username*"
+          label="Username"
+          name="username"
+          value={formData.username}
+          handleFormChange={handleFormChange}
         />
         <InputBox
           placeholder={"Password*"}
           label={"Password"}
           name={"password"}
+          value={formData.password}
+          handleFormChange={handleFormChange}
         />
         <button
           id="login"
           className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900"
+          onClick={submitLoginAttempt}
         >
           Login
         </button>
+        {submitResult != null && (
+          <p
+            className={`text-center font-bold ${
+              submitResult === LOGIN_SUCCESS
+                ? "text-green-600"
+                : "text-pink-600"
+            } `}
+          >{`*${submitResult}*`}</p>
+        )}
         <button
           id="signup"
           className="m-2 bg-green-400 shadow-xl/10 shadow-slate-900 text-black"
@@ -36,18 +75,6 @@ const Login = () => {
           Sign-Up
         </button>
       </form>
-      <footer className="fixed flex flex-row justify-center bottom-0 text-center text-2xl self-center w-full bg-indigo-50 h-15 pt-3 font-medium object-center">
-        Santiago Criado |
-        <a href="https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project">
-          <img
-            className="h-5 w-5 m-1.75 transition-transform duration-200 ease-in-out hover:scale-125 hover:cursor-pointer "
-            src={
-              "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
-            }
-            alt="GitHub"
-          />
-        </a>
-      </footer>
     </div>
   );
 };
