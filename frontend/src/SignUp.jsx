@@ -65,11 +65,13 @@ const SignUp = () => {
   return (
     <div className="flex flex-col">
       <header>
-        <div className="text-center text-8xl m-15 font-bold text-indigo-50 text-shadow-lg">
-          Alpha-Edge
+        <div className="text-center m-15 text-2xl font-bold text-indigo-50 text-shadow-xl ">
+          <h1 className="drop-shadow-[0px_0px_39px_rgba(247,247,247,.7)]">
+            Alpha-Edge
+          </h1>
         </div>
       </header>
-      <form className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 shadow-slate-900 w-150 m-auto">
+      <form className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 w-150 m-auto">
         <h3 className="font-bold text-3xl p-1 text-center">Sign Up</h3>
         <p className="font-bold text-sm p-0 text-center">
           Please sign up to continue{" "}

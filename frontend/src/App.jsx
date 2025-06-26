@@ -3,11 +3,13 @@ import "./App.css";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Home from "./Home";
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import { BASE_URL } from "./utils/reused";
+import { UserFullName } from "./context/UserContext";
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const { fullName, setFullName } = UserFullName();
 
   const attemptLogin = async () => {
     try {
@@ -16,6 +18,9 @@ const App = () => {
         credentials: "include",
       });
       if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setFullName(data.name);
         setLoggedIn(true);
       }
     } catch {
@@ -56,11 +61,13 @@ const App = () => {
           <Route path="/signup" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
-      <footer className="fixed flex flex-row justify-center bottom-0 text-center text-2xl self-center w-full bg-indigo-50 h-15 pt-3 font-medium object-center">
-        Santiago Criado |
+      <footer className="fixed flex flex-row justify-center bottom-0 text-center text-xl text-indigo-50 self-center w-full h-15 pt-3 font-medium object-center">
+        <p className="drop-shadow-[0px_0px_39px_rgba(247,247,247,1)]">
+          Santiago Criado |{" "}
+        </p>
         <a href="https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project">
           <img
-            className="h-5 w-5 m-1.75 transition-transform duration-200 ease-in-out hover:scale-125 hover:cursor-pointer "
+            className="h-5 w-5 m-1.5 transition-transform duration-200 ease-in-out hover:scale-125 hover:cursor-pointer filter invert"
             src={
               "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
             }
