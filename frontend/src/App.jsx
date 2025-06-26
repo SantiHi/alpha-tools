@@ -49,7 +49,10 @@ const App = () => {
               )
             }
           />
-          <Route path="/home" element={<Home />} />
+          <Route
+            path="/home"
+            element={isLoggedIn === true ? <Home /> : <Navigate to="/login" />}
+          />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
       </BrowserRouter>

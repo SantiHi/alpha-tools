@@ -5,7 +5,7 @@ const Home = ({ children }) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className="flex flex-col justify-center">
         <SidebarTrigger />
         {children}
       </main>

@@ -31,7 +31,7 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Portfolios",
+    title: "My Portfolios",
     url: "#",
     icon: BookText,
   },
@@ -44,18 +44,28 @@ const items = [
 
 const AppSidebar = () => {
   return (
-    <Sidebar className=" bg-indigo-100 border-0">
+    <Sidebar className="bg-purple text-white p-3">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xl">Alpha-Edge</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupLabel className="text-4xl ml-auto mr-auto">
+            Alpha-Edge
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="mt-5">
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                <SidebarMenuItem
+                  key={item.title}
+                  className="m-1 bg-dark hover:brightness-75 rounded-b-md p-1"
+                >
+                  <SidebarMenuButton
+                    asChild
+                    className="[&>svg]:size-7 [&>svg]:ml-2"
+                  >
+                    <a href={item.url} className="flex items-center">
+                      <item.icon className="text-white" />
+                      <span className="text-white text-[15px]">
+                        {item.title}
+                      </span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

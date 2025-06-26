@@ -78,7 +78,8 @@ router.post("/login", loginLimiter, async (req, res) => {
     return res.status(400).json({ error: "Invalid username or password." });
   }
   req.session.userId = user.id;
-  res.json({ message: "Login successful!" });
+  console.log("success");
+  res.status(200).json({ message: "Login successful!" });
 });
 
 // check if valid session exists!

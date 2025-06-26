@@ -11,17 +11,16 @@ const handleLogin = async (formData, responseSetter, attemptLogin) => {
       },
       body: JSON.stringify(formData),
     });
-    if (response.ok) {
+    if (response.ok === true) {
       responseSetter(LOGIN_SUCCESS);
-      await wait(500);
       attemptLogin();
-      console.log("did I get here");
     } else {
-      console.log("did I get here instead?");
       const s = await response.json();
       responseSetter(s.error);
     }
-  } catch (err) {}
+  } catch (error) {
+    console.error("Network Error, try again");
+  }
 };
 
 export { handleLogin, BASE_URL };
