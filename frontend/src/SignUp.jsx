@@ -1,7 +1,7 @@
 import InputBox from "./components/InputBox";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "./utils/reused";
-import { MIN_PASSWORD_LENGTH } from "./utils/constants";
+import { BASE_URL } from "./lib/utils";
+import { MIN_PASSWORD_LENGTH } from "./lib/constants";
 import { useState } from "react";
 
 const RESULT_SUCCESS = "Thank you for signing up, redirecting to login...";
@@ -77,31 +77,31 @@ const SignUp = () => {
           Please sign up to continue{" "}
         </p>
         <InputBox
-          placeholder={"John Doe"}
-          label={"Full Name"}
-          name={"name"}
+          placeholder="John Doe"
+          label="Full Name"
+          name="name"
           value={formData.name}
           handleFormChange={handleFormChange}
         />
 
         <InputBox
-          placeholder={"johndoe@gmail.com"}
-          label={"Email"}
-          name={"email"}
+          placeholder="johndoe@gmail.com"
+          label="Email"
+          name="email"
           value={formData.email}
           handleFormChange={handleFormChange}
         />
         <InputBox
-          placeholder={"Password"}
-          label={"Password"}
-          name={"password"}
+          placeholder="Password"
+          label="Password"
+          name="password"
           value={formData.password}
           handleFormChange={handleFormChange}
         />
         <InputBox
-          placeholder={"Username"}
-          label={"Username"}
-          name={"username"}
+          placeholder="Username"
+          label="Username"
+          name="username"
           value={formData.username}
           handleFormChange={handleFormChange}
         />

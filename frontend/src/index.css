@@ -59,6 +59,7 @@ button:focus-visible {
 @theme {
   --color-purple: #342a38;
   --color-dark: #1b151d;
+  --color-green: #9bec00;
 }
 
 @layer base {

@@ -15,17 +15,16 @@ datasource db {
 }
 
 
-  model Company {
-    id             Int    @id @default(autoincrement())
-    name           String
-    ticker         String
-    tenk_url       String
-    fivek_urls     String 
-    earnings_calls String 
-    daily_price    Int 
-    recent_news    String[] 
-    created_at DateTime @default(now())
-  }
+model Company {
+  id                  Int         @id @default(autoincrement())
+  name                String
+  ticker              String
+  cik_number          Int         @unique
+  daily_price         Int
+  recent_news         String[]
+  created_at          DateTime    @default(now())
+  documents           Document[] 
+}
 
   model User { 
     id              Int    @id @default(autoincrement())
@@ -35,3 +34,12 @@ datasource db {
     password        String      
     search_history  String[] 
   }
+
+  model Document {
+    id          Int       @id @default(autoincrement())
+    type        String   
+    url         String    @unique 
+    filed_date  DateTime
+    company     Company   @relation(fields: [companyId], references: [id])
+    companyId   Int
+}
