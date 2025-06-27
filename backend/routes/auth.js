@@ -89,10 +89,16 @@ router.get("/me", async (req, res) => {
   }
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { username: true }, // Only return necessary data
+    select: { username: true, name: true }, // Only return necessary data
   });
 
-  res.json({ id: req.session.userId, username: user.username });
+  console.log(user);
+
+  res.status(200).json({
+    id: req.session.userId,
+    username: user.username,
+    name: user.name,
+  });
 });
 
 module.exports = router;
