@@ -30,7 +30,6 @@ router.get("/tickers", async (req, res) => {
           daily_price: 0,
         },
       });
-      console.log(value);
     }
   }
 
@@ -56,7 +55,6 @@ router.post("/companyfill", async (req, res) => {
 router.post("/companyfill/:cik_number", async (req, res) => {
   const cik = parseInt(req.params.cik_number);
   const paddedCik = cik.toString().padStart(10, "0");
-  console.log(paddedCik);
   const company = await prisma.company.findUnique({
     where: { cik_number: cik },
   });
@@ -71,9 +69,7 @@ router.post("/companyfill/:cik_number", async (req, res) => {
       headers: { "User-Agent": "Santi Criado (santiagocriado@meta.com)" },
     }
   );
-  console.log(response);
   const data = await response.json();
-  console.log(data);
   const filings = data.filings.recent;
   const length = data.filings.recent.accessionNumber.length;
   for (let i = 0; i < length; i++) {
