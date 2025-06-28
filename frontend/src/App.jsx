@@ -6,6 +6,7 @@ import Home from "./Home";
 import { useState, useContext, useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { UserFullName } from "./context/UserContext";
+import CompanyInfo from "./CompanyInfo";
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(false);
@@ -33,6 +34,12 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
+          <Route
+            path="/CompanyInfo/:companyID"
+            element={
+              isLoggedIn === true ? <CompanyInfo /> : <Navigate to="/login" />
+            }
+          />
           <Route
             path="/"
             element={

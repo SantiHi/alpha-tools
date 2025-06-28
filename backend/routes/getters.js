@@ -11,7 +11,7 @@ router.get("/stats/:companyTick", async (req, res) => {
   const ticker = req.params.companyTick;
   const result = await yahooFinance.quote(ticker);
   if (result === null) {
-    res.status(404).json({ message: "ticker does not exist " });
+    res.status(404).json({ message: "ticker does not exist" });
   }
   res.status(200).json(result);
 });
@@ -24,6 +24,17 @@ router.get("/explore", async (req, res) => {
         created_at: "asc",
       },
       take: 8,
+    })
+  );
+});
+
+router.get("/companyById/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  res.json(
+    await prisma.company.findUnique({
+      where: {
+        id,
+      },
     })
   );
 });

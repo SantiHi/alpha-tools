@@ -1,6 +1,22 @@
+import { useNavigate } from "react-router-dom";
+import { UserFullName } from "../context/UserContext";
+
 const Company = ({ companyFacts }) => {
+  const { setSelectedId } = UserFullName();
+  const navigate = useNavigate();
+
+  const handleView = () => {
+    navigate(`/CompanyInfo/${companyFacts.id}`);
+  };
+
   return (
-    <div className="flex flex-row w-80s bg-indigo-50 rounded-lg h-40 mb-15 mr-5 ml-5 shadow-[0px_0px_45px_10px_rgba(223,215,217,.2)] hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out">
+    <div
+      onClick={() => {
+        handleView();
+        setSelectedId(companyFacts.id);
+      }}
+      className="flex flex-row w-80s bg-indigo-50 rounded-lg h-40 mb-15 mr-5 ml-5 shadow-[0px_0px_45px_10px_rgba(223,215,217,.2)] hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out"
+    >
       <div
         id="title"
         className="flex flex-col justify-center items-center w-1/2"

@@ -14,7 +14,6 @@ const CompanyList = () => {
     "-",
     "-",
   ]);
-
   const fetchExplore = async () => {
     const response = await fetch(`${BASE_URL}/getters/explore`);
     const data = await response.json();
@@ -52,6 +51,7 @@ const CompanyList = () => {
                   exploreCompaniesPrices[ind].price -
                   exploreCompaniesPrices[ind].dayStart
                 ).toFixed(2),
+                id: value.id,
               }}
             />
           );
