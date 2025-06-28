@@ -6,7 +6,6 @@ import { UserFullName } from "./context/UserContext";
 
 const Home = ({ children }) => {
   const { fullName, setFullName } = UserFullName();
-  console.log(fullName);
   return (
     <>
       <SidebarProvider>

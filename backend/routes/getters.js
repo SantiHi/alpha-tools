@@ -7,7 +7,7 @@ app.use(express.json());
 const router = express.Router({ mergeParams: true });
 const yahooFinance = require("yahoo-finance2").default;
 
-router.get("/:companyTick", async (req, res) => {
+router.get("/stats/:companyTick", async (req, res) => {
   const ticker = req.params.companyTick;
   const result = await yahooFinance.quote(ticker);
   if (result === null) {

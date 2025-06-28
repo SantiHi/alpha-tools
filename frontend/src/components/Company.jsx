@@ -9,9 +9,21 @@ const Company = ({ companyFacts }) => {
       </div>
       <div className="flex flex-col justify-center items-center w-1/2">
         <h5 className="font-bold text-2xl text-cyan-600">{`(${companyFacts.ticker})`}</h5>
-        <h5 className="font-bold text-2xl text-green-600">{`${companyFacts.daily}`}</h5>
-        <h5 className="font-bold text-2xl text-red-600">
-          {`-4.32`} <span> ytd. </span>
+        <h5
+          className={
+            companyFacts.dailyChange < 0
+              ? "font-bold text-2xl text-red-800"
+              : "font-bold text-2xl text-green-800"
+          }
+        >{`$${companyFacts.daily}`}</h5>
+        <h5
+          className={
+            companyFacts.dailyChange < 0
+              ? "font-bold text-2xl text-red-600 ml-3"
+              : "font-bold text-2xl text-green-600 ml-3"
+          }
+        >
+          {companyFacts.dailyChange} <span> %</span>
         </h5>
       </div>
     </div>

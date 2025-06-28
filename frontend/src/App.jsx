@@ -19,7 +19,6 @@ const App = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         setFullName(data.name);
         setLoggedIn(true);
       }
@@ -61,7 +60,7 @@ const App = () => {
           <Route path="/signup" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
-      <footer className="fixed flex flex-row justify-center bottom-0 text-center text-xl text-indigo-50 self-center w-full h-15 pt-3 font-medium object-center">
+      <footer className="fixed flex flex-row justify-center bottom-0 text-center text-xl text-indigo-50 self-center w-full h-16 pt-3 font-medium object-center">
         <p className="drop-shadow-[0px_0px_39px_rgba(247,247,247,1)]">
           Santiago Criado |{" "}
         </p>
