@@ -3,24 +3,34 @@ const prisma = new PrismaClient();
 
 const express = require("express");
 const PORT = process.env.PORT || 3000;
-const cors = require("cors");
 require("dotenv").config();
+const ORIGIN = process.env.origin;
+console.log(ORIGIN);
+const cors = require("cors");
 const app = express();
 app.use(express.json());
 const session = require("express-session");
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: ORIGIN, credentials: true }));
 app.use(
   session({
     secret: "your-secret",
     resave: false,
     saveUninitialized: false,
     rolling: true,
-    cookie: { secure: false, maxAge: 15 * 60 * 1000 },
+    cookie: { secure: false, maxAge: 15 * 60 * 1000 }, // 15 minutes!!
   })
 );
 
 const authRoutes = require("./routes/auth");
+
+const getterRoutes = require("./routes/getters");
+app.use("/getters", getterRoutes);
+
 app.use("/auth", authRoutes);
+
+const populatorRoutes = require("./populators/tickers");
+app.use("/populators", populatorRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -1,27 +1,27 @@
 import * as React from "react";
-import { Slot } from "../../../node_modules/@radix-ui/react-slot";
+import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { SquareArrowRight, SquareArrowLeft } from "lucide-react";
 
 import { useIsMobile } from "../../hooks/use-mobile";
 import { cn } from "../../lib/utils";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Separator } from "./separator";
+import { Button } from "./Button";
+import { Input } from "./Input";
+import { Separator } from "./Separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "./sheet";
-import { Skeleton } from "./skeleton";
+} from "./Sheet";
+import { Skeleton } from "./Skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./tooltip";
+} from "./Tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

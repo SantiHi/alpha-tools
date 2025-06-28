@@ -6,7 +6,8 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.1",
-    "express-session": "^1.18.1"
+    "express-session": "^1.18.1",
+    "yahoo-finance2": "^2.13.3"
   },
   "name": "backend",
   "version": "1.0.0",

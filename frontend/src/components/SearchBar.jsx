@@ -6,7 +6,7 @@ import SearchIcon from "@mui/icons-material/Search";
 const Searchbar = () => {
   return (
     <>
-      <div className="flex flex-col justify-center items-right">
+      <div className="flex flex-col justify-center mt-4 mr-auto ml-auto fixed">
         <div className="pb-4">
           <Input
             id="outlined-basic"

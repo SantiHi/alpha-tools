@@ -4,8 +4,11 @@ const UserContext = createContext();
 
 const UserContextProvider = ({ children }) => {
   const [fullName, setFullName] = useState("");
+  const [selectedId, setSelectedId] = useState("");
   return (
-    <UserContext.Provider value={{ fullName, setFullName }}>
+    <UserContext.Provider
+      value={{ fullName, setFullName, selectedId, setSelectedId }}
+    >
       {children}
     </UserContext.Provider>
   );

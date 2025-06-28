@@ -1,4 +1,4 @@
-const { MIN_PASSWORD_LENGTH } = require("../../frontend/src/utils/constants");
+const { MIN_PASSWORD_LENGTH } = require("../../frontend/src/lib/constants");
 
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
@@ -8,8 +8,12 @@ const app = express();
 app.use(express.json());
 const router = express.Router({ mergeParams: true });
 const argon2 = require("argon2");
+const rateLimit = require("express-rate-limit");
 
+// constants
+CONST_LOCKEDOUT_TIME = 10;
 // Simplistic Signup Route
+
 router.post("/signup", async (req, res) => {
   const { username, password, email, name } = req.body;
   if (!username || !password) {
@@ -56,12 +60,12 @@ router.post("/signup", async (req, res) => {
 
 // login routes!
 
-const rateLimit = require("express-rate-limit");
-
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 10 login attempts per windowMs
-  message: { error: "Too many failed login attempts. Try again in 10 minutes" },
+  windowMs: CONST_LOCKEDOUT_TIME * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to xx login attempts per windowMs
+  message: {
+    error: `Too many failed login attempts. Try again in ${CONST_LOCKEDOUT_TIME} minutes`,
+  },
 });
 
 router.post("/login", loginLimiter, async (req, res) => {
@@ -69,7 +73,7 @@ router.post("/login", loginLimiter, async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { username },
   });
-  if (!user) {
+  if (user == null) {
     return res.status(400).json({ error: "Invalid username or password." });
   }
 
@@ -91,8 +95,6 @@ router.get("/me", async (req, res) => {
     where: { id: userId },
     select: { username: true, name: true }, // Only return necessary data
   });
-
-  console.log(user);
 
   res.status(200).json({
     id: req.session.userId,

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { handleLogin, BASE_URL } from "./utils/reused";
+import { handleLogin, BASE_URL } from "./lib/utils";
 import InputBox from "./components/InputBox";
 
 const LOGIN_SUCCESS = "password accepted";
@@ -21,7 +21,7 @@ const Login = ({ attemptLogin }) => {
   const submitLoginAttempt = async (e) => {
     e.preventDefault();
     if (formData.password == "" || formData.username == "") {
-      setSubmitResult("please fill out all forms");
+      setSubmitResult("Please fill out all forms");
       return;
     }
     await handleLogin(formData, setSubmitResult, attemptLogin);
@@ -40,18 +40,19 @@ const Login = ({ attemptLogin }) => {
       <form className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 shadow-slate-900 w-150 m-auto">
         <h3 className="font-bold text-3xl p-3 text-center"> Welcome Back</h3>
         <InputBox
-          placeholder="Username*"
+          placeholder="Username"
           label="Username"
           name="username"
           value={formData.username}
           handleFormChange={handleFormChange}
         />
         <InputBox
-          placeholder={"Password*"}
+          placeholder={"Password"}
           label={"Password"}
           name={"password"}
           value={formData.password}
           handleFormChange={handleFormChange}
+          isPassword={true}
         />
         <button
           id="login"
@@ -67,7 +68,9 @@ const Login = ({ attemptLogin }) => {
                 ? "text-green-600"
                 : "text-pink-600"
             } `}
-          >{`*${submitResult}*`}</p>
+          >
+            {submitResult}
+          </p>
         )}
         <button
           id="signup"
