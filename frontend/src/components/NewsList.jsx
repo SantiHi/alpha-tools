@@ -1,11 +1,11 @@
 import NewsArticle from "./NewsArticle";
 
 const NewsList = ({ newsData }) => {
-  if (newsData == null) {
-    return;
+  if (newsData == null || !Array.isArray(newsData)) {
+    return null;
   }
   return (
-    <div className="flex flex-row flex-wrap mx-60 mt-10 justify-center">
+    <div className="flex flex-row flex-wrap mx-30 mt-10 justify-center">
       {newsData.map((value) => {
         return (
           <NewsArticle

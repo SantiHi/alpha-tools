@@ -132,7 +132,13 @@ router.get("/news/:id", async (req, res) => {
       },
     });
   }
-  res.status(200).json(response);
+
+  const currentArticles2 = await prisma.article.findMany({
+    where: { companyId: id },
+    orderBy: { created_at: "desc" },
+  });
+
+  res.status(200).json(currentArticles2);
 });
 
 module.exports = router;

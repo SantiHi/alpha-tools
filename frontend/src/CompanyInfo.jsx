@@ -43,8 +43,8 @@ const CompanyInfo = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <div className="flex flex-col justify-center">
-        <SidebarTrigger className="fixed" />
+      <div className="relative h-full flex flex-col justify-center">
+        <SidebarTrigger className="fixed top-1/2" />
       </div>
       <header className="bg-indigo-50 fixed top-0 w-full pt-4 flex flex-col items-center h-16">
         <h2 className="fixed top-0 left-4 text-4xl pt-3 font-medium">
@@ -57,13 +57,13 @@ const CompanyInfo = () => {
       <main className="w-full">
         <div className="flex flex-col items-center">
           <SearchBar />
-          <div className="flex flex-row bg-indigo-950 p-4 mt-30 pt-0 rounded-sm border-2 border-white mb-8">
-            <p className="text-white text-4xl mt-10 font-bold">
+          <div className="flex flex-row p-4 mt-30 pt-0 rounded-sm mb-8">
+            <p className="text-indigo-200 text-6xl mt-10 font-bold">
               {info ? info.name : "-"}
             </p>
             {info && (
               <img
-                className="h-20 mt-5 ml-6 rounded-md"
+                className="h-20 mt-8 ml-6 rounded-md"
                 src={`https://img.logokit.com/ticker/${info.ticker}?token=${logoKey}`}
               />
             )}
@@ -71,29 +71,36 @@ const CompanyInfo = () => {
           {info != null && <TradingViewWidget key={info.ticker} info={info} />}
         </div>
         <div className="text-white text-center mt-5">
-          {yahooFinanceData != null && (
-            <h2 className="font-semibold">
-              Yahoo Finance Average Analyst Rating:{" "}
-              <span
-                className={
-                  yahooFinanceData.averageAnalystRating.includes("Buy")
-                    ? "text-green-300 font-bold"
-                    : "text-red-300 font-bold"
-                }
-              >
-                {yahooFinanceData.averageAnalystRating}
-              </span>
-            </h2>
-          )}
-          <div className="flex flex-row flex-wrap"></div>
+          {yahooFinanceData != null &&
+            yahooFinanceData.averageAnalystRating && (
+              <h2 className="font-semibold">
+                Yahoo Finance Average Analyst Rating:{" "}
+                <span
+                  className={
+                    yahooFinanceData.averageAnalystRating.includes("Buy")
+                      ? "text-green-300 font-bold"
+                      : "text-red-300 font-bold"
+                  }
+                >
+                  {yahooFinanceData.averageAnalystRating}
+                </span>
+              </h2>
+            )}
+          <h2 className="text-white text-5xl font-bold text-center mt-10">
+            Recent Company News
+          </h2>
+          <div>
+            <NewsList newsData={newsData} />
+          </div>
         </div>
-        <h2 className="text-white text-5xl font-bold text-center mt-10">
-          Recent Company News
-        </h2>
-        <NewsList newsData={newsData} />
       </main>
     </SidebarProvider>
   );
 };
 
 export default CompanyInfo;
+
+// ?        <h2 className="text-white text-5xl font-bold text-center mt-10">
+//           Recent Company News
+//         </h2>
+//         <NewsList newsData={newsData} />

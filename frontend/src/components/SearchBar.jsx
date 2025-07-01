@@ -21,7 +21,7 @@ const SearchResultsBar = ({ results, setSearchQuery, setSearchResults }) => {
         return (
           <div
             key={value.id}
-            className="bg-indigo-100 ounded-b-sm hover:cursor-pointer hover:brightness-95"
+            className="bg-indigo-100 ounded-b-sm hover:cursor-pointer hover:brightness-95 z-100"
             onClick={() => {
               navigate(`/CompanyInfo/${value.id}`);
               setSelectedId(value.id);
