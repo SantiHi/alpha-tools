@@ -25,10 +25,10 @@ const TradingViewScrollArea = ({ info }) => {
   }
 
   return (
-    <ScrollArea className="h-117 rounded-md border border-white w-100">
+    <ScrollArea className="h-125 rounded-md border border-white w-100">
       <div className="p-4">
         <h4 className="mb-4 text-sm leading-none font-bold text-white">
-          Recent Major Filings for {info.name} (by date filed)
+          Major Filings for {info.name} (by date filed)
         </h4>
         {allDocuments != null &&
           allDocuments.map((document) => {
@@ -50,20 +50,23 @@ const TradingViewScrollArea = ({ info }) => {
 };
 
 function TradingViewWidget({ info }) {
-  const container = useRef();
+  const container = useRef(null);
+  const loadedRef = useRef(false);
+
   useEffect(() => {
     if (info == null || container.current == null) {
       return;
     }
-    try {
-      container.current.innerHTML = `<div class="tradingview-widget-container__widget"></div>
-    <div class="tradingview-widget-copyright"></div>`;
-      const script = document.createElement("script");
-      script.src =
-        "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
-      script.type = "text/javascript";
-      script.async = true;
-      script.innerHTML = `
+    if (loadedRef.current) {
+      return;
+    }
+    loadedRef.current = true;
+    const script = document.createElement("script");
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
+    script.type = "text/javascript";
+    script.async = true;
+    script.innerHTML = `
         {
           "lineWidth": 2,
           "lineType": 0,
@@ -113,21 +116,17 @@ function TradingViewWidget({ info }) {
           "hideMarketStatus": false,
           "hideSymbolLogo": false
         }`;
-      container.current.appendChild(script);
-    } catch {
-      return;
-    }
+    container.current.appendChild(script);
   }, [info]);
 
   return (
     <>
       <div className="w-320 h-125 flex flex-row">
-        <div className="tradingview-widget-container" ref={container}>
-          <div
-            className="tradingview-widget-container__widget"
-            ref={container}
-          ></div>
-        </div>
+        <div
+          className="tradingview-widget-container"
+          style={{ width: "100%", height: "100%" }}
+          ref={container}
+        ></div>
         <div className="ml-10">
           <TradingViewScrollArea info={info} />
         </div>

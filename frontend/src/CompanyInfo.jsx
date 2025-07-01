@@ -9,6 +9,7 @@ import TradingViewWidget from "./components/TradingViewWidget";
 const CompanyInfo = () => {
   const [info, setInfo] = useState(null);
   const { selectedId, fullName } = UserFullName();
+  const [yahooFinanceData, setYahooFinanceData] = useState(null);
 
   useEffect(() => {
     const getAllInfo = async () => {
@@ -17,6 +18,11 @@ const CompanyInfo = () => {
       );
       const data = await response.json();
       setInfo(data);
+      const stockResponse = await fetch(
+        `${BASE_URL}/getters/stats/${data.ticker}`
+      );
+      const stockData = await stockResponse.json();
+      setYahooFinanceData(stockData);
     };
     getAllInfo();
   }, [selectedId]);
@@ -49,7 +55,23 @@ const CompanyInfo = () => {
               />
             )}
           </div>
-          <TradingViewWidget info={info} />
+          {info != null && <TradingViewWidget key={info.ticker} info={info} />}
+        </div>
+        <div className="text-white text-center mt-5">
+          {yahooFinanceData != null && (
+            <h2 className="font-semibold">
+              Yahoo Finance Average Analyst Rating:{" "}
+              <span
+                className={
+                  yahooFinanceData.averageAnalystRating.includes("Buy")
+                    ? "text-green-300 font-bold"
+                    : "text-red-300 font-bold"
+                }
+              >
+                {yahooFinanceData.averageAnalystRating}
+              </span>
+            </h2>
+          )}
         </div>
       </main>
     </SidebarProvider>
