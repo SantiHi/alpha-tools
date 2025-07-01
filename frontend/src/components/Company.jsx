@@ -15,7 +15,7 @@ const Company = ({ companyFacts }) => {
         handleView();
         setSelectedId(companyFacts.id);
       }}
-      className="flex flex-row w-80s bg-indigo-50 rounded-lg h-40 mb-15 mr-5 ml-5 shadow-[0px_0px_45px_10px_rgba(223,215,217,.2)] hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out"
+      className="flex flex-row w-80s bg-indigo-50 rounded-lg h-40 mb-15 mr-5 ml-5 shadow-[0px_0px_45px_10px_rgba(223,215,217,.1)] hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out"
     >
       <div
         id="title"
@@ -39,7 +39,8 @@ const Company = ({ companyFacts }) => {
               : "font-bold text-2xl text-green-600 ml-3"
           }
         >
-          {companyFacts.dailyChange} <span> %</span>
+          {companyFacts.dailyChange}
+          <span>%</span>
         </h5>
       </div>
     </div>

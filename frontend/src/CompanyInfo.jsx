@@ -1,15 +1,13 @@
-import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/Sidebar";
 import AppSidebar from "./components/AppSidebar";
 import SearchBar from "./components/SearchBar";
 import { BASE_URL } from "./lib/utils";
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { UserFullName } from "./context/UserContext";
+import TradingViewWidget from "./components/TradingViewWidget";
 
 const CompanyInfo = () => {
-  const [title, setTitle] = useState(null);
-  const location = useLocation();
+  const [info, setInfo] = useState(null);
   const { selectedId, fullName } = UserFullName();
 
   useEffect(() => {
@@ -18,10 +16,10 @@ const CompanyInfo = () => {
         `${BASE_URL}/getters/companyById/${selectedId}`
       );
       const data = await response.json();
-      setTitle(data.name);
+      setInfo(data);
     };
     getAllInfo();
-  }, [location]);
+  }, [selectedId]);
 
   return (
     <SidebarProvider>
@@ -40,7 +38,18 @@ const CompanyInfo = () => {
       <main className="w-full">
         <div className="flex flex-col items-center">
           <SearchBar />
-          <p className="text-white text-4xl mt-30">{title}</p>
+          <div className="flex flex-row bg-indigo-950 p-4 mt-30 pt-0 rounded-sm border-2 border-white mb-8">
+            <p className="text-white text-4xl mt-10 font-bold">
+              {info ? info.name : "-"}
+            </p>
+            {info && (
+              <img
+                className="h-20 mt-5 ml-6 rounded-md"
+                src={`https://img.logokit.com/ticker/${info.ticker}?token=pk_fr8a40387b3910cee522d6`}
+              />
+            )}
+          </div>
+          <TradingViewWidget info={info} />
         </div>
       </main>
     </SidebarProvider>

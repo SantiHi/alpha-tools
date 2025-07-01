@@ -36,6 +36,12 @@ const CompanyList = () => {
     fetchExplore();
   }, []);
 
+  if (exploreCompaniesPrices[0] === "-") {
+    return (
+      <img className="w-40 h-40 mt-10" src="https://i.gifer.com/ZKZg.gif" />
+    );
+  }
+
   return (
     <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-4/5">
       {exploreCompanies.map((value, ind) => {
@@ -46,7 +52,7 @@ const CompanyList = () => {
               companyFacts={{
                 name: value.name,
                 ticker: value.ticker,
-                daily: exploreCompaniesPrices[ind].price,
+                daily: exploreCompaniesPrices[ind].price.toFixed(2),
                 dailyChange: (
                   exploreCompaniesPrices[ind].price -
                   exploreCompaniesPrices[ind].dayStart
@@ -55,7 +61,6 @@ const CompanyList = () => {
               }}
             />
           );
-        } else {
         }
       })}
     </div>

@@ -3,14 +3,13 @@ import "./App.css";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Home from "./Home";
-import { useState, useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { UserFullName } from "./context/UserContext";
 import CompanyInfo from "./CompanyInfo";
 
 const App = () => {
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  const { setFullName } = UserFullName();
+  const { setFullName, isLoggedIn, setIsLoggedIn } = UserFullName();
 
   const attemptLogin = async () => {
     try {
@@ -21,14 +20,14 @@ const App = () => {
       if (response.ok) {
         const data = await response.json();
         setFullName(data.name);
-        setLoggedIn(true);
+        setIsLoggedIn(true);
       }
     } catch {
       return;
     }
   };
 
-  useEffect(() => attemptLogin, []);
+  useEffect(() => attemptLogin);
 
   return (
     <>
