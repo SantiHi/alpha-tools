@@ -5,26 +5,39 @@ import { BASE_URL } from "./lib/utils";
 import { useState, useEffect } from "react";
 import { UserFullName } from "./context/UserContext";
 import TradingViewWidget from "./components/TradingViewWidget";
+import NewsList from "./components/NewsList";
+const logoKey = import.meta.env.VITE_LOGO_TOKEN;
 
 const CompanyInfo = () => {
   const [info, setInfo] = useState(null);
   const { selectedId, fullName } = UserFullName();
   const [yahooFinanceData, setYahooFinanceData] = useState(null);
+  const [newsData, setNewsData] = useState(null);
 
   useEffect(() => {
-    const getAllInfo = async () => {
+    const getAll = async () => {
+      // get basic info from database
       const response = await fetch(
         `${BASE_URL}/getters/companyById/${selectedId}`
       );
       const data = await response.json();
       setInfo(data);
+
+      // get yfinance data!
       const stockResponse = await fetch(
         `${BASE_URL}/getters/stats/${data.ticker}`
       );
       const stockData = await stockResponse.json();
       setYahooFinanceData(stockData);
+
+      // get newsAPI data!
+      const newsResponse = await fetch(
+        `${BASE_URL}/getters/news/${selectedId}`
+      );
+      const newsArticles = await newsResponse.json();
+      setNewsData(newsArticles);
     };
-    getAllInfo();
+    getAll();
   }, [selectedId]);
 
   return (
@@ -51,7 +64,7 @@ const CompanyInfo = () => {
             {info && (
               <img
                 className="h-20 mt-5 ml-6 rounded-md"
-                src={`https://img.logokit.com/ticker/${info.ticker}?token=pk_fr8a40387b3910cee522d6`}
+                src={`https://img.logokit.com/ticker/${info.ticker}?token=${logoKey}`}
               />
             )}
           </div>
@@ -72,7 +85,12 @@ const CompanyInfo = () => {
               </span>
             </h2>
           )}
+          <div className="flex flex-row flex-wrap"></div>
         </div>
+        <h2 className="text-white text-5xl font-bold text-center mt-10">
+          Recent Company News
+        </h2>
+        <NewsList newsData={newsData} />
       </main>
     </SidebarProvider>
   );

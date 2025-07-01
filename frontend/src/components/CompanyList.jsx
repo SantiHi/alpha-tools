@@ -48,7 +48,7 @@ const CompanyList = () => {
         if (exploreCompaniesPrices[ind] != "-") {
           return (
             <Company
-              key={ind}
+              key={value.id}
               companyFacts={{
                 name: value.name,
                 ticker: value.ticker,

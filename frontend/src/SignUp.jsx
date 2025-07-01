@@ -57,7 +57,9 @@ const SignUp = () => {
         const s = await response.json();
         setSubmitResult(s.error);
       }
-    } catch (err) {}
+    } catch {
+      return;
+    }
   };
 
   const navigate = useNavigate();

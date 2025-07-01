@@ -30,7 +30,7 @@ const App = () => {
   useEffect(() => attemptLogin);
 
   return (
-    <>
+    <div className="flex flex-col">
       <BrowserRouter>
         <Routes>
           <Route
@@ -66,7 +66,7 @@ const App = () => {
           <Route path="/signup" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
-      <footer className="fixed flex flex-row justify-center bottom-0 text-center text-xl text-indigo-50 self-center w-full h-16 pt-3 font-medium object-center">
+      <footer className="flex flex-row justify-center text-center text-xl text-indigo-50 self-center w-full h-16 pt-3 font-medium object-center">
         <p className="drop-shadow-[0px_0px_39px_rgba(247,247,247,1)]">
           Santiago Criado |{" "}
         </p>
@@ -80,7 +80,7 @@ const App = () => {
           />
         </a>
       </footer>
-    </>
+    </div>
   );
 };
 export default App;

@@ -21,9 +21,9 @@ model Company {
   ticker              String
   cik_number          Int         @unique
   daily_price         Int
-  recent_news         String[]
   created_at          DateTime    @default(now())
   documents           Document[] 
+  articles            Article[]
 }
 
   model User { 
@@ -42,4 +42,18 @@ model Company {
     filed_date  DateTime
     company     Company   @relation(fields: [companyId], references: [id])
     companyId   Int
+}
+
+model Article { 
+    id          Int @id @default(autoincrement())
+    link        String @unique
+    source      String 
+    title       String 
+    summary     String 
+    publishDate DateTime 
+    language    String 
+    images      String[]
+    company     Company   @relation(fields: [companyId], references: [id])
+    companyId   Int
+    created_at          DateTime    @default(now())
 }
