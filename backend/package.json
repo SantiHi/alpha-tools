@@ -7,6 +7,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.1",
     "express-session": "^1.18.1",
+    "finlight-client": "^1.4.0",
     "yahoo-finance2": "^2.13.3"
   },
   "name": "backend",

@@ -56,7 +56,7 @@ const Login = ({ attemptLogin }) => {
         />
         <button
           id="login"
-          className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900"
+          className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900  hover:brightness-110"
           onClick={submitLoginAttempt}
         >
           Login
@@ -74,7 +74,7 @@ const Login = ({ attemptLogin }) => {
         )}
         <button
           id="signup"
-          className="m-2 bg-green-400 shadow-xl/10 shadow-slate-900 text-black"
+          className="m-2 bg-green-400 shadow-xl/10 shadow-slate-900 text-black  hover:brightness-110"
           onClick={() => navigate("/signup")}
         >
           Sign-Up

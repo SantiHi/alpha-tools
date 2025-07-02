@@ -25,8 +25,8 @@ const handleLogin = async (formData, responseSetter, attemptLogin) => {
       const s = await response.json();
       responseSetter(s.error);
     }
-  } catch (error) {
-    console.error("Network Error, try again");
+  } catch {
+    return;
   }
 };
 

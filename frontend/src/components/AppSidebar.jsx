@@ -32,7 +32,7 @@ const items = [
   },
   {
     title: "My Portfolios",
-    url: "#",
+    url: "/portfolios",
     icon: BookText,
   },
   {

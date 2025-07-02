@@ -38,7 +38,6 @@ button {
   transition: ease 0.3s;
 }
 button:hover {
-  filter: brightness(1.2);
   transition: ease 0.3s;
 }
 button:focus,
