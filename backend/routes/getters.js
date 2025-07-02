@@ -41,7 +41,7 @@ router.get("/stats/:companyTick", async (req, res) => {
   res.status(200).json(result);
 });
 
-// explore page, will be filled with better suggestions later
+// TODO: fill explore page with suggestions
 router.get("/explore", async (req, res) => {
   // will add more complicated logic in later iterations
   res.json(
@@ -92,13 +92,13 @@ router.get("/news/:id", async (req, res) => {
   });
 
   if (company == null) {
-    res
-      .status(404)
-      .json({ message: "company is not in databse / is not pubically traded" });
+    res.status(404).json({
+      message: "company is not in database / is not pubically traded",
+    });
   }
   const companyName = company.name;
 
-  const currentArticles = await prisma.article.findMany({
+  let currentArticles = await prisma.article.findMany({
     where: { companyId: id },
     orderBy: { created_at: "desc" },
   });
@@ -133,12 +133,12 @@ router.get("/news/:id", async (req, res) => {
     });
   }
 
-  const currentArticles2 = await prisma.article.findMany({
+  currentArticles = await prisma.article.findMany({
     where: { companyId: id },
     orderBy: { created_at: "desc" },
   });
 
-  res.status(200).json(currentArticles2);
+  res.status(200).json(currentArticles);
 });
 
 module.exports = router;
