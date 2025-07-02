@@ -22,7 +22,7 @@ const UserContextProvider = ({ children }) => {
   );
 };
 
-export const UserFullName = () => {
+export const UserInfo = () => {
   return useContext(UserContext);
 };
 

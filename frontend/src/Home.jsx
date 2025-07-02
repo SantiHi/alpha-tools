@@ -2,10 +2,10 @@ import { SidebarProvider, SidebarTrigger } from "./components/ui/Sidebar";
 import AppSidebar from "./components/AppSidebar";
 import SearchBar from "./components/SearchBar";
 import CompanyList from "./components/CompanyList";
-import { UserFullName } from "./context/UserContext";
+import { UserInfo } from "./context/UserContext";
 
 const Home = () => {
-  const { fullName } = UserFullName();
+  const { fullName } = UserInfo();
   return (
     <>
       <SidebarProvider>
