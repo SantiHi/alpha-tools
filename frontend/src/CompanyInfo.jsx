@@ -3,14 +3,14 @@ import AppSidebar from "./components/AppSidebar";
 import SearchBar from "./components/SearchBar";
 import { BASE_URL } from "./lib/utils";
 import { useState, useEffect } from "react";
-import { UserFullName } from "./context/UserContext";
+import { UserInfo } from "./context/UserContext";
 import TradingViewWidget from "./components/TradingViewWidget";
 import NewsList from "./components/NewsList";
 const logoKey = import.meta.env.VITE_LOGO_TOKEN;
 
 const CompanyInfo = () => {
   const [info, setInfo] = useState(null);
-  const { selectedId, fullName } = UserFullName();
+  const { selectedId, fullName } = UserInfo();
   const [yahooFinanceData, setYahooFinanceData] = useState(null);
   const [newsData, setNewsData] = useState(null);
 

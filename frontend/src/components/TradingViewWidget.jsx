@@ -3,11 +3,11 @@ import React, { useEffect, useRef, memo, useState } from "react";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Separator } from "../components/ui/separator";
 import { BASE_URL } from "../lib/utils";
-import { UserFullName } from "../context/UserContext";
+import { UserInfo } from "../context/UserContext";
 
 const TradingViewScrollArea = ({ info }) => {
   const [allDocuments, setAllDocuments] = useState([]);
-  const { selectedId } = UserFullName();
+  const { selectedId } = UserInfo();
 
   useEffect(() => {
     const getAllDocuments = async () => {

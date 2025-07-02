@@ -1,10 +1,9 @@
 import { SidebarProvider, SidebarTrigger } from "./components/ui/Sidebar";
 import AppSidebar from "./components/AppSidebar";
 import SearchBar from "./components/SearchBar";
-import CompanyList from "./components/CompanyList";
+import PortfolioList from "./components/PortfolioList";
 import { UserInfo } from "./context/UserContext";
-
-const Home = () => {
+const Portfolios = () => {
   const { fullName } = UserInfo();
   return (
     <>
@@ -25,14 +24,14 @@ const Home = () => {
           <div className="flex flex-col items-center">
             <SearchBar />
             <h3 className="self-center text-center text-6xl mt-30 mb-10 text-indigo-50 font-semibold drop-shadow-[0px_0px_39px_rgba(247,247,247,.3)] z-10">
-              Explore Companies
+              Your Portfolios
             </h3>
-            <CompanyList />
           </div>
+          <PortfolioList />
         </main>
       </SidebarProvider>
     </>
   );
 };
 
-export default Home;
+export default Portfolios;

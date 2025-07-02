@@ -5,10 +5,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 import { BASE_URL } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
-import { UserFullName } from "../context/UserContext";
+import { UserInfo } from "../context/UserContext";
 
 const SearchResultsBar = ({ results, setSearchQuery, setSearchResults }) => {
-  const { setSelectedId } = UserFullName();
+  const { setSelectedId } = UserInfo();
   const navigate = useNavigate();
   if (results.length === 0) {
     return;

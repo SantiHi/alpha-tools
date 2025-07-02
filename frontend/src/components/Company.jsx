@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { UserFullName } from "../context/UserContext";
+import { UserInfo } from "../context/UserContext";
 
 const Company = ({ companyFacts }) => {
-  const { setSelectedId } = UserFullName();
+  const { setSelectedId } = UserInfo();
   const navigate = useNavigate();
 
   const handleView = () => {
