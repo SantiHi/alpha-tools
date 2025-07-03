@@ -55,6 +55,30 @@ router.delete("/:id", async (req, res) => {
   res.json(portfolio);
 });
 
+// delete company from portfolio
+router.delete("/:id/:companyId", async (req, res) => {
+  const portfolioId = parseInt(req.params.id);
+  const companyId = parseInt(req.params.companyId);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+  const array = portfolio.companiesIds.filter((val) => val !== companyId);
+
+  const updatedPortfolio = await prisma.portfolio.update({
+    where: { id: portfolioId },
+    data: {
+      companiesIds: array,
+    },
+  });
+
+  if (updatedPortfolio == null) {
+    res.status(400).json({ message: "failed to delete" });
+  }
+  res.json(updatedPortfolio);
+});
+
 router.get("/:id", async (req, res) => {
   const portfolioId = parseInt(req.params.id);
 
