@@ -8,6 +8,7 @@ import { BASE_URL } from "./lib/utils";
 import { UserInfo } from "./context/UserContext";
 import CompanyInfo from "./CompanyInfo";
 import Portfolios from "./Portfolios";
+import PortfolioInfo from "./PortfolioInfo";
 import Footer from "./Footer";
 
 const App = () => {
@@ -36,10 +37,8 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route
-            path="/CompanyInfo/:companyID"
-            element={
-              isLoggedIn === true ? <CompanyInfo /> : <Navigate to="/login" />
-            }
+            path="/CompanyInfo/:selectedId"
+            element={isLoggedIn === true ? <CompanyInfo /> : <Login />}
           />
           <Route
             path="/"
@@ -69,6 +68,10 @@ const App = () => {
           <Route
             path="/portfolios"
             element={isLoggedIn === true ? <Portfolios /> : <Login />}
+          />
+          <Route
+            path="/portfolios/:id"
+            element={isLoggedIn === true ? <PortfolioInfo /> : <Login />}
           />
         </Routes>
       </BrowserRouter>

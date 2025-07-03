@@ -30,6 +30,9 @@ app.use("/auth", authRoutes);
 const populatorRoutes = require("./populators/tickers");
 app.use("/populators", populatorRoutes);
 
+const portfolioRoutes = require("./routes/portfolios");
+app.use("/portfolios", portfolioRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

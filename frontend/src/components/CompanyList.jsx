@@ -26,7 +26,7 @@ const CompanyList = () => {
       const stockData = await stockResponse.json();
       prices.push({
         price: stockData.regularMarketPrice,
-        dayStart: stockData.regularMarketOpen,
+        dayStart: stockData.regularMarketPreviousClose,
       });
     }
     setExploreCompaniesPrices(prices);
@@ -54,8 +54,10 @@ const CompanyList = () => {
                 ticker: value.ticker,
                 daily: exploreCompaniesPrices[ind].price.toFixed(2),
                 dailyChange: (
-                  exploreCompaniesPrices[ind].price -
-                  exploreCompaniesPrices[ind].dayStart
+                  ((exploreCompaniesPrices[ind].price -
+                    exploreCompaniesPrices[ind].dayStart) /
+                    exploreCompaniesPrices[ind].dayStart) *
+                  100
                 ).toFixed(2),
                 id: value.id,
               }}
