@@ -6,18 +6,40 @@ import { useState, useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { useParams, useNavigate } from "react-router-dom";
 import { Pencil, X } from "lucide-react";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const MODE_DAY = "Day";
+const MODE_WEEK = "Week";
+const MODE_MONTH = "Month";
+const MODE_YEAR = "Year";
 
 const PortfolioInfo = () => {
+  const darkMode = createTheme({
+    palette: {
+      mode: "dark",
+    },
+  });
+
   const [portfolioData, setPortfolioData] = useState(null);
   const [companyIds, setCompanyIds] = useState([]);
   const [companiesData, setCompaniesData] = useState([]);
   const [companiesStockData, setCompaniesStockData] = useState([]);
   const [isEditingMode, setIsEditingMode] = useState(false);
+  const [historicalMode, setHistoricalMode] = useState(MODE_DAY);
 
   const navigate = useNavigate();
 
   const { fullName } = UserInfo();
   const { id } = useParams();
+
+  const handleTimelineChange = (e) => {
+    setHistoricalMode(e.target.value);
+  };
 
   const getPortfolioData = async () => {
     const response = await fetch(`${BASE_URL}/portfolios/${id}`, {
@@ -118,6 +140,7 @@ const PortfolioInfo = () => {
                     }}
                   />
                 </div>
+                {/* PORTFOLIO COMPANIES COMPONENT! */}
                 <div className="flex flex-col h-full items-center">
                   {companiesStockData.length === 0 && (
                     <img
@@ -127,7 +150,7 @@ const PortfolioInfo = () => {
                   )}
                   {companiesStockData.length !== 0 &&
                     companiesData.map((value, ind) => {
-                      if (value == null) {
+                      if (value == null || companiesStockData[ind] == null) {
                         return;
                       }
                       const percentChange = (
@@ -182,6 +205,43 @@ const PortfolioInfo = () => {
                         </div>
                       );
                     })}
+                </div>
+              </div>
+              {/* PORTFOLIO COMPANIES END */}
+              <div className="w-1/2 flex flex-col">
+                <div className=" w-full text-center flex flex-row justify-center">
+                  <h3 className="text-white font-bold text-2xl mt-2">
+                    {" "}
+                    Largest Swings{" "}
+                  </h3>
+                  <ThemeProvider theme={darkMode}>
+                    <Box
+                      sx={{ minWidth: 120, color: "white" }}
+                      className="ml-5 mb-7"
+                    >
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="timeline-label"
+                          sx={{ borderColor: "white" }}
+                        >
+                          period
+                        </InputLabel>
+                        <Select
+                          labelId="timeline-label"
+                          id="timeline-select"
+                          value={historicalMode}
+                          label="period"
+                          sx={{ color: "white", borderColor: "white" }}
+                          onChange={handleTimelineChange}
+                        >
+                          <MenuItem value={MODE_DAY}> {MODE_DAY}</MenuItem>
+                          <MenuItem value={MODE_WEEK}> {MODE_WEEK} </MenuItem>
+                          <MenuItem value={MODE_MONTH}> {MODE_MONTH} </MenuItem>
+                          <MenuItem value={MODE_YEAR}> {MODE_YEAR} </MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </ThemeProvider>
                 </div>
               </div>
             </div>

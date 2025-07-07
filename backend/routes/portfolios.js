@@ -131,4 +131,16 @@ router.put("/add/:id/:companyId", async (req, res) => {
   res.status(200).json(newPortfolio);
 });
 
+// x largest swings in portfolio
+
+router.get("/swings/:portfolioId", async (req, res) => {
+  const portfolioId = parseInt(req.params.portfolioId);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+  const idArray = portfolio.companiesIds;
+});
+
 module.exports = router;

@@ -23,6 +23,7 @@ const CompanyList = () => {
       const stockResponse = await fetch(
         `${BASE_URL}/getters/stats/${company.ticker}`
       );
+
       const stockData = await stockResponse.json();
       prices.push({
         price: stockData.regularMarketPrice,
