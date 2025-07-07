@@ -7,10 +7,14 @@ import { useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { UserInfo } from "./context/UserContext";
 import CompanyInfo from "./CompanyInfo";
+<<<<<<< HEAD
 import Portfolios from "./Portfolios";
 import PortfolioInfo from "./PortfolioInfo";
 import Footer from "./Footer";
 
+=======
+import Footer from "./footer";
+>>>>>>> origin/main
 const App = () => {
   const { setFullName, isLoggedIn, setIsLoggedIn } = UserInfo();
 
@@ -30,7 +34,7 @@ const App = () => {
     }
   };
 
-  useEffect(() => attemptLogin);
+  useEffect(() => attemptLogin, []);
 
   return (
     <div className="flex flex-col">

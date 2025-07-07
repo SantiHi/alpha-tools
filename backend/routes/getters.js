@@ -41,7 +41,11 @@ router.get("/stats/:companyTick", async (req, res) => {
   res.status(200).json(result);
 });
 
+<<<<<<< HEAD
 // TODO fill explore page wqith suggestions
+=======
+// TODO: fill explore page with suggestions
+>>>>>>> origin/main
 router.get("/explore", async (req, res) => {
   // will add more complicated logic in later iterations
   res.json(
@@ -92,11 +96,17 @@ router.get("/news/:id", async (req, res) => {
   });
 
   if (company == null) {
+<<<<<<< HEAD
     res
       .status(404)
       .json({
         message: "company is not in database / is not pubically traded",
       });
+=======
+    res.status(404).json({
+      message: "company is not in database / is not pubically traded",
+    });
+>>>>>>> origin/main
   }
   const companyName = company.name;
 

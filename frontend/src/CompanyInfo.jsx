@@ -119,7 +119,11 @@ const AddToPortfolio = ({ companyId }) => {
 
 const CompanyInfo = () => {
   const [info, setInfo] = useState(null);
+<<<<<<< HEAD
   const { fullName } = UserInfo();
+=======
+  const { selectedId, fullName } = UserInfo();
+>>>>>>> origin/main
   const [yahooFinanceData, setYahooFinanceData] = useState(null);
   const [newsData, setNewsData] = useState(null);
   const { selectedId } = useParams();
