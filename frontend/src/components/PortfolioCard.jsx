@@ -7,6 +7,8 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
+import { BASE_URL } from "../lib/utils";
+
 const DeleteButton = ({ deleteCard }) => {
   return (
     <Popover>
@@ -24,13 +26,11 @@ const DeleteButton = ({ deleteCard }) => {
         <div className="grid gap-4">
           <div className="grid gap-2">
             <h2 className="font-medium text-center mb-0 p-0">
-              {" "}
-              Delete Portfolio Confirmation{" "}
+              Delete Portfolio Confirmation
             </h2>
             <span className="font-bold text-center mt-0 p-0">
-              {" "}
-              (all data will be lost){" "}
-            </span>{" "}
+              (all data will be lost)
+            </span>
             <PopoverClose asChild>
               <button
                 variant="outline"
@@ -50,9 +50,7 @@ const DeleteButton = ({ deleteCard }) => {
   );
 };
 
-import { BASE_URL } from "../lib/utils";
-
-const PortfolioCard = ({ id, name, description, getPortfolios }) => {
+const PortfolioCard = ({ id, name, description, setPortfolios }) => {
   const navigate = useNavigate();
 
   const portfolioClicked = () => {
@@ -64,7 +62,7 @@ const PortfolioCard = ({ id, name, description, getPortfolios }) => {
       method: "DELETE",
       credentials: "include",
     });
-    getPortfolios();
+    setPortfolios((self) => self.filter((val) => val.id !== id));
   };
 
   return (

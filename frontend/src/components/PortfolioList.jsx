@@ -100,17 +100,13 @@ const PortfolioList = () => {
   };
 
   const getPortfolios = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/portfolios/`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setPortfolios(data);
-      }
-    } catch {
-      return;
+    const response = await fetch(`${BASE_URL}/portfolios/`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setPortfolios(data);
     }
   };
 
@@ -131,7 +127,7 @@ const PortfolioList = () => {
               id={portfolio.id}
               companies={portfolio.companiesIds}
               description={portfolio.description}
-              getPortfolios={getPortfolios}
+              setPortfolios={setPortfolios}
             />
           );
         })

@@ -30,4 +30,8 @@ const handleLogin = async (formData, responseSetter, attemptLogin) => {
   }
 };
 
-export { handleLogin, BASE_URL };
+const toPercentage = (startPrice, endPrice) => {
+  return (((startPrice - endPrice) / startPrice) * 100).toFixed(2);
+};
+
+export { handleLogin, BASE_URL, toPercentage };

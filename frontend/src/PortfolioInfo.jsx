@@ -4,42 +4,38 @@ import SearchBar from "./components/SearchBar";
 import { UserInfo } from "./context/UserContext";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
-import { useParams, useNavigate } from "react-router-dom";
-import { Pencil, X } from "lucide-react";
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useParams } from "react-router-dom";
+import PortfolioCompanies from "./components/PortfolioCompanies";
+import SwingCompanies from "./components/swingCompanies";
 
 const MODE_DAY = "Day";
-const MODE_WEEK = "Week";
-const MODE_MONTH = "Month";
-const MODE_YEAR = "Year";
 
 const PortfolioInfo = () => {
-  const darkMode = createTheme({
-    palette: {
-      mode: "dark",
-    },
-  });
-
   const [portfolioData, setPortfolioData] = useState(null);
   const [companyIds, setCompanyIds] = useState([]);
   const [companiesData, setCompaniesData] = useState([]);
-  const [companiesStockData, setCompaniesStockData] = useState([]);
+  const [companiesStockData, setCompaniesStockData] = useState(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [historicalMode, setHistoricalMode] = useState(MODE_DAY);
-
-  const navigate = useNavigate();
-
+  const [sortedSwings, setSortedSwings] = useState([]);
   const { fullName } = UserInfo();
   const { id } = useParams();
 
-  const handleTimelineChange = (e) => {
-    setHistoricalMode(e.target.value);
+  const getSwingData = async () => {
+    const response = await fetch(
+      `${BASE_URL}/portfolios/swings/${id}/${historicalMode}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+    const data = await response.json();
+    setSortedSwings(data);
   };
+
+  useEffect(() => {
+    getSwingData();
+  }, [historicalMode]);
 
   const getPortfolioData = async () => {
     const response = await fetch(`${BASE_URL}/portfolios/${id}`, {
@@ -58,27 +54,37 @@ const PortfolioInfo = () => {
       method: "DELETE",
       credentials: "include",
     });
-    getCompaniesData();
+    setSortedSwings((self) => self.filter((cid) => cid.id !== companyId));
     setCompanyIds((self) => self.filter((cid) => cid !== companyId));
   };
 
   const getCompaniesData = async () => {
     const newArray = [];
-    for (let ids of companyIds) {
-      const response = await fetch(`${BASE_URL}/getters/companyById/${ids}`, {
-        method: "GET",
+    if (companyIds) {
+      const response = await fetch(`${BASE_URL}/company`, {
+        method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: companyIds }),
       });
       if (response.ok) {
-        let data = await response.json();
-        newArray.push({ id: data.id, name: data.name, ticker: data.ticker });
+        const data = await response.json();
+        for (let val of data) {
+          newArray.push({ id: val.id, name: val.name, ticker: val.ticker });
+        }
       }
     }
     setCompaniesData(newArray);
     const prices = [];
     for (const company of newArray) {
       const stockResponse = await fetch(
-        `${BASE_URL}/getters/stats/${company.ticker}`
+        `${BASE_URL}/getters/stats/${company.ticker}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
       );
       const stockData = await stockResponse.json();
       prices.push({
@@ -102,10 +108,6 @@ const PortfolioInfo = () => {
     );
   }
 
-  const handleClick = (id) => {
-    navigate(`/CompanyInfo/${id}`);
-  };
-
   return (
     <>
       <SidebarProvider>
@@ -128,122 +130,21 @@ const PortfolioInfo = () => {
               {portfolioData.name}
             </h3>
             <div className="flex flex-row justify-start w-full">
-              <div className="bg-indigo-50 h-75 w-7/20 ml-40 rounded-md overflow-auto">
-                <div className="flex flex-row justify-center">
-                  <h3 className="font-bold text-2xl text-center mt-3">
-                    Portfolio Companies
-                  </h3>
-                  <Pencil
-                    className="mt-5 ml-4 border-2 h-5 w-5 rounded-sm hover:scale-110 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90"
-                    onClick={() => {
-                      setIsEditingMode((prev) => !prev);
-                    }}
-                  />
-                </div>
-                {/* PORTFOLIO COMPANIES COMPONENT! */}
-                <div className="flex flex-col h-full items-center">
-                  {companiesStockData.length === 0 && (
-                    <img
-                      className="h-20 w-20 mt-10"
-                      src="https://i.gifer.com/ZKZg.gif"
-                    />
-                  )}
-                  {companiesStockData.length !== 0 &&
-                    companiesData.map((value, ind) => {
-                      if (value == null || companiesStockData[ind] == null) {
-                        return;
-                      }
-                      const percentChange = (
-                        ((companiesStockData[ind].price -
-                          companiesStockData[ind].dayStart) /
-                          companiesStockData[ind].dayStart) *
-                        100
-                      ).toFixed(2);
-                      return (
-                        <div
-                          className="flex flex-row justify-center h-6/50 w-9/10 m-1"
-                          key={value.id}
-                        >
-                          <div
-                            className={
-                              percentChange < 0
-                                ? percentChange < 5
-                                  ? " w-full h-full bg-red-200 rounded-sm mt-2 hover:scale-103 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90 flex flex-row"
-                                  : " w-full h-full bg-red-400 rounded-sm mt-2 hover:scale-103 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90 flex flex-row"
-                                : percentChange > 5
-                                ? " w-full h-full bg-green-400 rounded-sm mt-2 hover:scale-103 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90 flex flex-row"
-                                : " w-full h-full bg-green-200 rounded-sm mt-2 hover:scale-103 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90 flex flex-row"
-                            }
-                            onClick={() => {
-                              handleClick(value.id);
-                            }}
-                          >
-                            <h5 className="font-bold ml-2 pt-1 text-lg truncate w-3/5">
-                              {value.name} ({value.ticker})
-                            </h5>
-                            <h5
-                              className={
-                                percentChange < 0
-                                  ? " font-bold pt-1 text-lg text-red-600 mr-2 ml-auto"
-                                  : " font-bold pt-1 text-lg text-green-800 mr-2 ml-auto"
-                              }
-                            >
-                              ${companiesStockData[ind].price} | {percentChange}
-                              %
-                            </h5>
-                          </div>
-                          {isEditingMode ? (
-                            <X
-                              className=" mt-4 ml-1 hover:scale-115 transition-transform duration-200 ease-in-out hover:cursor-pointer"
-                              onClick={() => {
-                                handleDelete(value.id);
-                              }}
-                            />
-                          ) : (
-                            ""
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-              {/* PORTFOLIO COMPANIES END */}
-              <div className="w-1/2 flex flex-col">
-                <div className=" w-full text-center flex flex-row justify-center">
-                  <h3 className="text-white font-bold text-2xl mt-2">
-                    {" "}
-                    Largest Swings{" "}
-                  </h3>
-                  <ThemeProvider theme={darkMode}>
-                    <Box
-                      sx={{ minWidth: 120, color: "white" }}
-                      className="ml-5 mb-7"
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id="timeline-label"
-                          sx={{ borderColor: "white" }}
-                        >
-                          period
-                        </InputLabel>
-                        <Select
-                          labelId="timeline-label"
-                          id="timeline-select"
-                          value={historicalMode}
-                          label="period"
-                          sx={{ color: "white", borderColor: "white" }}
-                          onChange={handleTimelineChange}
-                        >
-                          <MenuItem value={MODE_DAY}> {MODE_DAY}</MenuItem>
-                          <MenuItem value={MODE_WEEK}> {MODE_WEEK} </MenuItem>
-                          <MenuItem value={MODE_MONTH}> {MODE_MONTH} </MenuItem>
-                          <MenuItem value={MODE_YEAR}> {MODE_YEAR} </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </ThemeProvider>
-                </div>
-              </div>
+              <PortfolioCompanies
+                handleDelete={handleDelete}
+                companiesStockData={companiesStockData}
+                companiesData={companiesData}
+                isEditingMode={isEditingMode}
+                setIsEditingMode={setIsEditingMode}
+              />
+              <SwingCompanies
+                companiesStockData={companiesStockData}
+                companiesData={companiesData}
+                setHistoricalMode={setHistoricalMode}
+                sortedSwings={sortedSwings}
+                historicalMode={historicalMode}
+                companyIds={companyIds}
+              />
             </div>
           </div>
         </main>

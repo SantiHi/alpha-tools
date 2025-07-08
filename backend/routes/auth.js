@@ -76,7 +76,6 @@ router.post("/login", loginLimiter, async (req, res) => {
   if (user == null) {
     return res.status(400).json({ error: "Invalid username or password." });
   }
-
   const isValidPassword = await argon2.verify(user.password, password);
   if (!isValidPassword) {
     return res.status(400).json({ error: "Invalid username or password." });

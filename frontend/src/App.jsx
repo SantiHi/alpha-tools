@@ -7,14 +7,14 @@ import { useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { UserInfo } from "./context/UserContext";
 import CompanyInfo from "./CompanyInfo";
-<<<<<<< HEAD
 import Portfolios from "./Portfolios";
 import PortfolioInfo from "./PortfolioInfo";
 import Footer from "./Footer";
 
-=======
-import Footer from "./footer";
->>>>>>> origin/main
+const LoggedInPage = ({ isLoggedIn, children }) => {
+  return isLoggedIn ? children : <Login />;
+};
+
 const App = () => {
   const { setFullName, isLoggedIn, setIsLoggedIn } = UserInfo();
 
@@ -34,7 +34,9 @@ const App = () => {
     }
   };
 
-  useEffect(() => attemptLogin, []);
+  useEffect(() => {
+    attemptLogin();
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -42,40 +44,52 @@ const App = () => {
         <Routes>
           <Route
             path="/CompanyInfo/:selectedId"
-            element={isLoggedIn === true ? <CompanyInfo /> : <Login />}
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <CompanyInfo />
+              </LoggedInPage>
+            }
           />
           <Route
             path="/"
             element={
-              isLoggedIn === true ? (
-                <Navigate to="/home" />
-              ) : (
-                <Navigate to="/login" />
-              )
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Home />
+              </LoggedInPage>
             }
           />
           <Route
             path="/login"
             element={
-              isLoggedIn === true ? (
-                <Navigate to="/home" />
-              ) : (
-                <Login attemptLogin={attemptLogin} />
-              )
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Home />
+              </LoggedInPage>
             }
           />
           <Route
             path="/home"
-            element={isLoggedIn === true ? <Home /> : <Navigate to="/login" />}
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Home />
+              </LoggedInPage>
+            }
           />
           <Route path="/signup" element={<SignUp />} />
           <Route
             path="/portfolios"
-            element={isLoggedIn === true ? <Portfolios /> : <Login />}
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Portfolios />
+              </LoggedInPage>
+            }
           />
           <Route
             path="/portfolios/:id"
-            element={isLoggedIn === true ? <PortfolioInfo /> : <Login />}
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <PortfolioInfo />
+              </LoggedInPage>
+            }
           />
         </Routes>
       </BrowserRouter>

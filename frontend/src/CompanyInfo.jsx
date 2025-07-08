@@ -6,8 +6,9 @@ import { useState, useEffect } from "react";
 import { UserInfo } from "./context/UserContext";
 import TradingViewWidget from "./components/TradingViewWidget";
 import NewsList from "./components/NewsList";
-const logoKey = import.meta.env.VITE_LOGO_TOKEN;
 import { useParams } from "react-router-dom";
+const logoKey = import.meta.env.VITE_LOGO_TOKEN;
+import cn from "classnames";
 
 import {
   Popover,
@@ -21,12 +22,14 @@ const AddToPortfolio = ({ companyId }) => {
   const [portfoliosToAddToo, setPortfoliosToAddToo] = useState([]);
 
   const AddToPortfolios = async () => {
-    for (let id of portfoliosToAddToo) {
-      await fetch(`${BASE_URL}/portfolios/add/${id}/${companyId}`, {
-        method: "PUT",
-        credentials: "include",
-      });
-    }
+    await fetch(`${BASE_URL}/portfolios/addMany/${companyId}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ids: portfoliosToAddToo }),
+    });
   };
 
   const getPortfolios = async () => {
@@ -72,6 +75,16 @@ const AddToPortfolio = ({ companyId }) => {
               if (value.companiesIds.includes(companyId)) {
                 return;
               }
+
+              // conditional class:
+              const portfolioClass = cn(
+                "text-center p-1 m-0 rounded-lg hover:cursor-pointer hover:scale-105 transition-transform duration-150 ease-in-out font-bold",
+                {
+                  "bg-green-300": portfoliosToAddToo.includes(value.id),
+                  "bg-gray-300": !portfoliosToAddToo.includes(value.id),
+                }
+              );
+
               return (
                 <div
                   key={value.id}
@@ -82,11 +95,7 @@ const AddToPortfolio = ({ companyId }) => {
                         : [...self, value.id]
                     );
                   }}
-                  className={
-                    portfoliosToAddToo.includes(value.id)
-                      ? "text-center bg-green-300 p-1 m-0 rounded-lg hover:cursor-pointer hover:scale-105 transition-transform duration-150 ease-in-out font-bold"
-                      : "text-center bg-gray-300 p-1 m-0 rounded-lg hover:cursor-pointer hover:scale-105 transition-transform duration-150 ease-in-out font-bold"
-                  }
+                  className={portfolioClass}
                 >
                   {value.name}
                 </div>
@@ -119,11 +128,7 @@ const AddToPortfolio = ({ companyId }) => {
 
 const CompanyInfo = () => {
   const [info, setInfo] = useState(null);
-<<<<<<< HEAD
   const { fullName } = UserInfo();
-=======
-  const { selectedId, fullName } = UserInfo();
->>>>>>> origin/main
   const [yahooFinanceData, setYahooFinanceData] = useState(null);
   const [newsData, setNewsData] = useState(null);
   const { selectedId } = useParams();
@@ -132,22 +137,35 @@ const CompanyInfo = () => {
     const getAll = async () => {
       // get basic info from database
       const response = await fetch(
-        `${BASE_URL}/getters/companyById/${selectedId}`
+        `${BASE_URL}/getters/companyById/${selectedId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
       );
       const data = await response.json();
       setInfo(data);
 
       // get yfinance data!
       const stockResponse = await fetch(
-        `${BASE_URL}/getters/stats/${data.ticker}`
+        `${BASE_URL}/getters/stats/${data.ticker}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
       );
       const stockData = await stockResponse.json();
       setYahooFinanceData(stockData);
 
       // get newsAPI data!
       const newsResponse = await fetch(
-        `${BASE_URL}/getters/news/${selectedId}`
+        `${BASE_URL}/getters/news/${selectedId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
       );
+
       const newsArticles = await newsResponse.json();
       setNewsData(newsArticles);
     };

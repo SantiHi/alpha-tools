@@ -1,3 +1,4 @@
+import cn from "classnames";
 const InputBox = ({
   label,
   placeholder,
@@ -6,13 +7,16 @@ const InputBox = ({
   handleFormChange,
   isPassword,
 }) => {
+  const inputClass = cn(
+    "bg-white text-base m-2 h-8 rounded-sm p-1 resize-none shadow-xl/10 shadow-slate-900"
+  );
   if (isPassword === true) {
     return (
       <>
         <label className="font-semibold ml-2">{label}</label>
         <input
           type="password"
-          className="bg-white text-base m-2 h-8 rounded-sm p-1 resize-none shadow-xl/10 shadow-slate-900"
+          className={inputClass}
           name={name}
           placeholder={placeholder}
           onChange={handleFormChange}
@@ -25,7 +29,7 @@ const InputBox = ({
     <>
       <label className="font-semibold ml-2">{label}</label>
       <textarea
-        className="bg-white text-base m-2 h-8 rounded-sm p-1 resize-none shadow-xl/10 shadow-slate-900"
+        className={inputClass}
         name={name}
         placeholder={placeholder}
         onChange={handleFormChange}

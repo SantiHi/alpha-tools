@@ -13,12 +13,4 @@ class BadParams extends Error {
   }
 }
 
-class NotAuthorized extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "Unauthorized";
-    this.statusCode = 401;
-  }
-}
-
-module.exports = { DoesNotExist, BadParams, NotAuthorized };
+module.exports = { DoesNotExist, BadParams };

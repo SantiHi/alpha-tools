@@ -37,12 +37,8 @@ function PopoverAnchor({ ...props }) {
   return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />;
 }
 
-<<<<<<< HEAD
 function PopoverClose({ ...props }) {
   return <PopoverPrimitive.Close data-slot="popover-anchor" {...props} />;
 }
 
 export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor, PopoverClose };
-=======
-export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor };
->>>>>>> origin/main
