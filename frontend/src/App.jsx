@@ -3,67 +3,77 @@ import "./App.css";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Home from "./Home";
-import { useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { UserInfo } from "./context/UserContext";
 import CompanyInfo from "./CompanyInfo";
-import Footer from "./footer";
+import Portfolios from "./Portfolios";
+import PortfolioInfo from "./PortfolioInfo";
+import Footer from "./Footer";
+
+const LoggedInPage = ({ isLoggedIn, children }) => {
+  return isLoggedIn ? children : <Login />;
+};
+
 const App = () => {
-  const { setFullName, isLoggedIn, setIsLoggedIn } = UserInfo();
+  const { isLoggedIn, authChecked } = UserInfo();
 
-  const attemptLogin = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/auth/me`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setFullName(data.name);
-        setIsLoggedIn(true);
-      }
-    } catch {
-      return;
-    }
-  };
-
-  useEffect(() => attemptLogin, []);
+  if (!authChecked) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col">
       <BrowserRouter>
         <Routes>
           <Route
-            path="/CompanyInfo/:companyID"
+            path="/CompanyInfo/:selectedId"
             element={
-              isLoggedIn === true ? <CompanyInfo /> : <Navigate to="/login" />
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <CompanyInfo />
+              </LoggedInPage>
             }
           />
           <Route
             path="/"
             element={
-              isLoggedIn === true ? (
-                <Navigate to="/home" />
-              ) : (
-                <Navigate to="/login" />
-              )
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Home />
+              </LoggedInPage>
             }
           />
           <Route
             path="/login"
             element={
-              isLoggedIn === true ? (
-                <Navigate to="/home" />
-              ) : (
-                <Login attemptLogin={attemptLogin} />
-              )
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Home />
+              </LoggedInPage>
             }
           />
           <Route
             path="/home"
-            element={isLoggedIn === true ? <Home /> : <Navigate to="/login" />}
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Home />
+              </LoggedInPage>
+            }
           />
           <Route path="/signup" element={<SignUp />} />
+          <Route
+            path="/portfolios"
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Portfolios />
+              </LoggedInPage>
+            }
+          />
+          <Route
+            path="/portfolios/:id"
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <PortfolioInfo />
+              </LoggedInPage>
+            }
+          />
         </Routes>
       </BrowserRouter>
       <Footer />

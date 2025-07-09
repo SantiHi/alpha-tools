@@ -124,7 +124,7 @@ const SignUp = () => {
             navigate("/");
           }}
           id="login"
-          className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900  hover:brightness-110"
+          className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900 hover:brightness-110"
         >
           Back to login
         </button>

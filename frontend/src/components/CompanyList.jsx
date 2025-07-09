@@ -1,6 +1,6 @@
 import Company from "./Company";
 import { useState, useEffect } from "react";
-import { BASE_URL } from "../lib/utils";
+import { BASE_URL, toPercentage } from "../lib/utils";
 
 const PLACEHOLDER = "-";
 
@@ -17,18 +17,25 @@ const CompanyList = () => {
     PLACEHOLDER,
   ]);
   const fetchExplore = async () => {
-    const response = await fetch(`${BASE_URL}/getters/explore`);
+    const response = await fetch(`${BASE_URL}/getters/explore`, {
+      method: "GET",
+      credentials: "include",
+    });
     const data = await response.json();
     await setExploreCompanies(data);
     const prices = [];
     for (const company of data) {
       const stockResponse = await fetch(
-        `${BASE_URL}/getters/stats/${company.ticker}`
+        `${BASE_URL}/getters/stats/${company.ticker}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
       );
       const stockData = await stockResponse.json();
       prices.push({
         price: stockData.regularMarketPrice,
-        dayStart: stockData.regularMarketOpen,
+        dayStart: stockData.regularMarketPreviousClose,
       });
     }
     setExploreCompaniesPrices(prices);
@@ -55,10 +62,10 @@ const CompanyList = () => {
                 name: value.name,
                 ticker: value.ticker,
                 daily: exploreCompaniesPrices[ind].price.toFixed(2),
-                dailyChange: (
-                  exploreCompaniesPrices[ind].price -
+                dailyChange: toPercentage(
+                  exploreCompaniesPrices[ind].price,
                   exploreCompaniesPrices[ind].dayStart
-                ).toFixed(2),
+                ),
                 id: value.id,
               }}
             />

@@ -3,16 +3,22 @@ import { ScrollArea } from "../components/ui/scroll-area";
 import { Separator } from "../components/ui/separator";
 import { BASE_URL } from "../lib/utils";
 import { UserInfo } from "../context/UserContext";
+import { useParams } from "react-router-dom";
 
 const TradingViewScrollArea = ({ info }) => {
   const [allDocuments, setAllDocuments] = useState([]);
-  const { selectedId } = UserInfo();
+  const { selectedId } = useParams();
 
   useEffect(() => {
     const getAllDocuments = async () => {
       const response = await fetch(
-        `${BASE_URL}/getters/documents/${selectedId}`
+        `${BASE_URL}/getters/documents/${selectedId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
       );
+
       const allDocs = await response.json();
       setAllDocuments(allDocs);
     };
