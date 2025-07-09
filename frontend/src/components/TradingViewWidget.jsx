@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, memo, useState } from "react";
 import { ScrollArea } from "../components/ui/scroll-area";
-import { Separator } from "../components/ui/separator";
+import { Separator } from "./ui/separator";
 import { BASE_URL } from "../lib/utils";
-import { UserInfo } from "../context/UserContext";
 import { useParams } from "react-router-dom";
 
 const TradingViewScrollArea = ({ info }) => {

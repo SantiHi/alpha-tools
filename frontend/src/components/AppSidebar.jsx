@@ -1,11 +1,4 @@
-import {
-  Calendar,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  BookText,
-} from "lucide-react";
+import { Home, Inbox, Settings, BookText } from "lucide-react";
 
 import {
   Sidebar,
@@ -16,7 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "./ui/Sidebar";
+} from "./ui/sidebar";
 
 // Menu items.
 const items = [
