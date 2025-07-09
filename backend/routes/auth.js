@@ -10,9 +10,7 @@ const router = express.Router({ mergeParams: true });
 const argon2 = require("argon2");
 const rateLimit = require("express-rate-limit");
 
-// constants
 CONST_LOCKEDOUT_TIME = 10;
-// Simplistic Signup Route
 
 router.post("/signup", async (req, res) => {
   const { username, password, email, name } = req.body;

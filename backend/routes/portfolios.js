@@ -164,7 +164,7 @@ router.put("/addMany/:companyId", async (req, res, next) => {
 });
 
 // x largest swings in portfolio, req period can be: "Day", "Week", "Month", "Year"
-router.get("/swings/:portfolioId/:timeFrame", async (req, res) => {
+router.get("/swings/:portfolioId/:timeFrame", async (req, res, next) => {
   const timeFrame = req.params.timeFrame;
   let retArray = [];
   const portfolioId = parseInt(req.params.portfolioId);
@@ -173,6 +173,9 @@ router.get("/swings/:portfolioId/:timeFrame", async (req, res) => {
       id: portfolioId,
     },
   });
+  if (portfolio == null) {
+    next(new BadParams("portfolio does not exist"));
+  }
   // go through each company in the array, at the end sort by greatest change!
   const idArray = portfolio.companiesIds;
   for (let id of idArray) {

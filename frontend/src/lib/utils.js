@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { UserInfo } from "../context/UserContext";
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -8,7 +9,7 @@ export function cn(...inputs) {
 const BASE_URL = import.meta.env.DEV ? "http://localhost:3000" : ""; // official database url
 const LOGIN_SUCCESS = "password accepted";
 
-const handleLogin = async (formData, responseSetter, attemptLogin) => {
+const handleLogin = async (formData, responseSetter, setIsLoggedIn) => {
   try {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
@@ -20,7 +21,8 @@ const handleLogin = async (formData, responseSetter, attemptLogin) => {
     });
     if (response.ok === true) {
       responseSetter(LOGIN_SUCCESS);
-      attemptLogin();
+      setIsLoggedIn(true);
+      return true;
     } else {
       const s = await response.json();
       responseSetter(s.error);

@@ -1,5 +1,6 @@
 const { PrismaClient } = require("./generated/prisma");
 const prisma = new PrismaClient();
+const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 
 const { BadParams, DoesNotExist } = require("./routes/middleware/CustomErrors");
 
@@ -7,9 +8,21 @@ const express = require("express");
 const PORT = process.env.PORT || 3000;
 require("dotenv").config();
 const ORIGIN = process.env.origin;
+
+const isProd = process.env.NODE_ENV === "production";
+
+if (isProd) {
+}
+
 const cors = require("cors");
 const app = express();
 app.use(express.json());
+
+if (isProd) {
+  // behind Heroku, Nginx, Cloudflare, etc.
+  app.set("trust proxy", 1);
+}
+
 const session = require("express-session");
 app.use(
   cors({
@@ -21,11 +34,18 @@ app.use(
 );
 app.use(
   session({
-    secret: "your-secret",
-    resave: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // ms
+      secure: isProd,
+    },
+    secret: "a santa at nasa",
+    resave: true,
     saveUninitialized: false,
-    rolling: true,
-    cookie: { secure: false, maxAge: 15 * 60 * 1000 }, // 15 minutes!!
+    store: new PrismaSessionStore(new PrismaClient(), {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
   })
 );
 

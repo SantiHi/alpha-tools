@@ -41,7 +41,7 @@ router.get("/stats/:companyTick", async (req, res) => {
   res.status(200).json(result);
 });
 
-// TODO fill explore page wqith suggestions
+// TODO fill explore page with suggestions
 router.get("/explore", async (req, res) => {
   // will add more complicated logic in later iterations
   res.json(

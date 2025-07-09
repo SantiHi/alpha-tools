@@ -26,7 +26,6 @@ router.get("/tickers", async (req, res) => {
           cik_number: parseInt(value.cik_str),
           ticker: value.ticker,
           name: value.title,
-          recent_news: [],
           daily_price: 0,
         },
       });
@@ -44,6 +43,7 @@ router.post("/companyfill", async (req, res) => {
   for (const company of companies) {
     const isSuccess = await companyFillHelper(company.cik_number);
     i++;
+    console.log(i + "/" + 7700);
     await wait(100);
   }
   res.status(200).json({ message: "Successfully Populated database!" });

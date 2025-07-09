@@ -1,17 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { handleLogin, BASE_URL } from "./lib/utils";
+import { handleLogin } from "./lib/utils";
 import InputBox from "./components/InputBox";
+import { UserInfo } from "./context/UserContext";
 
 const LOGIN_SUCCESS = "password accepted";
 
-const Login = ({ attemptLogin }) => {
+const Login = () => {
   const [formData, setFormData] = useState({
     password: "",
     username: "",
   });
 
+  const { setIsLoggedIn } = UserInfo();
   const [submitResult, setSubmitResult] = useState(null);
+  const navigate = useNavigate();
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
@@ -24,10 +27,17 @@ const Login = ({ attemptLogin }) => {
       setSubmitResult("Please fill out all forms");
       return;
     }
-    await handleLogin(formData, setSubmitResult, attemptLogin);
+    const loginSuccesful = await handleLogin(
+      formData,
+      setSubmitResult,
+      setIsLoggedIn,
+      navigate
+    );
+    if (loginSuccesful === true) {
+      navigate("/");
+    }
   };
 
-  const navigate = useNavigate();
   return (
     <div className="flex flex-col">
       <header>

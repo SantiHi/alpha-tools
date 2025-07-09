@@ -3,7 +3,6 @@ import "./App.css";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Home from "./Home";
-import { useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { UserInfo } from "./context/UserContext";
 import CompanyInfo from "./CompanyInfo";
@@ -16,27 +15,11 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
 };
 
 const App = () => {
-  const { setFullName, isLoggedIn, setIsLoggedIn } = UserInfo();
+  const { isLoggedIn, authChecked } = UserInfo();
 
-  const attemptLogin = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/auth/me`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setFullName(data.name);
-        setIsLoggedIn(true);
-      }
-    } catch {
-      return;
-    }
-  };
-
-  useEffect(() => {
-    attemptLogin();
-  }, []);
+  if (!authChecked) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col">
