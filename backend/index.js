@@ -11,9 +11,6 @@ const ORIGIN = process.env.origin;
 
 const isProd = process.env.NODE_ENV === "production";
 
-if (isProd) {
-}
-
 const cors = require("cors");
 const app = express();
 app.use(express.json());
@@ -52,7 +49,11 @@ app.use(
 app.use((req, res, next) => {
   const userId = req.session.userId;
   const path = req.path;
-  if (path.includes("/login") || path.includes("/signup")) {
+  if (
+    path.includes("/login") ||
+    path.includes("/signup") ||
+    path.includes("/auth/me")
+  ) {
     next();
     return;
   }

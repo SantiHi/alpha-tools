@@ -12,7 +12,7 @@ const Login = () => {
     username: "",
   });
 
-  const { setIsLoggedIn } = UserInfo();
+  const { setIsLoggedIn, setFullName } = UserInfo();
   const [submitResult, setSubmitResult] = useState(null);
   const navigate = useNavigate();
 
@@ -31,7 +31,7 @@ const Login = () => {
       formData,
       setSubmitResult,
       setIsLoggedIn,
-      navigate
+      setFullName
     );
     if (loginSuccesful === true) {
       navigate("/");

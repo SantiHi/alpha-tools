@@ -5,7 +5,10 @@ import CompanyList from "./components/CompanyList";
 import { UserInfo } from "./context/UserContext";
 
 const Home = () => {
-  const { fullName } = UserInfo();
+  const { fullName, isLoggedIn } = UserInfo();
+  if (!isLoggedIn || fullName == null) {
+    return null;
+  }
   return (
     <>
       <SidebarProvider>

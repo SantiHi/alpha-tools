@@ -1,6 +1,7 @@
 import Company from "./Company";
 import { useState, useEffect } from "react";
 import { BASE_URL, toPercentage } from "../lib/utils";
+import { UserInfo } from "../context/UserContext";
 
 const PLACEHOLDER = "-";
 
@@ -16,13 +17,17 @@ const CompanyList = () => {
     PLACEHOLDER,
     PLACEHOLDER,
   ]);
+  const { isLoggedIn } = UserInfo();
   const fetchExplore = async () => {
     const response = await fetch(`${BASE_URL}/getters/explore`, {
       method: "GET",
       credentials: "include",
     });
+    if (!response.ok) {
+      return;
+    }
     const data = await response.json();
-    await setExploreCompanies(data);
+    setExploreCompanies(data);
     const prices = [];
     for (const company of data) {
       const stockResponse = await fetch(
@@ -42,6 +47,9 @@ const CompanyList = () => {
   };
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
     fetchExplore();
   }, []);
 

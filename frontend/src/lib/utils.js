@@ -11,7 +11,12 @@ const BASE_URL = import.meta.env.DEV
   : "https://capstone-project-db-service.onrender.com"; // official database url
 const LOGIN_SUCCESS = "password accepted";
 
-const handleLogin = async (formData, responseSetter, setIsLoggedIn) => {
+const handleLogin = async (
+  formData,
+  responseSetter,
+  setIsLoggedIn,
+  setFullName
+) => {
   try {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
@@ -22,8 +27,10 @@ const handleLogin = async (formData, responseSetter, setIsLoggedIn) => {
       body: JSON.stringify(formData),
     });
     if (response.ok === true) {
+      const data = await response.json();
       responseSetter(LOGIN_SUCCESS);
       setIsLoggedIn(true);
+      setFullName(data.name);
       return true;
     } else {
       const s = await response.json();
