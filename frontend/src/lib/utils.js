@@ -6,7 +6,9 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-const BASE_URL = import.meta.env.DEV ? "http://localhost:3000" : ""; // official database url
+const BASE_URL = import.meta.env.DEV
+  ? "http://localhost:3000"
+  : "https://capstone-project-db-service.onrender.com"; // official database url
 const LOGIN_SUCCESS = "password accepted";
 
 const handleLogin = async (formData, responseSetter, setIsLoggedIn) => {
