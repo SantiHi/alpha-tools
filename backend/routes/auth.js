@@ -100,4 +100,9 @@ router.get("/me", async (req, res) => {
   });
 });
 
+router.get("/sectors", async (req, res) => {
+  const sectors = await prisma.sector.findMany();
+  res.json(sectors);
+});
+
 module.exports = router;

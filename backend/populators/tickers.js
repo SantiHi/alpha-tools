@@ -5,6 +5,7 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 const router = express.Router({ mergeParams: true });
+const yahooFinance = require("yahoo-finance2").default;
 
 const wait = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms)); // needed to not go over api call limit
@@ -132,6 +133,102 @@ const companyFillHelper = async (cik) => {
       }
     }
   }
+};
+
+// assign sector and industry denominations to database
+router.post("/sectorfill", async (req, res) => {
+  const companies = await prisma.company.findMany();
+  for (let company of companies) {
+    const companyInfo = await yahooFinance.quoteSummary(company.ticker, {
+      modules: ["assetProfile"],
+    });
+    console.log(companyInfo);
+    res.json(companyInfo);
+    await prisma.industry.create({
+      name: companyInfo.industry,
+    });
+    return;
+  }
+  const ticker = req.params.companyTick;
+  const result = await yahooFinance.info(ticker);
+  if (result === null) {
+    res.status(404).json({ message: "ticker does not exist" });
+  }
+});
+
+// assign sector and industry denominations to database
+router.post("/industrysectorfill", async (req, res) => {
+  const companies = await prisma.company.findMany();
+  let ind = 0;
+  console.log("got here?");
+  for (let company of companies) {
+    let companyInfo;
+    try {
+      companyInfo = await yahooFinance.quoteSummary(company.ticker, {
+        modules: ["assetProfile"],
+      });
+    } catch (err) {
+      console.warn(`Skipping ${company.name} due to yfinance error`);
+      continue;
+    }
+    // check existing
+    if (companyInfo.assetProfile.sector == null) {
+      continue;
+    }
+    const existing = await prisma.sector.findUnique({
+      where: {
+        name: companyInfo.assetProfile.sector,
+      },
+    });
+    if (existing == null) {
+      const newSector = await prisma.sector.create({
+        data: {
+          name: companyInfo.assetProfile.sector,
+        },
+      });
+      // sector does not exist, so it is therefore impossible that corresponding industies yet exist, so no need to check
+      const newIndustry = await prisma.industry.create({
+        data: {
+          name: companyInfo.assetProfile.industry,
+          sectorId: newSector.id,
+        },
+      });
+      await updateCompany(company, newIndustry.id);
+    } else {
+      // sector already exists, so the industry could already exist.
+      const existingIndustry = await prisma.industry.findUnique({
+        where: {
+          name: companyInfo.assetProfile.industry,
+        },
+      });
+      if (existingIndustry == null) {
+        const newIndustry = await prisma.industry.create({
+          data: {
+            name: companyInfo.assetProfile.industry,
+            sectorId: existing.id,
+          },
+        });
+        await updateCompany(company, newIndustry.id);
+      } else {
+        await updateCompany(company, existingIndustry.id);
+      }
+    }
+    ind++;
+    await wait(40);
+    console.log(ind + "/7700");
+  }
+  res.json({ message: "done" });
+});
+
+const updateCompany = async (company, industryId) => {
+  await prisma.company.update({
+    where: {
+      id: company.id,
+    },
+    data: {
+      industryId,
+    },
+  });
 };
 
 module.exports = router;

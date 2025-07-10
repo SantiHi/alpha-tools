@@ -52,7 +52,8 @@ app.use((req, res, next) => {
   if (
     path.includes("/login") ||
     path.includes("/signup") ||
-    path.includes("/auth/me")
+    path.includes("/auth/me") ||
+    path.includes("/sectors")
   ) {
     next();
     return;

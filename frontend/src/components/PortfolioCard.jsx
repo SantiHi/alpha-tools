@@ -3,7 +3,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   PopoverClose,
-} from "./ui/popover";
+} from "./ui/popover"; // popovers from shadcn,
 
 import { useNavigate } from "react-router-dom";
 
