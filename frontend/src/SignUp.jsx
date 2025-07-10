@@ -50,6 +50,7 @@ const SignUp = () => {
 
     if (formData.password.length < MIN_PASSWORD_LENGTH) {
       alert("Please make sure passwords are longer than 8 characters");
+      return;
     }
     setSignUpPressed(true);
   };
@@ -68,6 +69,7 @@ const SignUp = () => {
 
     if (formData.password.length < MIN_PASSWORD_LENGTH) {
       alert("Please make sure passwords are longer than 8 characters");
+      return;
     }
 
     const response = await fetch(`${BASE_URL}/auth/signup`, {

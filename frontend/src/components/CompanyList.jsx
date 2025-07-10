@@ -19,7 +19,7 @@ const CompanyList = () => {
   ]);
   const { isLoggedIn } = UserInfo();
   const fetchExplore = async () => {
-    const response = await fetch(`${BASE_URL}/getters/explore`, {
+    const response = await fetch(`${BASE_URL}/getters/curated`, {
       method: "GET",
       credentials: "include",
     });

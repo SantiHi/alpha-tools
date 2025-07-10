@@ -41,9 +41,67 @@ router.get("/stats/:companyTick", async (req, res) => {
   res.status(200).json(result);
 });
 
-// TODO fill explore page with suggestions
+/* initially, a linear suggestions algorithim with weighting on the following categories: 
+    w1*IndustryPreference 
+    w2*SectorPreference 
+    w3*recencyScore*numberOfVisits 
+    w4*IndustryInterest (recent visits to that industry)
+    w5*SectorInterest (recent visits to hat sector)
+
+    will add more complicated logic in later iterations, likely change to learned model .
+*/
+
+// weightings can be at most 1, least 0
+const INDUSTRY_WEIGHTING = 1; // industries are more specific, so should be of higher importance
+const SECTOR_WEIGHTING = 0.5; // less so, so less important
+
+router.get("/curated", async (req, res) => {
+  const userId = req.session.userId;
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  console.log(user.name);
+  const interestedIndustries = user.industries;
+  const interestedSectors = user.Sectors;
+  const allCompanies = await prisma.company.findMany({
+    include: {
+      industry: {
+        select: {
+          id: true,
+          sector: { select: { id: true } },
+        },
+      },
+    },
+  });
+
+  const validCompanies = allCompanies.filter(
+    (c) => c.industryId !== null && c.industry !== null
+  );
+
+  const scoresDictionary = {};
+  for (let company of validCompanies) {
+    let totalCompanyWeight = 0;
+
+    if (interestedIndustries.includes(company.industryId)) {
+      totalCompanyWeight += INDUSTRY_WEIGHTING;
+    }
+    if (interestedSectors.includes(company.industry.sectorId)) {
+      totalCompanyWeight += SECTOR_WEIGHTING;
+    }
+    scoresDictionary[company.id] = totalCompanyWeight;
+  }
+
+  const bestCompanies = allCompanies
+    .sort((a, b) => scoresDictionary[b.id] - scoresDictionary[a.id])
+    .slice(0, 8);
+
+  console.log(bestCompanies);
+  res.json(bestCompanies);
+});
+
 router.get("/explore", async (req, res) => {
-  // will add more complicated logic in later iterations
   res.json(
     await prisma.company.findMany({
       orderBy: {
