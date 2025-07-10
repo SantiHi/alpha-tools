@@ -13,7 +13,7 @@ const rateLimit = require("express-rate-limit");
 CONST_LOCKEDOUT_TIME = 10;
 
 router.post("/signup", async (req, res) => {
-  const { username, password, email, name } = req.body;
+  const { username, password, email, name, industries, Sectors } = req.body;
   if (!username || !password) {
     return res
       .status(400)
@@ -50,6 +50,8 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
       email,
       name,
+      industries,
+      Sectors,
     },
   });
 
@@ -98,6 +100,16 @@ router.get("/me", async (req, res) => {
     username: user.username,
     name: user.name,
   });
+});
+
+router.get("/sectors", async (req, res) => {
+  const sectors = await prisma.sector.findMany();
+  res.json(sectors);
+});
+
+router.get("/industries", async (req, res) => {
+  const industries = await prisma.industry.findMany();
+  res.json(industries);
 });
 
 module.exports = router;

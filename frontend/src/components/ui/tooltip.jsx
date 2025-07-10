@@ -1,4 +1,4 @@
-"use client";
+// taken from shadcn component library: https://ui.shadcn.com/docs/components/tooltip
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";

@@ -1,4 +1,4 @@
-"use client";
+//https://ui.shadcn.com/docs/components/seperator
 
 import * as React from "react";
 import * as SeparatorPrimitive from "@radix-ui/react-separator";

@@ -30,6 +30,8 @@ model Company {
   created_at          DateTime    @default(now())
   documents           Document[] 
   articles            Article[]
+  industry            Industry?  @relation(fields: [industryId], references: [id])
+  industryId          Int?
 }
 
   model User { 
@@ -40,6 +42,8 @@ model Company {
     password        String      
     search_history  String[] 
     portfolios      Portfolio[]
+    industries      Int[] 
+    Sectors         Int[] 
   }
 
   model Document {
@@ -62,7 +66,7 @@ model Article {
     images      String[]
     company     Company   @relation(fields: [companyId], references: [id])
     companyId   Int
-    created_at          DateTime    @default(now())
+    created_at  DateTime    @default(now())
 }
 
 model Portfolio { 
@@ -71,6 +75,20 @@ model Portfolio {
     description  String 
     companiesIds   Int[] 
     created_at  DateTime    @default(now())
-    user        User  @relation(fields: [userId], references: [id])
+    user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId      Int
+}
+
+model Sector { 
+  id            Int @id @default(autoincrement()) 
+  name          String @unique 
+  industries    Industry[] 
+}
+
+model Industry{ 
+  id            Int @id @default(autoincrement()) 
+  name          String @unique 
+  sectorId      Int 
+  sector        Sector @relation(fields:[sectorId], references: [id])
+  companies     Company[] 
 }

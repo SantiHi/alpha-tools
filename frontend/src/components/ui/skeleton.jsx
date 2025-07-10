@@ -1,3 +1,4 @@
+// taken from shadcn component library: https://ui.shadcn.com/docs/components/skeleton
 import { cn } from "../../lib/utils";
 
 function Skeleton({ className, ...props }) {

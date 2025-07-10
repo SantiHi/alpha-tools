@@ -1,4 +1,6 @@
-import { Home, Inbox, Settings, BookText } from "lucide-react";
+// mostly shadcn library, boilerplate code from https://ui.shadcn.com/docs/components/sidebar, own formatting
+
+import { Home, Inbox, Settings, BookText } from "lucide-react"; // lucide react library components
 
 import {
   Sidebar,
