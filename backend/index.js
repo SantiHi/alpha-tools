@@ -53,7 +53,8 @@ app.use((req, res, next) => {
     path.includes("/login") ||
     path.includes("/signup") ||
     path.includes("/auth/me") ||
-    path.includes("/sectors")
+    path.includes("/sectors") ||
+    path.includes("/industries")
   ) {
     next();
     return;

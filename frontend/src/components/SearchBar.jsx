@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import Input from "@mui/material/Input";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment"; // mui library
+import SearchIcon from "@mui/icons-material/Search"; // mui library
 import { useState } from "react";
 import { BASE_URL } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
