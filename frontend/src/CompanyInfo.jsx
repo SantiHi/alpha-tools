@@ -133,6 +133,13 @@ const CompanyInfo = () => {
   const [newsData, setNewsData] = useState(null);
   const { selectedId } = useParams();
 
+  const addToHistory = async () => {
+    await fetch(`${BASE_URL}/company/companyhist/${selectedId}`, {
+      method: "PUT",
+      credentials: "include",
+    });
+  };
+
   useEffect(() => {
     const getAll = async () => {
       // get basic info from database
@@ -168,6 +175,7 @@ const CompanyInfo = () => {
 
       const newsArticles = await newsResponse.json();
       setNewsData(newsArticles);
+      addToHistory();
     };
     getAll();
   }, [selectedId]);

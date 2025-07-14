@@ -11,9 +11,12 @@ const argon2 = require("argon2");
 const rateLimit = require("express-rate-limit");
 
 CONST_LOCKEDOUT_TIME = 10;
+CONST_INDUSTRY_LENGTH = 135; // slightly more than # of industries, used to index industry lengths.
+CONST_SECTOR_LENGTH = 15; // agian longer than # of sectors, used for easy indexing.
 
 router.post("/signup", async (req, res) => {
-  const { username, password, email, name, industries, Sectors } = req.body;
+  const { username, password, email, name, interestedIndustries, sectors } =
+    req.body;
   if (!username || !password) {
     return res
       .status(400)
@@ -44,14 +47,27 @@ router.post("/signup", async (req, res) => {
   }
   const hashedPassword = await argon2.hash(password);
 
+  const industryArray = new Array(CONST_INDUSTRY_LENGTH).fill(0);
+  for (let industryIndex of interestedIndustries) {
+    industryArray[industryIndex] = 1;
+  } // use exploration to then modify algorithim. Use user interaction as "labels",
+  // so positive indicators mean clicking on correct industries vs incorrect industries, with gD
+
+  const sectorArray = new Array(CONST_SECTOR_LENGTH).fill(0);
+  for (let sectorIndex of sectors) {
+    sectorArray[sectorIndex] = 0.5;
+  }
+
   const newUser = await prisma.user.create({
     data: {
       username,
       password: hashedPassword,
       email,
       name,
-      industries,
-      Sectors,
+      interestedIndustries,
+      sectors,
+      industryWeights: industryArray,
+      sectorWeights: sectorArray,
     },
   });
 

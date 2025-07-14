@@ -82,8 +82,8 @@ const SignUp = () => {
         password: formData.password,
         username: formData.username,
         email: formData.email,
-        industries: sectorsSelected,
-        Sectors: industriesSelected,
+        interestedIndustries: industriesSelected,
+        sectors: sectorsSelected,
       }),
     });
     if (response.ok) {
@@ -184,15 +184,15 @@ const SignUp = () => {
             To complete your registration, continue with the steps below:
           </h3>
           <h3 className="self-center font-bold text-xl mt-7">
-            Choose 3 sectors of interest
+            Choose up to 3 sectors of interest
           </h3>
           <SectorList />
 
           <h3 className="self-center font-bold text-xl mt-7">
-            Choose 5 Industries of interest
+            Choose up to 5 Industries of interest
           </h3>
           <IndustryList />
-          {numberIndustriesSelected === 5 && numberSectorsSelected === 3 && (
+          {numberIndustriesSelected >= 1 && numberSectorsSelected >= 1 && (
             <button
               type="submit"
               id="signup"

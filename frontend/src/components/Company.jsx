@@ -14,9 +14,11 @@ const Company = ({ companyFacts, mode }) => {
 
   // stylings
   const classMode = cn(
-    "flex flex-row rounded-lg h-40 mb-15 mr-5 ml-1 shadow-[0px_0px_45px_10px_rgba(223,215,217,.1)] hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out",
+    "flex flex-row rounded-lg h-40 mr-5 ml-1 pl-5 shadow-[0px_0px_45px_10px_rgba(223,215,217,.1)] hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out",
     {
       "w-50s max-w-3/5": mode === MODE_FIT,
+      "mb-5": mode === MODE_FIT,
+      "mb-15": mode !== MODE_FIT,
       "w-80s": mode !== MODE_FIT,
       "bg-indigo-50": mode !== MODE_FIT,
       "bg-green-300": mode === MODE_FIT && companyFacts.dailyChange >= 0,
@@ -27,7 +29,7 @@ const Company = ({ companyFacts, mode }) => {
     "text-xl": mode === MODE_FIT,
     "text-3xl": mode !== MODE_FIT,
   });
-  const factsSize = cn("flex flex-col justify-center items-center w-1/2 pr-2", {
+  const factsSize = cn("flex flex-col justify-center items-center w-1/2 ", {
     "text-xl": mode === MODE_FIT,
     "text-2xl": mode !== MODE_FIT,
   });

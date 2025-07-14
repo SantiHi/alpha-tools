@@ -38,12 +38,7 @@ const IndustryCard = ({ industryInfo }) => {
     }
   );
   return (
-    <div
-      onClick={() => {
-        handleClick();
-      }}
-      className={industryClass}
-    >
+    <div onClick={handleClick} className={industryClass}>
       <h2>{industryInfo.name}</h2>
     </div>
   );

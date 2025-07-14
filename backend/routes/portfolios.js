@@ -138,18 +138,18 @@ router.put("/addMany/:companyId", async (req, res, next) => {
   const companyId = parseInt(req.params.companyId);
   const possibleIds = req.body.ids;
 
-  const portfolio = await prisma.portfolio.findUnique({
-    where: {
-      id: portfolioId,
-    },
-  });
-
-  if (possibleIds == null) {
-    next(BadParams("no ids specified, or other bad param issue"));
+  if (companyId == null) {
+    next(BadParams("companyids specified, or other bad param issue"));
   }
+
   const ids = possibleIds.map((val) => parseInt(val));
 
-  for (let portfolioIds of ids) {
+  for (let portfolioId of ids) {
+    const portfolio = await prisma.portfolio.findUnique({
+      where: {
+        id: portfolioId,
+      },
+    });
     if (portfolio.companiesIds.includes(companyId)) {
       continue;
     }

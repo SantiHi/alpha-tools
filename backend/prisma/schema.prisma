@@ -40,10 +40,12 @@ model Company {
     name            String
     email           String  @unique 
     password        String      
-    search_history  String[] 
+    search_history  Int[] 
     portfolios      Portfolio[]
-    industries      Int[] 
-    Sectors         Int[] 
+    interestedIndustries      Int[] 
+    sectors         Int[] 
+    industryWeights Float[] 
+    sectorWeights   Float[]
   }
 
   model Document {

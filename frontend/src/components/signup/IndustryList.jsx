@@ -52,7 +52,7 @@ const IndustryList = () => {
         value={searchQuery}
         onChange={handleInputChange}
         autoComplete="off"
-        className="self-center"
+        className="self-center mb-5"
       />
       <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-4/5 w-full self-center max-h-150 overflow-auto">
         {filteredIndustries.map((value) => {
