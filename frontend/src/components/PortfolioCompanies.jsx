@@ -2,13 +2,14 @@ import { Pencil, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { toPercentage } from "../lib/utils";
-
+import { EDITOR_PERMS } from "../lib/constants";
 const PortfolioCompanies = ({
   companiesStockData,
   handleDelete,
   companiesData,
   isEditingMode,
   setIsEditingMode,
+  permission,
 }) => {
   const navigate = useNavigate();
 
@@ -17,17 +18,19 @@ const PortfolioCompanies = ({
   };
 
   return (
-    <div className="bg-indigo-50 h-75 w-7/20 ml-40 rounded-md overflow-auto">
+    <div className="bg-indigo-50 h-75 w-16/20 ml-40 rounded-md overflow-auto">
       <div className="flex flex-row justify-center">
         <h3 className="font-bold text-2xl text-center mt-3">
           Portfolio Companies
         </h3>
-        <Pencil
-          className="mt-5 ml-4 border-2 h-5 w-5 rounded-sm hover:scale-110 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90"
-          onClick={() => {
-            setIsEditingMode((prev) => !prev);
-          }}
-        />
+        {permission === EDITOR_PERMS && (
+          <Pencil
+            className="mt-5 ml-4 border-2 h-5 w-5 rounded-sm hover:scale-110 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90"
+            onClick={() => {
+              setIsEditingMode((prev) => !prev);
+            }}
+          />
+        )}
       </div>
       <div className="flex flex-col h-full items-center">
         {companiesStockData == null && (

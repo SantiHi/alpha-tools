@@ -1,3 +1,3 @@
 const MIN_PASSWORD_LENGTH = 8;
-
-export { MIN_PASSWORD_LENGTH };
+const EDITOR_PERMS = "editor";
+export { MIN_PASSWORD_LENGTH, EDITOR_PERMS };

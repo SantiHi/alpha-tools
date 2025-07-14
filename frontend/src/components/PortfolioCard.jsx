@@ -50,7 +50,14 @@ const DeleteButton = ({ deleteCard }) => {
   );
 };
 
-const PortfolioCard = ({ id, name, description, setPortfolios }) => {
+const PortfolioCard = ({
+  id,
+  name,
+  description,
+  setPortfolios,
+  canDelete,
+  creator,
+}) => {
   const navigate = useNavigate();
 
   const portfolioClicked = () => {
@@ -75,7 +82,15 @@ const PortfolioCard = ({ id, name, description, setPortfolios }) => {
           <h2 className="text-3xl font-bold mt-4 ml-4 ">{name}</h2>
           <p className="ml-5">{description}</p>
         </div>
-        <DeleteButton deleteCard={deleteCard}></DeleteButton>
+        {canDelete === true && (
+          <DeleteButton deleteCard={deleteCard}></DeleteButton>
+        )}
+        {creator != null && (
+          <p className="self-baseline-last ml-auto mr-5">
+            {" "}
+            <span className="font-bold"> Owned by: </span> {creator}
+          </p>
+        )}
       </div>
     </div>
   );
