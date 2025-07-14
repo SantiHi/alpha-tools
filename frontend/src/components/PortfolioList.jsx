@@ -1,13 +1,14 @@
 import PortfolioCard from "./PortfolioCard";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Button } from "./ui/button"; // from shadCN library
+import { Input } from "./ui/input"; // from shadCN library
+import { Label } from "./ui/label"; // from shadCN library
+import Checkbox from "@mui/material/Checkbox"; // from MUI library
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   PopoverClose,
-} from "./ui/popover";
+} from "./ui/popover"; // from shadCN library
 import { BASE_URL } from "../lib/utils";
 import { useEffect, useState } from "react";
 
@@ -15,7 +16,15 @@ const NewPortfolioModal = ({ newPortfolio }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    isPublic: false,
   });
+
+  const handlePublicChange = (event) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      ["isPublic"]: event.target.checked,
+    }));
+  };
 
   const handleChange = (event) => {
     const key = event.target.id;
@@ -58,6 +67,15 @@ const NewPortfolioModal = ({ newPortfolio }) => {
                 placeholder="Description"
                 className="col-span-2 h-8"
                 onChange={handleChange}
+              />
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label htmlFor="isPublic">Public?</Label>
+              <Checkbox
+                id="isPublic"
+                className="col-span-2 h-8"
+                checked={formData.isPublic}
+                onChange={handlePublicChange}
               />
             </div>
             <PopoverClose asChild>
@@ -128,6 +146,7 @@ const PortfolioList = () => {
               companies={portfolio.companiesIds}
               description={portfolio.description}
               setPortfolios={setPortfolios}
+              canDelete={true}
             />
           );
         })

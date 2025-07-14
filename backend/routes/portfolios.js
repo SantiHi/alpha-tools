@@ -17,18 +17,21 @@ const MODE_WEEK = "Week";
 const MODE_MONTH = "Month";
 const BAD_PARAMS = "portfolio id is likely incorrect";
 const DOES_NOT_EXIST = "portfolio doesn't exist";
+const PUBLIC_PORTFOLIOS_NUMBER = 6;
 
 // make new portfolio
 
 router.post("/", async (req, res) => {
   const userId = req.session.userId;
-  const { name, description } = req.body;
+  const { name, description, isPublic } = req.body;
+  const publicStatus = JSON.parse(isPublic);
   const newPortfolio = await prisma.portfolio.create({
     data: {
       name,
       description,
       companiesIds: [],
       userId,
+      isPublic: publicStatus,
     },
   });
   res.json(newPortfolio);
@@ -94,7 +97,7 @@ router.get("/:id", async (req, res, next) => {
   if (portfolio == null) {
     next(new DoesNotExist(DOES_NOT_EXIST));
   }
-  if (userId !== portfolio.userId) {
+  if (userId !== portfolio.userId && portfolio.isPublic !== true) {
     res
       .status(401)
       .json({ message: "you do not have permission to access this portfolio" });
@@ -207,6 +210,63 @@ router.get("/swings/:portfolioId/:timeFrame", async (req, res, next) => {
   retArray.sort((a, b) => compareByPercentChange(a, b));
   res.json(retArray);
 });
+
+// get all public portfolios, sort by top 8:
+router.get("/explore/public", async (req, res) => {
+  allPortfolios = await prisma.portfolio.findMany({
+    where: {
+      isPublic: true,
+    },
+    take: PUBLIC_PORTFOLIOS_NUMBER,
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+  res.json(allPortfolios);
+});
+
+// make public / private a portfolio:
+router.post("/make/public/:id", async (req, res) => {
+  const portfolioId = parseInt(req.params.id);
+
+  const currentPort = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+
+  allPortfolios = await prisma.portfolio.update({
+    where: {
+      id: portfolioId,
+    },
+    data: {
+      isPublic: !currentPort.isPublic,
+    },
+  });
+  res.json(allPortfolios);
+});
+
+// figure out what should be shown to the user!
+
+router.get("/permissions/user/:id", async (req, res) => {
+  const portfolioid = parseInt(req.params.id);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioid,
+    },
+  });
+  if (req.session.userId === portfolio.userId) {
+    res.json({ owner: true, public: portfolio.isPublic });
+    return;
+  }
+  res.json({ owner: false, public: portfolio.isPublic });
+});
+
+//helper functions below
 
 const getBeforeDate = (timeFrame) => {
   const today = new Date();

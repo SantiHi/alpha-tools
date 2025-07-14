@@ -7,8 +7,11 @@ import { BASE_URL } from "./lib/utils";
 import { useParams } from "react-router-dom";
 import PortfolioCompanies from "./components/PortfolioCompanies";
 import SwingCompanies from "./components/SwingCompanies";
+import cn from "classnames";
+import { EDITOR_PERMS } from "./lib/constants";
 
 const MODE_DAY = "Day";
+const VIEWER_PERMS = "viewer";
 
 const PortfolioInfo = () => {
   const [portfolioData, setPortfolioData] = useState(null);
@@ -20,6 +23,44 @@ const PortfolioInfo = () => {
   const [sortedSwings, setSortedSwings] = useState([]);
   const { fullName } = UserInfo();
   const { id } = useParams();
+  const [isPublic, setPublicButton] = useState(null);
+  const [viewerPermissions, setViewerPermissions] = useState(null);
+  const publicButtonClass = cn(
+    "border-2 border-white text-white ml-35 bg-gray-800 mt-5 hover:cursor-pointer hover:scale-110  hover:brightness-110",
+    {
+      "bg-pink-600": isPublic === true,
+      "bg-green-600": isPublic === false,
+    }
+  );
+  const getUserPermissions = async () => {
+    const response = await fetch(
+      `${BASE_URL}/portfolios/permissions/user/${id}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+    const data = await response.json();
+    if (data.owner === true) {
+      setViewerPermissions(EDITOR_PERMS);
+      return;
+    }
+    if (data.public === true) {
+      setViewerPermissions(VIEWER_PERMS);
+    }
+  };
+
+  const handlePublic = async () => {
+    if (!isPublic) {
+      setPublicButton(true);
+    } else {
+      setPublicButton(false);
+    }
+    await fetch(`${BASE_URL}/portfolios/make/public/${id}`, {
+      method: "POST",
+      credentials: "include",
+    });
+  };
 
   const getSwingData = async () => {
     const response = await fetch(
@@ -44,6 +85,7 @@ const PortfolioInfo = () => {
     });
     const data = await response.json();
     setPortfolioData(data);
+    setPublicButton(data.isPublic);
     if (companyIds.length === 0) {
       setCompanyIds(data.companiesIds);
     }
@@ -95,6 +137,7 @@ const PortfolioInfo = () => {
     setCompaniesStockData(prices);
   };
   useEffect(() => {
+    getUserPermissions();
     getPortfolioData();
     getCompaniesData();
   }, [companyIds]);
@@ -106,6 +149,10 @@ const PortfolioInfo = () => {
         src="https://i.gifer.com/ZKZg.gif"
       />
     );
+  }
+
+  if (viewerPermissions == null) {
+    return;
   }
 
   return (
@@ -130,13 +177,25 @@ const PortfolioInfo = () => {
               {portfolioData.name}
             </h3>
             <div className="flex flex-row justify-start w-full">
-              <PortfolioCompanies
-                handleDelete={handleDelete}
-                companiesStockData={companiesStockData}
-                companiesData={companiesData}
-                isEditingMode={isEditingMode}
-                setIsEditingMode={setIsEditingMode}
-              />
+              <div className="flex flex-col w-9/20 items-center">
+                <PortfolioCompanies
+                  handleDelete={handleDelete}
+                  companiesStockData={companiesStockData}
+                  companiesData={companiesData}
+                  isEditingMode={isEditingMode}
+                  setIsEditingMode={setIsEditingMode}
+                  permission={viewerPermissions}
+                />
+                {viewerPermissions === EDITOR_PERMS && (
+                  <button className={publicButtonClass} onClick={handlePublic}>
+                    {isPublic === false ? (
+                      <span>Make Public</span>
+                    ) : (
+                      <span>Make Private</span>
+                    )}
+                  </button>
+                )}
+              </div>
               <SwingCompanies
                 companiesStockData={companiesStockData}
                 companiesData={companiesData}

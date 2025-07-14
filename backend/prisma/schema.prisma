@@ -79,6 +79,8 @@ model Portfolio {
     created_at  DateTime    @default(now())
     user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId      Int
+    permittedUsers  Int[] 
+    isPublic    Boolean @default(false)
 }
 
 model Sector { 
