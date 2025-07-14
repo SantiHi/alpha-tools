@@ -22,7 +22,7 @@ router.get("/tickers", async (req, res) => {
       where: { cik_number: parseInt(value.cik_str) },
     });
     if (company === null) {
-      const newUser = await prisma.company.create({
+      await prisma.company.create({
         data: {
           cik_number: parseInt(value.cik_str),
           ticker: value.ticker,
@@ -40,11 +40,8 @@ CONST_FORM_TYPE = { tenk: "10-K", eightk: "8-K", tenq: "10-Q" };
 
 router.post("/companyfill", async (req, res) => {
   const companies = await prisma.company.findMany();
-  let i = 0;
   for (const company of companies) {
     const isSuccess = await companyFillHelper(company.cik_number);
-    i++;
-    console.log(i + "/" + 7700);
     await wait(100);
   }
   res.status(200).json({ message: "Successfully Populated database!" });
@@ -136,31 +133,9 @@ const companyFillHelper = async (cik) => {
 };
 
 // assign sector and industry denominations to database
-router.post("/sectorfill", async (req, res) => {
-  const companies = await prisma.company.findMany();
-  for (let company of companies) {
-    const companyInfo = await yahooFinance.quoteSummary(company.ticker, {
-      modules: ["assetProfile"],
-    });
-    console.log(companyInfo);
-    res.json(companyInfo);
-    await prisma.industry.create({
-      name: companyInfo.industry,
-    });
-    return;
-  }
-  const ticker = req.params.companyTick;
-  const result = await yahooFinance.info(ticker);
-  if (result === null) {
-    res.status(404).json({ message: "ticker does not exist" });
-  }
-});
-
-// assign sector and industry denominations to database
 router.post("/industrysectorfill", async (req, res) => {
   const companies = await prisma.company.findMany();
   let ind = 0;
-  console.log("got here?");
   for (let company of companies) {
     let companyInfo;
     try {
@@ -215,7 +190,6 @@ router.post("/industrysectorfill", async (req, res) => {
     }
     ind++;
     await wait(40);
-    console.log(ind + "/7700");
   }
   res.json({ message: "done" });
 });

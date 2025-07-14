@@ -12,6 +12,9 @@ const { FinlightApi } = require("finlight-client");
 const newsApiToken = process.env.news;
 const client = new FinlightApi({ apiKey: newsApiToken });
 
+CONST_DISCOUNT_FACTOR = 0.9;
+CONST_NUMBER_RECOMMENDED = 8;
+
 router.get("/search/:query", async (req, res) => {
   const query = req.params.query;
   const searchResults = await prisma.company.findMany({
@@ -29,6 +32,16 @@ router.get("/search/:query", async (req, res) => {
     take: 3,
   });
   res.json(searchResults);
+});
+
+router.get("/checker/:companyTick", async (req, res) => {
+  const ticker = req.params.companyTick;
+  const companyInfo = await prisma.company.findFirst({
+    where: {
+      ticker,
+    },
+  });
+  res.json(companyInfo);
 });
 
 // get yahoo finance data on a stock
@@ -50,11 +63,11 @@ router.get("/stats/:companyTick", async (req, res) => {
 
     will add more complicated logic in later iterations, likely change to learned model .
 */
-
-// weightings can be at most 1, least 0
+// weightings can be at most 1, least 0CONST_NUMBER_RECOMMENDED
 const INDUSTRY_WEIGHTING = 1; // industries are more specific, so should be of higher importance
 const SECTOR_WEIGHTING = 0.5; // less so, so less important
 
+// specific algorithim for reccomendations list
 router.get("/curated", async (req, res) => {
   const userId = req.session.userId;
   const user = await prisma.user.findUnique({
@@ -62,9 +75,6 @@ router.get("/curated", async (req, res) => {
       id: userId,
     },
   });
-  console.log(user.name);
-  const interestedIndustries = user.industries;
-  const interestedSectors = user.Sectors;
   const allCompanies = await prisma.company.findMany({
     include: {
       industry: {
@@ -79,25 +89,22 @@ router.get("/curated", async (req, res) => {
   const validCompanies = allCompanies.filter(
     (c) => c.industryId !== null && c.industry !== null
   );
-
   const scoresDictionary = {};
   for (let company of validCompanies) {
     let totalCompanyWeight = 0;
+    totalCompanyWeight += user.industryWeights[company.industryId];
+    totalCompanyWeight += user.sectorWeights[company.industry.sector.id];
 
-    if (interestedIndustries.includes(company.industryId)) {
-      totalCompanyWeight += INDUSTRY_WEIGHTING;
-    }
-    if (interestedSectors.includes(company.industry.sectorId)) {
-      totalCompanyWeight += SECTOR_WEIGHTING;
+    if (user.search_history.includes(company.id)) {
+      const indexOf = user.search_history.indexOf(company.id);
+      totalCompanyWeight += Math.pow(CONST_DISCOUNT_FACTOR, indexOf);
     }
     scoresDictionary[company.id] = totalCompanyWeight;
   }
 
-  const bestCompanies = allCompanies
+  const bestCompanies = validCompanies
     .sort((a, b) => scoresDictionary[b.id] - scoresDictionary[a.id])
-    .slice(0, 8);
-
-  console.log(bestCompanies);
+    .slice(0, CONST_NUMBER_RECOMMENDED);
   res.json(bestCompanies);
 });
 
@@ -107,7 +114,7 @@ router.get("/explore", async (req, res) => {
       orderBy: {
         created_at: "asc",
       },
-      take: 8,
+      take: CONST_NUMBER_RECOMMENDED,
     })
   );
 });
