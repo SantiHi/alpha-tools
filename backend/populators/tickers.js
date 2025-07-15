@@ -47,7 +47,6 @@ router.post("/companyfill", async (req, res) => {
     await wait(100);
     i++;
     const percentDone = ((i / companies.length) * 100).toFixed(3);
-    console.warn(`${percentDone}% - ${i} / ${length}`);
   }
   res.status(200).json({ message: "Successfully Populated database!" });
 });
@@ -148,7 +147,6 @@ router.post("/industry-sector-desc-fill", async (req, res) => {
         modules: ["assetProfile"],
       });
     } catch (err) {
-      console.warn(`Skipping ${company.name} due to yfinance error`);
       continue;
     }
     // check existing
