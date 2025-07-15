@@ -40,9 +40,14 @@ CONST_FORM_TYPE = { tenk: "10-K", eightk: "8-K", tenq: "10-Q" };
 
 router.post("/companyfill", async (req, res) => {
   const companies = await prisma.company.findMany();
+  const length = companies.length;
+  let i = 0;
   for (const company of companies) {
     const isSuccess = await companyFillHelper(company.cik_number);
     await wait(100);
+    i++;
+    const percentDone = ((i / companies.length) * 100).toFixed(3);
+    console.warn(`${percentDone}%  - ${i} / ${length}`);
   }
   res.status(200).json({ message: "Successfully Populated database!" });
 });
@@ -133,7 +138,7 @@ const companyFillHelper = async (cik) => {
 };
 
 // assign sector and industry denominations to database
-router.post("/industrysectorfill", async (req, res) => {
+router.post("/industry-sector-desc-fill", async (req, res) => {
   const companies = await prisma.company.findMany();
   let ind = 0;
   for (let company of companies) {
@@ -168,7 +173,11 @@ router.post("/industrysectorfill", async (req, res) => {
           sectorId: newSector.id,
         },
       });
-      await updateCompany(company, newIndustry.id);
+      await updateCompany(
+        company,
+        newIndustry.id,
+        companyInfo.assetProfile.longBusinessSummary
+      );
     } else {
       // sector already exists, so the industry could already exist.
       const existingIndustry = await prisma.industry.findUnique({
@@ -183,9 +192,17 @@ router.post("/industrysectorfill", async (req, res) => {
             sectorId: existing.id,
           },
         });
-        await updateCompany(company, newIndustry.id);
+        await updateCompany(
+          company,
+          newIndustry.id,
+          companyInfo.assetProfile.longBusinessSummary
+        );
       } else {
-        await updateCompany(company, existingIndustry.id);
+        await updateCompany(
+          company,
+          existingIndustry.id,
+          companyInfo.assetProfile.longBusinessSummary
+        );
       }
     }
     ind++;
@@ -194,13 +211,35 @@ router.post("/industrysectorfill", async (req, res) => {
   res.json({ message: "done" });
 });
 
-const updateCompany = async (company, industryId) => {
+// batch calls for companies:
+
+CONST_BATCH_SIZE = 500;
+
+router.post("/", async (req, res) => {
+  const allCompanies = await prisma.company.findMany();
+  const onlyTickers = allCompanies.map((value) => value.ticker);
+  const currentInd = 0;
+  while (true) {
+    batchSplit = onlyTickers.slice(currentInd, currentInd + CONST_BATCH_SIZE);
+    if (batchSplit.length == 0) {
+      break;
+    }
+    res.json(await yahooFinance.quote(batchSplit, { modules: ["price"] }));
+    currentInd + CONST_BATCH_SIZE;
+    return;
+  }
+});
+
+// helper functions below
+
+const updateCompany = async (company, industryId, description) => {
   await prisma.company.update({
     where: {
       id: company.id,
     },
     data: {
       industryId,
+      description,
     },
   });
 };

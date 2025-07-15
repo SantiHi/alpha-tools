@@ -1,31 +1,24 @@
 import cn from "classnames";
 import { useState } from "react";
-import { SignUpInfo } from "../../context/SignUpContext";
+import { SignUpInfoContext } from "../../context/SignUpContext";
 
 const MAX_INDUSTRIES = 5;
 
 const IndustryCard = ({ industryInfo }) => {
-  const {
-    numberIndustriesSelected,
-    setNumberIndustriesSelected,
-    setIndustriesSelected,
-    industriesSelected,
-  } = SignUpInfo();
+  const { setIndustriesSelected, industriesSelected } = SignUpInfoContext();
   const [isClicked, setIsClicked] = useState(
     industriesSelected.includes(industryInfo.id)
   );
 
   const handleClick = () => {
     if (isClicked == true) {
-      setNumberIndustriesSelected((self) => self - 1);
       setIndustriesSelected((self) =>
         self.filter((id) => id !== industryInfo.id)
       );
     } else {
-      if (numberIndustriesSelected >= MAX_INDUSTRIES) {
+      if (industriesSelected.length >= MAX_INDUSTRIES) {
         return;
       }
-      setNumberIndustriesSelected((self) => self + 1);
       setIndustriesSelected((self) => [...self, industryInfo.id]);
     }
     setIsClicked((self) => !self);

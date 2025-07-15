@@ -84,3 +84,85 @@ button:focus-visible {
     --sidebar-ring: oklch(0.439 0 0);
   }
 }
+
+@layer utils {
+  @keyframes ChevronUpslide {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    99% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    100% {
+      display: none;
+    }
+  }
+
+  @keyframes TextslideUp {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(-100px);
+      opacity: 1;
+    }
+  }
+
+  .companyDetails {
+    position: relative;
+    color: white;
+    width: 80%;
+    padding: 15px;
+    font-size: 20px;
+    justify-content: center;
+    justify-self: center;
+    animation-duration: 1s;
+    animation-name: TextslideUp;
+    animation-direction: ease-in;
+    animation-fill-mode: forwards;
+    border-radius: 20px;
+    margin-top: 5%;
+  }
+
+  .companyDetailsNo {
+    position: relative;
+    color: white;
+    width: 80%;
+    padding: 15px;
+    font-size: 20px;
+    justify-content: center;
+    justify-self: center;
+    animation-duration: 0.5s;
+    animation-direction: ease-in;
+    animation-fill-mode: forwards;
+    border-radius: 20px;
+    margin-top: 10;
+  }
+
+  .slide-up {
+    animation-name: ChevronUpslide;
+  }
+
+  .slide-down {
+    animation-name: TextslideUp;
+  }
+
+  .animatedfeature {
+    margin-top: 50px;
+    justify-self: center;
+    animation-duration: 2s;
+    animation-name: ChevronUpslide;
+    animation-direction: ease-in;
+    animation-fill-mode: forwards;
+    height: 60px;
+    width: 60px;
+    color: white;
+  }
+  .animatedfeature:hover {
+    transform: scale(1.5);
+    cursor: pointer;
+  }
+}
