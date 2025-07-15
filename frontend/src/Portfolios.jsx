@@ -6,11 +6,7 @@ import { UserInfo } from "./context/UserContext";
 const Portfolios = () => {
   const { fullName } = UserInfo();
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <div className="flex flex-col justify-center">
-        <SidebarTrigger className="fixed" />
-      </div>
+    <>
       <header className="bg-indigo-50 fixed top-0 w-full pt-4 flex flex-col items-center h-16">
         <h2 className="fixed top-0 left-4 text-4xl pt-3 font-medium">
           Alpha-Edge
@@ -28,7 +24,7 @@ const Portfolios = () => {
         </div>
         <PortfolioList />
       </main>
-    </SidebarProvider>
+    </>
   );
 };
 

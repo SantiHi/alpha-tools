@@ -8,9 +8,21 @@ import CompanyInfo from "./CompanyInfo";
 import Portfolios from "./Portfolios";
 import PortfolioInfo from "./PortfolioInfo";
 import Footer from "./Footer";
+import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"; // material ui Sidebar
+import AppSidebar from "./components/AppSidebar";
 
 const LoggedInPage = ({ isLoggedIn, children }) => {
-  return isLoggedIn ? children : <Login />;
+  return isLoggedIn ? (
+    <SidebarProvider>
+      <AppSidebar />
+      <div className="relative h-full flex flex-col justify-center">
+        <SidebarTrigger className="fixed top-1/2" />
+      </div>
+      {children}
+    </SidebarProvider>
+  ) : (
+    <Login />
+  );
 };
 
 const App = () => {

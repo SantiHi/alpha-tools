@@ -195,11 +195,7 @@ const CompanyInfo = () => {
   );
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <div className="relative h-full flex flex-col justify-center">
-        <SidebarTrigger className="fixed top-1/2" />
-      </div>
+    <>
       <header className="bg-indigo-50 fixed top-0 w-full pt-4 flex flex-col items-center h-16">
         <h2 className="fixed top-0 left-4 text-4xl pt-3 font-medium">
           Alpha-Edge
@@ -274,7 +270,7 @@ const CompanyInfo = () => {
           </div>
         </div>
       </main>
-    </SidebarProvider>
+    </>
   );
 };
 
