@@ -1,5 +1,3 @@
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import AppSidebar from "./components/AppSidebar";
 import SearchBar from "./components/SearchBar";
 import { UserInfo } from "./context/UserContext";
 import { useState, useEffect } from "react";
@@ -21,7 +19,6 @@ const PortfolioInfo = () => {
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [historicalMode, setHistoricalMode] = useState(MODE_DAY);
   const [sortedSwings, setSortedSwings] = useState([]);
-  const { fullName } = UserInfo();
   const { id } = useParams();
   const [isPublic, setPublicButton] = useState(null);
   const [viewerPermissions, setViewerPermissions] = useState(null);
@@ -157,14 +154,6 @@ const PortfolioInfo = () => {
 
   return (
     <>
-      <header className="bg-indigo-50 fixed top-0 w-full pt-4 flex flex-col items-center h-16">
-        <h2 className="fixed top-0 left-4 text-4xl pt-3 font-medium">
-          Alpha-Edge
-        </h2>
-        <h4 className="fixed top-0 right-4 pt-5">
-          Good day, <span className="font-bold"> {fullName} </span>
-        </h4>
-      </header>
       <main className="w-full">
         <div className="flex flex-col items-center">
           <SearchBar />

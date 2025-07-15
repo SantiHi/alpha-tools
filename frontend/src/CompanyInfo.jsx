@@ -1,5 +1,3 @@
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import AppSidebar from "./components/AppSidebar";
 import SearchBar from "./components/SearchBar";
 import { BASE_URL } from "./lib/utils";
 import { useState, useEffect } from "react";
@@ -7,7 +5,7 @@ import { UserInfo } from "./context/UserContext";
 import TradingViewWidget from "./components/TradingViewWidget";
 import NewsList from "./components/NewsList";
 import { useParams } from "react-router-dom";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 const logoKey = import.meta.env.VITE_LOGO_TOKEN;
 import cn from "classnames";
 
@@ -129,7 +127,6 @@ const AddToPortfolio = ({ companyId }) => {
 
 const CompanyInfo = () => {
   const [info, setInfo] = useState(null);
-  const { fullName } = UserInfo();
   const [yahooFinanceData, setYahooFinanceData] = useState(null);
   const [newsData, setNewsData] = useState(null);
   const { selectedId } = useParams();
@@ -196,14 +193,6 @@ const CompanyInfo = () => {
 
   return (
     <>
-      <header className="bg-indigo-50 fixed top-0 w-full pt-4 flex flex-col items-center h-16">
-        <h2 className="fixed top-0 left-4 text-4xl pt-3 font-medium">
-          Alpha-Edge
-        </h2>
-        <h4 className="fixed top-0 right-4 pt-5">
-          Good day, <span className="font-bold"> {fullName} </span>
-        </h4>
-      </header>
       <main className="w-full">
         <div className="flex flex-col items-center">
           <SearchBar />
