@@ -26,7 +26,7 @@ const PortfolioInfo = () => {
   const [isPublic, setPublicButton] = useState(null);
   const [viewerPermissions, setViewerPermissions] = useState(null);
   const publicButtonClass = cn(
-    "border-2 border-white text-white ml-35 bg-gray-800 mt-5 hover:cursor-pointer hover:scale-110  hover:brightness-110",
+    "border-2 border-white text-white ml-35 bg-gray-800 mt-5 hover:cursor-pointer hover:scale-110 hover:brightness-110",
     {
       "bg-pink-600": isPublic === true,
       "bg-green-600": isPublic === false,

@@ -32,6 +32,7 @@ model Company {
   articles            Article[]
   industry            Industry?  @relation(fields: [industryId], references: [id])
   industryId          Int?
+  description         String  @default("")
 }
 
   model User { 

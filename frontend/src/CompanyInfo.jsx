@@ -7,6 +7,7 @@ import { UserInfo } from "./context/UserContext";
 import TradingViewWidget from "./components/TradingViewWidget";
 import NewsList from "./components/NewsList";
 import { useParams } from "react-router-dom";
+import { ChevronDown, ChevronUp } from "lucide-react";
 const logoKey = import.meta.env.VITE_LOGO_TOKEN;
 import cn from "classnames";
 
@@ -132,6 +133,7 @@ const CompanyInfo = () => {
   const [yahooFinanceData, setYahooFinanceData] = useState(null);
   const [newsData, setNewsData] = useState(null);
   const { selectedId } = useParams();
+  const [isDetailRevealed, setIsDetailRevealed] = useState(null);
 
   const addToHistory = async () => {
     await fetch(`${BASE_URL}/company/companyhist/${selectedId}`, {
@@ -180,6 +182,18 @@ const CompanyInfo = () => {
     getAll();
   }, [selectedId]);
 
+  const handleReveal = () => {
+    if (isDetailRevealed == null) {
+      setIsDetailRevealed(true);
+    } else {
+      setIsDetailRevealed((self) => !self);
+    }
+  };
+
+  const downChevronClass = cn(
+    "justify-self-center hover:scale-120 transition-transform duration-300 ease-in-out hover:cursor-pointer h-13 w-13 hover:brightness-90 animate-bounce mt-10"
+  );
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -226,7 +240,32 @@ const CompanyInfo = () => {
                 </span>
               </h2>
             )}
-          {info && <AddToPortfolio companyId={info.id} />}
+          {info && (
+            <>
+              <AddToPortfolio companyId={info.id} />
+              {(!isDetailRevealed || isDetailRevealed == null) && (
+                <ChevronDown
+                  className={downChevronClass}
+                  onClick={handleReveal}
+                />
+              )}
+              {isDetailRevealed != null && (
+                <div
+                  className={`companyDetails ${
+                    isDetailRevealed ? "slide-down" : "slide-up"
+                  }`}
+                >
+                  <ChevronDown
+                    className={downChevronClass}
+                    onClick={handleReveal}
+                  />
+                  <p className="border-2 border-white rounded-lg p-4">
+                    {info.description}
+                  </p>
+                </div>
+              )}
+            </>
+          )}
           <h2 className="text-white text-5xl font-bold text-center mt-10">
             Recent Company News
           </h2>
