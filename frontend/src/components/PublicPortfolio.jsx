@@ -1,14 +1,4 @@
 import PortfolioCard from "./PortfolioCard";
-import { Button } from "./ui/button"; // from shadCN library
-import { Input } from "./ui/input"; // from shadCN library
-import { Label } from "./ui/label"; // from shadCN library
-import Checkbox from "@mui/material/Checkbox"; // from MUI library
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  PopoverClose,
-} from "./ui/popover"; // from shadCN library
 import { BASE_URL } from "../lib/utils";
 import { useEffect, useState } from "react";
 
@@ -16,7 +6,7 @@ const PublicPortfolios = () => {
   const [PublicPortfolios, setPublicPortfolios] = useState(null);
 
   const getPublicPortfolios = async () => {
-    const response = await fetch(`${BASE_URL}/portfolios/explore/public`, {
+    const response = await fetch(`${BASE_URL}/portfolios/curated/public`, {
       method: "GET",
       credentials: "include",
     });

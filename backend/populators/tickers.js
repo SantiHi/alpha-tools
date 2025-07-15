@@ -47,7 +47,6 @@ router.post("/companyfill", async (req, res) => {
     await wait(100);
     i++;
     const percentDone = ((i / companies.length) * 100).toFixed(3);
-    console.warn(`${percentDone}%  - ${i} / ${length}`);
   }
   res.status(200).json({ message: "Successfully Populated database!" });
 });
@@ -148,7 +147,6 @@ router.post("/industry-sector-desc-fill", async (req, res) => {
         modules: ["assetProfile"],
       });
     } catch (err) {
-      console.warn(`Skipping ${company.name} due to yfinance error`);
       continue;
     }
     // check existing
@@ -211,24 +209,52 @@ router.post("/industry-sector-desc-fill", async (req, res) => {
   res.json({ message: "done" });
 });
 
-// batch calls for companies:
+// batch calls for companies, used for TC 1:
 
 CONST_BATCH_SIZE = 500;
-
+CONST_MAX_BETWEEN_TIME = 1000 * 60 * 15;
 router.post("/", async (req, res) => {
+  await updateAllCompanies();
+  res.json({ message: "prices updated" });
+});
+
+const updateAllCompanies = async () => {
+  const mostRecent = await prisma.company.findFirst();
+  const currentTime = new Date();
+  if (
+    Math.abs(mostRecent.lastUpdate.getTime() - currentTime.getTime()) <
+    CONST_MAX_BETWEEN_TIME
+  ) {
+    return;
+  }
   const allCompanies = await prisma.company.findMany();
   const onlyTickers = allCompanies.map((value) => value.ticker);
-  const currentInd = 0;
+  let currentInd = 0;
   while (true) {
     batchSplit = onlyTickers.slice(currentInd, currentInd + CONST_BATCH_SIZE);
     if (batchSplit.length == 0) {
       break;
     }
-    res.json(await yahooFinance.quote(batchSplit, { modules: ["price"] }));
-    currentInd + CONST_BATCH_SIZE;
-    return;
+    const prices = await yahooFinance.quote(
+      batchSplit,
+      { modules: ["price"] },
+      { validateResult: false }
+    );
+    currentInd += CONST_BATCH_SIZE;
+    for (let company of prices) {
+      await prisma.company.update({
+        where: {
+          ticker: company.symbol,
+        },
+        data: {
+          daily_price: company.regularMarketPrice,
+          daily_price_change: company.regularMarketChangePercent,
+          lastUpdate: new Date(),
+        },
+      });
+    }
   }
-});
+};
 
 // helper functions below
 
@@ -244,4 +270,4 @@ const updateCompany = async (company, industryId, description) => {
   });
 };
 
-module.exports = router;
+module.exports = { router, updateAllCompanies };

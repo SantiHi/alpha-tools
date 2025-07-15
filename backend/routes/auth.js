@@ -11,7 +11,7 @@ const argon2 = require("argon2");
 const rateLimit = require("express-rate-limit");
 
 CONST_LOCKEDOUT_TIME = 10;
-CONST_INDUSTRY_LENGTH = 135; // slightly more than # of industries, used to index industry lengths.
+CONST_INDUSTRY_LENGTH = 160; // slightly more than # of industries, used to index industry lengths.
 CONST_SECTOR_LENGTH = 15; // agian longer than # of sectors, used for easy indexing.
 
 router.post("/signup", async (req, res) => {

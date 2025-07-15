@@ -20,7 +20,6 @@ const DOES_NOT_EXIST = "portfolio doesn't exist";
 const PUBLIC_PORTFOLIOS_NUMBER = 6;
 
 // make new portfolio
-
 router.post("/", async (req, res) => {
   const userId = req.session.userId;
   const { name, description, isPublic } = req.body;
@@ -105,7 +104,7 @@ router.get("/:id", async (req, res, next) => {
   res.json(portfolio);
 });
 
-// add company to portfolio
+// add company to portfolio -
 
 router.put("/add/:id/:companyId", async (req, res, next) => {
   const portfolioId = parseInt(req.params.id);
@@ -211,13 +210,22 @@ router.get("/swings/:portfolioId/:timeFrame", async (req, res, next) => {
   res.json(retArray);
 });
 
-// get all public portfolios, sort by top 8:
-router.get("/explore/public", async (req, res) => {
-  allPortfolios = await prisma.portfolio.findMany({
+/* get all public portfolios, sort by top X_number - get best recommended by preformance 
+your interest, here preformance will be weighted more than before! 
+*/
+
+const PREFORMANCE_CONST = 0.6;
+router.get("/curated/public", async (req, res) => {
+  const userId = req.session.userId;
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  const allPortfolios = await prisma.portfolio.findMany({
     where: {
       isPublic: true,
     },
-    take: PUBLIC_PORTFOLIOS_NUMBER,
     include: {
       user: {
         select: {
@@ -226,8 +234,48 @@ router.get("/explore/public", async (req, res) => {
       },
     },
   });
-  res.json(allPortfolios);
+  // get companies that are in the portfolios and then score them similar to
+  portfolioScores = {};
+  for (let portfolio of allPortfolios) {
+    const portfolioCompanies = await prisma.company.findMany({
+      where: {
+        id: {
+          in: portfolio.companiesIds,
+        },
+      },
+      include: {
+        industry: {
+          select: {
+            id: true,
+            sector: { select: { id: true } },
+          },
+        },
+      },
+    });
+    let portfolioSum = 0;
+    portfolioCompanies.map((value) => {
+      portfolioSum += scoreValue(value, user, PREFORMANCE_CONST);
+      return scoreValue(value, user, PREFORMANCE_CONST);
+    });
+    // give slight preference to larger portfolios --- ie, dont want recommendation to be all 1 company portfolios
+    portfolioScores[portfolio.id] =
+      portfolioSum / (portfolioCompanies.length - 1);
+  }
+  const recommendedPortfolios = allPortfolios
+    .sort((a, b) => portfolioScores[b.id] - portfolioScores[a.id])
+    .slice(0, PUBLIC_PORTFOLIOS_NUMBER);
+  res.json(recommendedPortfolios);
 });
+
+// return scoresDictionary.
+const scoreValue = (company, user, preformaceFactor) => {
+  let totalCompanyWeight = 0;
+  totalCompanyWeight += user.industryWeights[company.industryId];
+  totalCompanyWeight += user.sectorWeights[company.industry.sector.id];
+  totalCompanyWeight += preformaceFactor * company.daily_price_change;
+  // search history incorporation doesnt make sense for a portfolio search, so not factored in here.
+  return totalCompanyWeight;
+};
 
 // make public / private a portfolio:
 router.post("/make/public/:id", async (req, res) => {
