@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "./lib/utils";
 import { MIN_PASSWORD_LENGTH } from "./lib/constants";
 import { useState } from "react";
-import { SignUpInfo } from "./context/SignUpContext";
+import { SignUpInfoContext } from "./context/SignUpContext";
 import SignUpPreferences from "./components/signup/SignUpPreferences";
 
 const RESULT_SUCCESS = "Thank you for signing up, redirecting to login...";
@@ -15,7 +15,7 @@ const SignUp = () => {
     username: "",
     email: "",
   });
-  const { sectorsSelected, industriesSelected } = SignUpInfo();
+  const { sectorsSelected, industriesSelected } = SignUpInfoContext();
   const [signUpPressed, setSignUpPressed] = useState(false);
 
   const wait = (ms) => {

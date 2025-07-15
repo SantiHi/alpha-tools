@@ -1,11 +1,11 @@
 import SectorList from "./SectorList";
 import IndustryList from "./IndustryList";
-import { SignUpInfo } from "../../context/SignUpContext";
+import { SignUpInfoContext } from "../../context/SignUpContext";
 
 const MIN_SELECTED = 1;
 
 const SignUpPreferences = ({ createUser }) => {
-  const { sectorsSelected, industriesSelected } = SignUpInfo();
+  const { sectorsSelected, industriesSelected } = SignUpInfoContext();
   return (
     <div className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 w-150 m-auto">
       <h2 className="self-center font-bold text-xl">
