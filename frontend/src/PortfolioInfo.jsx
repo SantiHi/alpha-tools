@@ -1,5 +1,4 @@
 import SearchBar from "./components/SearchBar";
-import { UserInfo } from "./context/UserContext";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 import { useParams } from "react-router-dom";

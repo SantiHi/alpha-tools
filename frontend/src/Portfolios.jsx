@@ -1,6 +1,5 @@
 import SearchBar from "./components/SearchBar";
 import PortfolioList from "./components/PortfolioList";
-import { UserInfo } from "./context/UserContext";
 const Portfolios = () => {
   return (
     <>

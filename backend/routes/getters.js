@@ -11,8 +11,9 @@ require("dotenv").config();
 const { FinlightApi } = require("finlight-client");
 const newsApiToken = process.env.news;
 const client = new FinlightApi({ apiKey: newsApiToken });
+const { updateAllCompanies } = require("../populators/tickers");
 
-CONST_DISCOUNT_FACTOR = 0.9;
+CONST_DISCOUNT_FACTOR = 0.85;
 CONST_NUMBER_RECOMMENDED = 8;
 
 router.get("/search/:query", async (req, res) => {
@@ -54,21 +55,44 @@ router.get("/stats/:companyTick", async (req, res) => {
   res.status(200).json(result);
 });
 
-/* initially, a linear suggestions algorithim with weighting on the following categories: 
-    w1*IndustryPreference 
-    w2*SectorPreference 
-    w3*recencyScore*numberOfVisits 
-    w4*IndustryInterest (recent visits to that industry)
-    w5*SectorInterest (recent visits to hat sector)
-
-    will add more complicated logic in later iterations, likely change to learned model .
-*/
-// weightings can be at most 1, least 0CONST_NUMBER_RECOMMENDED
-const INDUSTRY_WEIGHTING = 1; // industries are more specific, so should be of higher importance
-const SECTOR_WEIGHTING = 0.5; // less so, so less important
+const CHANGE_WEIGHT = 0.25; // how much weight is given to well preforming stocks?
 
 // specific algorithim for reccomendations list
+
+/* 
+Algorithim as Stands:
+  New User:
+      - User Inputs Interest, Weight array initialized for both Sectors and Industries. 
+ 
+  Iteration:
+
+    User Interaction: - code located at /companyhist/:companyId endpoint in company.js 
+
+      -  On user interaction with app, each time user clicks on a profile, 
+      that companies' sector / industry have weight's increased slightly. 
+      - The user also has that company brought to the front of their search history, increasing 
+      it's likelyhood of being recommended UNLESS that company is in a portfolio in which 
+      its's likelyhodd is decreased (score is lowered). 
+      -  *note*, company search history matters less as time goes on. the most recent company gets 
+      .85 "points" to its score, next .85^2, next .85^3, etc. 
+
+  Other Factors: 
+
+      - Stocks preforming better (based on percentage) are also given additional score depending on 
+      how well they are preforming. However, it is costly to get realtime data each time the explore 
+      page is queried, so instead this percentage is only updated every 20 minutes. -- see post populators/ for details. 
+
+  Score Detail: 
+    - Companies are each given a utility score based on the above criteria and top eight per user are recommended. 
+
+  TODO in later iterations: 
+  - give additional attention to companies with high page interaction "clicks" of the entire userbase 
+  - cap weights of industries / sectors so they do not grow out of control. additionally, lower the scores 
+    of non-clicked on industries / sectors! 
+*/
+
 router.get("/curated", async (req, res) => {
+  updateAllCompanies();
   const userId = req.session.userId;
   const user = await prisma.user.findUnique({
     where: {
@@ -94,11 +118,13 @@ router.get("/curated", async (req, res) => {
     let totalCompanyWeight = 0;
     totalCompanyWeight += user.industryWeights[company.industryId];
     totalCompanyWeight += user.sectorWeights[company.industry.sector.id];
+    totalCompanyWeight += CHANGE_WEIGHT * company.daily_price_change;
 
     if (user.search_history.includes(company.id)) {
       const indexOf = user.search_history.indexOf(company.id);
       totalCompanyWeight += Math.pow(CONST_DISCOUNT_FACTOR, indexOf);
     }
+
     scoresDictionary[company.id] = totalCompanyWeight;
   }
 

@@ -24,15 +24,17 @@ model Session {
 model Company {
   id                  Int         @id @default(autoincrement())
   name                String
-  ticker              String
+  ticker              String      @unique
   cik_number          Int         @unique
-  daily_price         Int
+  daily_price         Float
+  daily_price_change  Float       @default(0.0)
   created_at          DateTime    @default(now())
   documents           Document[] 
   articles            Article[]
   industry            Industry?  @relation(fields: [industryId], references: [id])
   industryId          Int?
   description         String  @default("")
+  lastUpdate          DateTime    @default(now())
 }
 
   model User { 

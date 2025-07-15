@@ -34,7 +34,6 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // ms
       secure: isProd,
-      sameSite: "none",
     },
     secret: "a santa at nasa",
     resave: true,
@@ -68,12 +67,12 @@ app.use((req, res, next) => {
 
 const authRoutes = require("./routes/auth");
 const getterRoutes = require("./routes/getters");
-const populatorRoutes = require("./populators/tickers");
+const { router } = require("./populators/tickers");
 const portfolioRoutes = require("./routes/portfolios");
 const companyRoutes = require("./routes/company");
 app.use("/getters", getterRoutes);
 app.use("/auth", authRoutes);
-app.use("/populators", populatorRoutes);
+app.use("/populators", router);
 app.use("/portfolios", portfolioRoutes);
 app.use("/company", companyRoutes);
 

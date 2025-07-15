@@ -55,6 +55,7 @@ router.put("/companyhist/:companyId", async (req, res) => {
   newSectorWeights[company.industry.sector.id] =
     newSectorWeights[company.industry.sector.id] +
     CONST_LAMBDA * CONST_SECTOR_REWARD;
+
   await prisma.user.update({
     where: {
       id: userId,

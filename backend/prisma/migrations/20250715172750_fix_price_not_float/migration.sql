@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Company" ALTER COLUMN "daily_price" SET DATA TYPE DOUBLE PRECISION;

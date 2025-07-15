@@ -20,7 +20,6 @@ const DOES_NOT_EXIST = "portfolio doesn't exist";
 const PUBLIC_PORTFOLIOS_NUMBER = 6;
 
 // make new portfolio
-
 router.post("/", async (req, res) => {
   const userId = req.session.userId;
   const { name, description, isPublic } = req.body;
