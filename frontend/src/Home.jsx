@@ -19,7 +19,7 @@ const Home = () => {
           <SearchBar />
           <h3 className={classText}>Recommended Companies</h3>
           <CompanyList />
-          <h3 className={classText}>Public Portfolios:</h3>
+          <h3 className={classText}>Curated Portfolios</h3>
           <PublicPortfolios />
         </div>
       </main>
