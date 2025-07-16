@@ -6,6 +6,7 @@ import PortfolioCompanies from "./components/PortfolioCompanies";
 import SwingCompanies from "./components/SwingCompanies";
 import cn from "classnames";
 import { EDITOR_PERMS } from "./lib/constants";
+import PredictionTools from "./components/PredictionTools";
 
 const MODE_DAY = "Day";
 const VIEWER_PERMS = "viewer";
@@ -188,6 +189,10 @@ const PortfolioInfo = () => {
               companyIds={companyIds}
             />
           </div>
+          <PredictionTools
+            portfolioData={portfolioData}
+            companiesData={companiesData}
+          />
         </div>
       </main>
     </>
