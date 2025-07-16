@@ -18,7 +18,7 @@ const PortfolioCompanies = ({
   };
 
   return (
-    <div className="bg-indigo-50 h-75 w-16/20 ml-40 rounded-md overflow-auto">
+    <div className="bg-indigo-50 h-90 w-16/20 ml-40 rounded-md overflow-auto">
       <div className="flex flex-row justify-center">
         <h3 className="font-bold text-2xl text-center mt-3">
           Portfolio Companies
@@ -62,7 +62,7 @@ const PortfolioCompanies = ({
             );
             return (
               <div
-                className="flex flex-row justify-center h-6/50 w-9/10 m-1"
+                className="flex flex-row justify-center h-5/50 w-9/10 m-1"
                 key={value.id}
               >
                 <div

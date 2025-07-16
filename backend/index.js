@@ -34,7 +34,7 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // ms
       secure: isProd,
-      sameSite: "none", 
+      sameSite: "none",
     },
     secret: "a santa at nasa",
     resave: true,
