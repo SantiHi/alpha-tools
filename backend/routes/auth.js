@@ -10,9 +10,9 @@ const router = express.Router({ mergeParams: true });
 const argon2 = require("argon2");
 const rateLimit = require("express-rate-limit");
 
-CONST_LOCKEDOUT_TIME = 10;
-CONST_INDUSTRY_LENGTH = 160; // slightly more than # of industries, used to index industry lengths.
-CONST_SECTOR_LENGTH = 15; // agian longer than # of sectors, used for easy indexing.
+const CONST_LOCKEDOUT_TIME = 10;
+const CONST_INDUSTRY_LENGTH = 160; // slightly more than # of industries, used to index industry lengths.
+const CONST_SECTOR_LENGTH = 15; // agian longer than # of sectors, used for easy indexing.
 
 router.post("/signup", async (req, res) => {
   const { username, password, email, name, interestedIndustries, sectors } =
@@ -74,6 +74,61 @@ router.post("/signup", async (req, res) => {
   res.status(201).json(newUser);
 });
 
+router.get("/get-interests", async (req, res) => {
+  const userId = req.session.userId;
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  res.json({
+    interestedIndustries: user.interestedIndustries,
+    sectors: user.sectors,
+  });
+});
+
+router.post("/change-settings", async (req, res) => {
+  const userId = req.session.userId;
+  const { interestedIndustries, sectors } = req.body;
+
+  const currentUser = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  let currentIndWeights = currentUser.industryWeights;
+  let currentSectWeights = currentUser.sectorWeights;
+  for (let i = 0; i < currentIndWeights.length; i++) {
+    if (currentUser.interestedIndustries.includes(i)) {
+      continue;
+    }
+    if (interestedIndustries.includes(i)) {
+      currentIndWeights[i] += 1;
+    }
+  }
+  for (let i = 0; i < currentIndWeights.length; i++) {
+    if (currentUser.sectors.includes(i)) {
+      continue;
+    }
+    if (sectors.includes(i)) {
+      currentSectWeights[i] += 0.5;
+    }
+  }
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      interestedIndustries,
+      sectors,
+      industryWeights: currentIndWeights,
+      sectorWeights: currentSectWeights,
+    },
+  });
+  res.json({ messsage: "updated settings" });
+});
+
 // login routes!
 
 const loginLimiter = rateLimit({
@@ -126,6 +181,15 @@ router.get("/sectors", async (req, res) => {
 router.get("/industries", async (req, res) => {
   const industries = await prisma.industry.findMany();
   res.json(industries);
+});
+
+router.delete("/signout", async (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+    }
+    res.clearCookie("sid", { path: "/" });
+    return res.json({ message: "Logged out successfully" });
+  });
 });
 
 module.exports = router;

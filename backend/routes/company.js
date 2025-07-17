@@ -6,10 +6,10 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 
 // constants
-CONST_LOCKEDOUT_TIME = 10;
-CONST_INDUSTRY_REWARD = 1;
-CONST_SECTOR_REWARD = 0.5;
-CONST_LAMBDA = 0.1;
+const CONST_LOCKEDOUT_TIME = 10;
+const CONST_INDUSTRY_REWARD = 1;
+const CONST_SECTOR_REWARD = 0.5;
+const CONST_LAMBDA = 0.1;
 // getting companies by multiple ids
 router.post("/", async (req, res, next) => {
   const possibleIds = req.body.ids;

@@ -157,7 +157,9 @@ const SignUp = () => {
           </button>
         </form>
       )}
-      {signUpPressed && <SignUpPreferences createUser={createUser} />}
+      {signUpPressed && (
+        <SignUpPreferences createUser={createUser} changeMode={false} />
+      )}
     </div>
   );
 };

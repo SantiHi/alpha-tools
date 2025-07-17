@@ -11,6 +11,8 @@ const app = express();
 app.use(express.json());
 const router = express.Router({ mergeParams: true });
 require("dotenv").config();
+const finnhub = require("finnhub");
+const finnhubClient = new finnhub.DefaultApi(process.env.finnhubKey);
 
 const MODE_DAY = "Day";
 const MODE_WEEK = "Week";
@@ -314,6 +316,44 @@ router.get("/permissions/user/:id", async (req, res) => {
   res.json({ owner: false, public: portfolio.isPublic });
 });
 
+// Technical challenge #2, preformance prediction
+/* 
+
+returns two things, stock data in form 
+  [{date: XX, price: price}, ..., ..] 
+
+and also risk indicators in the next month of form 
+  [{data: XX, company: XX, risk XX}]
+  ex of risks: earnings release, 
+*/
+
+router.get("/portfolio/prediction/:id", async (req, res) => {
+  const portfolioid = parseInt(req.params.id);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioid,
+    },
+  });
+
+  const today = new Date();
+  let nextDate = new Date(today);
+  nextDate.setMonth(nextDate.getMonth() + 1);
+  const begin = formatDate(today);
+  const end = formatDate(nextDate);
+  finnhubClient.earningsCalendar(
+    { from: begin, to: end },
+    (error, data, response) => {
+      res.json(data);
+    }
+  );
+});
+
+const formatDate = (dateObj) => {
+  const formattedDate = `${dateObj.getFullYear()}-${String(
+    dateObj.getMonth() + 1
+  ).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
+  return formattedDate;
+};
 //helper functions below
 
 const getBeforeDate = (timeFrame) => {

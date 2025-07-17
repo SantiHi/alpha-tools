@@ -13,8 +13,8 @@ const newsApiToken = process.env.news;
 const client = new FinlightApi({ apiKey: newsApiToken });
 const { updateAllCompanies } = require("../populators/tickers");
 
-CONST_DISCOUNT_FACTOR = 0.85;
-CONST_NUMBER_RECOMMENDED = 8;
+const CONST_DISCOUNT_FACTOR = 0.85;
+const CONST_NUMBER_RECOMMENDED = 8;
 
 router.get("/search/:query", async (req, res) => {
   const query = req.params.query;
@@ -91,7 +91,7 @@ Algorithim as Stand, very similar for portfolio with *slight* differences:
   - give additional attention to companies with high page interaction "clicks" of the entire userbase 
 */
 
-// specific algorithim for company reccomendations list. the portfolio algorithim is in the portfolios file.
+// specific algorithim for company recommendations list. the portfolio algorithim is in the portfolios file.
 
 router.get("/curated", async (req, res) => {
   updateAllCompanies();
