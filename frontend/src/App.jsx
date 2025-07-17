@@ -10,9 +10,12 @@ import PortfolioInfo from "./PortfolioInfo";
 import Footer from "./Footer";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"; // material ui Sidebar
 import AppSidebar from "./components/AppSidebar";
+import { useNavigate } from "react-router-dom";
+import Settings from "./Settings";
 
 const LoggedInPage = ({ isLoggedIn, children }) => {
   const { fullName } = UserInfo();
+  const navigate = useNavigate();
   return isLoggedIn ? (
     <SidebarProvider>
       <AppSidebar />
@@ -24,7 +27,14 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
           Alpha-Edge
         </h2>
         <h4 className="fixed top-0 right-4 pt-5">
-          Good day, <span className="font-bold"> {fullName} </span>
+          Good day,{" "}
+          <span
+            className="font-bold hover:cursor-pointer"
+            onClick={() => navigate("/settings")}
+          >
+            {" "}
+            {fullName}{" "}
+          </span>
         </h4>
       </header>
       {children}
@@ -74,6 +84,14 @@ const App = () => {
             element={
               <LoggedInPage isLoggedIn={isLoggedIn}>
                 <Home />
+              </LoggedInPage>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Settings />
               </LoggedInPage>
             }
           />
