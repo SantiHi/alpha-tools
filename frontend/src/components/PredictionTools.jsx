@@ -1,4 +1,4 @@
-import LineChart from "./predictiontoolsobjs/linechart";
+import LineChart from "./predictiontools/LineChart";
 
 const PredictionTools = ({ portfolioData, companiesData }) => {
   return (
