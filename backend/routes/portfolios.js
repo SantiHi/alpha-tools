@@ -484,7 +484,7 @@ router.post("/model/:id", async (req, res) => {
     metrics: ["mse"], // val w mse validation / loss
   });
   await model.fit(X_values, Y_values, {
-    epochs: 20,
+    epochs: 7,
     batchSize: 32,
     validationSplit: 0.2,
     verbose: 1,
