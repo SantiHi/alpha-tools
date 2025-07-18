@@ -56,19 +56,23 @@ const SwingCompanies = ({
           </Box>
         </ThemeProvider>
       </div>
-      <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-4/5 overflow-auto w-8/10">
+      <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-100 overflow-auto w-8/10">
         {sortedSwings &&
           companiesStockData != null &&
           companiesStockData.length !== 0 &&
           sortedSwings.map((value) => {
+            const ind = companyIds.indexOf(parseInt(value.id));
             const comp = companiesData.filter((c) => c.id === value.id)[0];
+            if (comp == null || companiesStockData[ind] == null) {
+              return;
+            }
             if (historicalMode === MODE_DAY) {
               // find which index is which
-              const ind = companyIds.indexOf(parseInt(value.id));
               const percentageChange = toPercentage(
                 companiesStockData[ind].price,
                 companiesStockData[ind].dayStart
               );
+
               return (
                 <Company
                   key={value.id}
@@ -76,7 +80,7 @@ const SwingCompanies = ({
                   companyFacts={{
                     name: comp.name,
                     ticker: comp.ticker,
-                    daily: companiesStockData[ind].price,
+                    daily: companiesStockData[ind].price.toFixed(2),
                     dailyChange: percentageChange,
                     id: value.id,
                   }}

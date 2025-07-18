@@ -32,6 +32,20 @@ router.get("/search/:query", async (req, res) => {
     orderBy: { id: "asc" },
     take: 3,
   });
+  if (searchResults.length < 3) {
+    const portfolioResults = await prisma.portfolio.findMany({
+      where: {
+        name: { contains: query, mode: "insensitive" },
+        isPublic: true,
+      },
+      take: 3,
+    });
+    for (let result of portfolioResults) {
+      if (searchResults.length < 3) {
+        searchResults.push(result);
+      }
+    }
+  }
   res.json(searchResults);
 });
 

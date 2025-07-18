@@ -83,9 +83,17 @@ const PortfolioInfo = () => {
     const data = await response.json();
     setPortfolioData(data);
     setPublicButton(data.isPublic);
-    if (companyIds.length === 0) {
+    if (companyIds.length == 0 || !sameValues(data.companiesIds, companyIds))
       setCompanyIds(data.companiesIds);
+  };
+
+  const sameValues = (arr1, arr2) => {
+    for (let val of arr1) {
+      if (!arr2.includes(val)) {
+        return false;
+      }
     }
+    return true;
   };
 
   const handleDelete = async (companyId) => {
@@ -134,10 +142,13 @@ const PortfolioInfo = () => {
     setCompaniesStockData(prices);
   };
   useEffect(() => {
-    getUserPermissions();
-    getPortfolioData();
-    getCompaniesData();
-  }, [companyIds]);
+    const getAllInfo = async () => {
+      getUserPermissions();
+      getPortfolioData();
+      getCompaniesData();
+    };
+    getAllInfo();
+  }, [companyIds, id]);
 
   if (portfolioData == null) {
     return (
@@ -192,6 +203,7 @@ const PortfolioInfo = () => {
           <PredictionTools
             portfolioData={portfolioData}
             companiesData={companiesData}
+            companiesStockData={companiesStockData}
           />
         </div>
       </main>
