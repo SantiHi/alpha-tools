@@ -35,6 +35,7 @@ model Company {
   industryId          Int?
   description         String  @default("")
   lastUpdate          DateTime    @default(now())
+  UpcomingEarnings    String[]    @default([])
 }
 
   model User { 
