@@ -17,6 +17,23 @@ const SearchResultsBar = ({ results, setSearchQuery, setSearchResults }) => {
     <div className="-mt-4">
       {" "}
       {results.map((value) => {
+        if (value.isPublic == true) {
+          // is a portfolio
+          return (
+            <div
+              key={value.id}
+              className="bg-indigo-100 ounded-b-sm hover:cursor-pointer hover:brightness-95 z-100"
+              onClick={() => {
+                navigate(`/portfolios/${value.id}`);
+                setSelectedId(value.id);
+                setSearchQuery("");
+                setSearchResults([]);
+              }}
+            >
+              <p className="ml-2">{`${value.name} (portfolio)`}</p>
+            </div>
+          );
+        }
         return (
           <div
             key={value.id}
@@ -67,7 +84,7 @@ const Searchbar = () => {
             id="outlined-basic"
             label="search"
             size="large"
-            placeholder="Search For Companies"
+            placeholder="Search For Companies or Portfolios"
             sx={{ width: "500px" }}
             startAdornment={
               <InputAdornment position="start">

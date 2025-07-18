@@ -378,6 +378,7 @@ router.post("/model/:id", async (req, res) => {
   const FUTURE_DAYS = 30; // how many days we predict **these can be turned into params and specified by users later!"
   const WINDOW = 40; // how far in the past we look in total
   const portfolioId = parseInt(req.params.id);
+  const currentCost = parseInt(req.body.currentPrice);
   const portfolio = await prisma.portfolio.findUnique({
     where: {
       id: portfolioId,
@@ -480,10 +481,10 @@ router.post("/model/:id", async (req, res) => {
   model.compile({
     optimizer: tf.train.adam(),
     loss: tf.losses.meanSquaredError,
-    metrics: ["mse"],
+    metrics: ["mse"], // val w mse validation / loss
   });
   await model.fit(X_values, Y_values, {
-    epochs: 10,
+    epochs: 20,
     batchSize: 32,
     validationSplit: 0.2,
     verbose: 1,
@@ -495,7 +496,8 @@ router.post("/model/:id", async (req, res) => {
   const predictionArray = (await prediction.array())[0];
   let currentDate = new Date();
   let offset =
-    lastPrice - parseFloat(unNormalize(predictionArray[0], minLabel, maxLabel));
+    currentCost -
+    parseFloat(unNormalize(predictionArray[0], minLabel, maxLabel));
   const valuePredict = predictionArray.map((value) => {
     lastPrice = unNormalize(value, minLabel, maxLabel);
     currentDate.setDate(currentDate.getDate() + 1);

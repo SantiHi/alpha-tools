@@ -9,8 +9,6 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { useEffect, useState } from "react";
-import { BASE_URL } from "../../lib/utils";
 
 ChartJS.register(
   CategoryScale,
@@ -25,27 +23,7 @@ ChartJS.register(
 
 // dummay data, mostly just to understand how to format my TC #2 data!
 
-const LineChart = ({ portfolioData }) => {
-  const [realData, setRealData] = useState(null);
-  const [calledOnce, setCalledOnce] = useState(false);
-  useEffect(() => {
-    async function getMode() {
-      const response = await fetch(
-        `${BASE_URL}/portfolios/model/${portfolioData.id}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      setRealData(data);
-    }
-    if (!calledOnce) {
-      getMode();
-      setCalledOnce(true);
-    }
-  }, []);
-
+const LineChart = ({ portfolioData, realData }) => {
   const options = {
     responsive: true,
     ticks: {
