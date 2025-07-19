@@ -53,14 +53,22 @@ const PredictionTools = ({
           <button className=" bg-red-700 text-white hover:brightness-80 mx-5 m-2">
             Risk Analysis
           </button>
-          <button
-            className=" bg-green-700 text-white hover:brightness-80 mx-5 m-2"
-            onClick={getMode}
-          >
-            Get Future Predictions
-          </button>
+          {predictionsClicked == false && (
+            <button
+              className=" bg-green-700 text-white hover:brightness-80 mx-5 m-2"
+              onClick={getMode}
+            >
+              Get Future Predictions
+            </button>
+          )}
           {predictionsClicked == true && (
-            <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-green-200 animate-spin"></div>
+            <>
+              <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-green-200 animate-spin"></div>
+              <h2 className="w-50 mr-auto ml-auto pl-3 pr-2">
+                Predictions take time, and are computationally demanding. We'll
+                message you when they're done!
+              </h2>
+            </>
           )}
           <h2 className="font-bold mr-auto ml-auto mt-10">
             Total Current Balance

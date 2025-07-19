@@ -7,6 +7,7 @@ import SwingCompanies from "./components/SwingCompanies";
 import cn from "classnames";
 import { EDITOR_PERMS } from "./lib/constants";
 import PredictionTools from "./components/PredictionTools";
+import TextEditor from "./components/TextEditor";
 
 const MODE_DAY = "Day";
 const VIEWER_PERMS = "viewer";
@@ -205,6 +206,7 @@ const PortfolioInfo = () => {
             companiesData={companiesData}
             companiesStockData={companiesStockData}
           />
+          <TextEditor />
         </div>
       </main>
     </>

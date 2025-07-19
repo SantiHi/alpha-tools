@@ -472,8 +472,14 @@ router.post("/model/:id", async (req, res) => {
   const model = tf.sequential();
   model.add(
     tf.layers.lstm({
-      units: 50,
+      units: 30,
       inputShape: [WINDOW, NUM_FEATURES],
+      returnSequences: true,
+    })
+  );
+  model.add(
+    tf.layers.lstm({
+      units: 16,
       returnSequences: false,
     })
   );
@@ -484,7 +490,7 @@ router.post("/model/:id", async (req, res) => {
     metrics: ["mse"], // val w mse validation / loss
   });
   await model.fit(X_values, Y_values, {
-    epochs: 7,
+    epochs: 10,
     batchSize: 32,
     validationSplit: 0.2,
     verbose: 1,
@@ -507,8 +513,83 @@ router.post("/model/:id", async (req, res) => {
     };
   });
   tf.dispose([X_values, Y_values, input, prediction]);
-  res.json(valuePredict);
+  finalValues = await additionalModelFactors(
+    tickerArr,
+    valuePredict,
+    companyArrays
+  );
+  // we have base predictions, now we add in other factors, like P/E, earnings expectations, etc.
+  res.json(finalValues);
 });
+
+// now we look at P/E, earnings expectations, etc:
+
+// to do this, we look at average analyst rating and give higher weight to those
+const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
+  const data = await yahooFinance.quote(tickers, { validateResult: false });
+  let getEarnings = companyArrays.map((value) => value.UpcomingEarnings); // when are the next earnings calls?
+  getEarnings = getEarnings.filter((value) => {
+    if (value.length == 0) {
+      return false;
+    }
+    return true;
+  });
+  let analystsum = 0;
+  for (let companydata of data) {
+    if (companydata.averageAnalystRating == null) {
+      analystsum += 2.7; // small stock
+    } else {
+      const newFloat = parseFloat(
+        companydata.averageAnalystRating.split(" ")[0]
+      );
+      analystsum += newFloat;
+    }
+  }
+  const averageAnalystRating = analystsum / parseFloat(data.length); // analyst rating goes from 1-5. Add to predictions based on this!, up to 10% swing at the end.
+  // we choose 1.003 as constant for 1.0 as a 10% (30 day timeframe) total increase for having a perfect analyst rating, or a rating of 1 (ie -- 1.003^30 = 1.09 )
+  // likewise we choose 0.996 as a constant for 5.0, for a total 10% DECREASE (30 day timeframe )for having a horrible analyst rating of 5. Everything else is evenly between!
+
+  // get insider trading transactions as well!
+  const dateNow = formatDate(new Date());
+  let prevDate = new Date(dateNow);
+  prevDate.setFullYear(prevDate.getFullYear() - 1);
+  const factorChange = determineFactor(averageAnalystRating);
+
+  let sentimentCost = 0;
+  for (let tick of tickers) {
+    finnhubClient.insiderSentiment(
+      tick,
+      formatDate(prevDate),
+      dateNow,
+      async (error, data) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        sentimentCost += data.data[data.data.length - 1].mspr;
+      }
+    );
+  }
+  if (sentimentCost < 0) {
+    factorChange = factorChange - 0.001;
+  }
+  if (sentimentCost > 0) {
+    factorChange = factorChange + 0.001;
+  }
+  const newPredict = valuePredict.map((value, ind) => {
+    const factor = Math.pow(factorChange, ind);
+    return { date: value.date, price: value.price * factor };
+  });
+
+  return newPredict;
+};
+
+const determineFactor = (averageAnalystRating) => {
+  const factorRange = 0.006;
+  const dilution = -(averageAnalystRating - 2) / 4;
+  const factor = 1 + factorRange * dilution;
+  return factor;
+};
 
 // normalize data using xi - min(x) / (max(x) - min(x)) to get data with mean=0 and std 1,
 // normalizes along columns
@@ -547,7 +628,7 @@ const getBeforeDate = (timeFrame) => {
   if (timeFrame === MODE_DAY) {
     prevDate.setDate(prevDate.getDate() - 2);
   } else if (timeFrame === MODE_WEEK) {
-    prevDate.setDate(prevDate.getDate() - 7);
+    dateNow;
   } else if (timeFrame === MODE_MONTH) {
     prevDate.setMonth(prevDate.getMonth() - 1);
   } else if (timeFrame === THREE_MONTH) {
