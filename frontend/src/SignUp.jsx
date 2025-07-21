@@ -1,6 +1,6 @@
 import InputBox from "./components/InputBox";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "./lib/utils";
+import { BASE_URL, wait } from "./lib/utils";
 import { MIN_PASSWORD_LENGTH } from "./lib/constants";
 import { useState } from "react";
 import { SignUpInfoContext } from "./context/SignUpContext";
@@ -17,10 +17,6 @@ const SignUp = () => {
   });
   const { sectorsSelected, industriesSelected } = SignUpInfoContext();
   const [signUpPressed, setSignUpPressed] = useState(false);
-
-  const wait = (ms) => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  };
 
   const [submitResult, setSubmitResult] = useState(null);
 

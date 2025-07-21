@@ -373,6 +373,36 @@ router.get("/earnings/:id", async (req, res) => {
   );
 });
 
+router.get("/getNotes/:id", async (req, res, next) => {
+  const portfolioId = parseInt(req.params.id);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+  if (portfolio == null) {
+    next(new BadParams("no portfolio with such Id"));
+  }
+  res.json(portfolio.notesDoc);
+});
+
+router.post("/setNotes/:id", async (req, res, next) => {
+  const portfolioId = parseInt(req.params.id);
+  const newDoc = req.body.html;
+  const portfolio = await prisma.portfolio.update({
+    where: {
+      id: portfolioId,
+    },
+    data: {
+      notesDoc: newDoc,
+    },
+  });
+  if (portfolio == null) {
+    next(new BadParams("no portfolio with such Id"));
+  }
+  res.json(portfolio.notesDoc);
+});
+
 /* create and run model! */
 router.post("/model/:id", async (req, res) => {
   const FUTURE_DAYS = 30; // how many days we predict **these can be turned into params and specified by users later!"
@@ -537,7 +567,7 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
   let analystsum = 0;
   for (let companydata of data) {
     if (companydata.averageAnalystRating == null) {
-      analystsum += 2.7; // small stock
+      analystsum += 2.5;
     } else {
       const newFloat = parseFloat(
         companydata.averageAnalystRating.split(" ")[0]
@@ -554,7 +584,6 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
   let prevDate = new Date(dateNow);
   prevDate.setFullYear(prevDate.getFullYear() - 1);
   const factorChange = determineFactor(averageAnalystRating);
-
   let sentimentCost = 0;
   for (let tick of tickers) {
     finnhubClient.insiderSentiment(
@@ -566,7 +595,9 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
           console.error(error);
           return;
         }
-        sentimentCost += data.data[data.data.length - 1].mspr;
+        if (data.data[data.data.length - 1]) {
+          sentimentCost += data.data[data.data.length - 1].mspr;
+        }
       }
     );
   }
@@ -585,8 +616,8 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
 };
 
 const determineFactor = (averageAnalystRating) => {
-  const factorRange = 0.006;
-  const dilution = -(averageAnalystRating - 2) / 4;
+  const factorRange = 0.008;
+  const dilution = (3 - averageAnalystRating) / 4;
   const factor = 1 + factorRange * dilution;
   return factor;
 };

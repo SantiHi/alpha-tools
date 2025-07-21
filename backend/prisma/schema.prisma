@@ -84,6 +84,7 @@ model Portfolio {
     user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId      Int
     permittedUsers  Int[] 
+    notesDoc    String  @default("")
     isPublic    Boolean @default(false)
 }
 
