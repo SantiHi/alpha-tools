@@ -45,4 +45,8 @@ const toPercentage = (startPrice, endPrice) => {
   return (((startPrice - endPrice) / startPrice) * 100).toFixed(2);
 };
 
-export { handleLogin, BASE_URL, toPercentage };
+const wait = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export { handleLogin, BASE_URL, toPercentage, wait };

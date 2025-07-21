@@ -28,22 +28,17 @@ const CompanyList = () => {
     }
     const data = await response.json();
     setExploreCompanies(data);
-    const prices = [];
-    for (const company of data) {
-      const stockResponse = await fetch(
-        `${BASE_URL}/getters/stats/${company.ticker}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      const stockData = await stockResponse.json();
-      prices.push({
-        price: stockData.regularMarketPrice,
-        dayStart: stockData.regularMarketPreviousClose,
-      });
-    }
-    setExploreCompaniesPrices(prices);
+    const tickers = data.map((value) => value.ticker);
+    const stockResponse = await fetch(`${BASE_URL}/getters/manycompanies`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tickers),
+    });
+    const stockData = await stockResponse.json();
+    setExploreCompaniesPrices(stockData);
   };
 
   useEffect(() => {
@@ -69,10 +64,11 @@ const CompanyList = () => {
               companyFacts={{
                 name: value.name,
                 ticker: value.ticker,
-                daily: exploreCompaniesPrices[ind].price.toFixed(2),
+                daily:
+                  exploreCompaniesPrices[ind].regularMarketPrice.toFixed(2),
                 dailyChange: toPercentage(
-                  exploreCompaniesPrices[ind].price,
-                  exploreCompaniesPrices[ind].dayStart
+                  exploreCompaniesPrices[ind].regularMarketPrice,
+                  exploreCompaniesPrices[ind].regularMarketPreviousClose
                 ),
                 id: value.id,
               }}

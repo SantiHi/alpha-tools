@@ -59,6 +59,18 @@ router.get("/checker/:companyTick", async (req, res) => {
   res.json(companyInfo);
 });
 
+// get many companies info!
+
+router.post("/manycompanies", async (req, res) => {
+  const tickers = req.body;
+  const prices = await yahooFinance.quote(
+    tickers,
+    { modules: ["price"] },
+    { validateResult: false }
+  );
+  res.json(prices);
+});
+
 // get yahoo finance data on a stock
 router.get("/stats/:companyTick", async (req, res) => {
   const ticker = req.params.companyTick;
