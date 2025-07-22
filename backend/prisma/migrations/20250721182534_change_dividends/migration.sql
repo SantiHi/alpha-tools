@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Company" ALTER COLUMN "dividends" SET DATA TYPE DOUBLE PRECISION[];

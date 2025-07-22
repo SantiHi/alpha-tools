@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Company" ADD COLUMN     "dividends" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
+ADD COLUMN "dividendsDates" INTEGER[] DEFAULT ARRAY[]::INTEGER[];
