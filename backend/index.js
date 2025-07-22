@@ -8,6 +8,9 @@ const express = require("express");
 const PORT = process.env.PORT || 3000;
 require("dotenv").config();
 const ORIGIN = process.env.origin;
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const isProd = process.env.NODE_ENV === "production";
 

@@ -19,23 +19,21 @@ const Settings = () => {
     navigate("/login");
   };
   return (
-    <>
-      <main className="w-full">
-        <div className="flex flex-col items-center">
-          <Searchbar />
-          <h3 className="self-center text-center text-6xl mt-30 mb-10 text-indigo-50 font-semibold  z-10">
-            Settings
-          </h3>
-          <button
-            className="bg-white hover:cursor-pointer hover:scale-140 hover:brightness-110 mt-2"
-            onClick={signOut}
-          >
-            Log Out
-          </button>
-          <SignUpPreferences changeMode={true} />
-        </div>
-      </main>
-    </>
+    <main className="w-full">
+      <div className="flex flex-col items-center">
+        <Searchbar />
+        <h3 className="self-center text-center text-6xl mt-30 mb-10 text-indigo-50 font-semibold  z-10">
+          Settings
+        </h3>
+        <button
+          className="bg-white hover:cursor-pointer hover:scale-140 hover:brightness-110 mt-2"
+          onClick={signOut}
+        >
+          Log Out
+        </button>
+        <SignUpPreferences changeMode={true} />
+      </div>
+    </main>
   );
 };
 

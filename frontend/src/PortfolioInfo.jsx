@@ -30,6 +30,7 @@ const PortfolioInfo = () => {
       "bg-green-600": isPublic === false,
     }
   );
+
   const getUserPermissions = async () => {
     const response = await fetch(
       `${BASE_URL}/portfolios/permissions/user/${id}`,
@@ -142,6 +143,8 @@ const PortfolioInfo = () => {
     }
     setCompaniesStockData(prices);
   };
+
+  // TODO: Refactor to fix extraneous calls! next PR this will be addressed.
   useEffect(() => {
     const getAllInfo = async () => {
       getUserPermissions();
@@ -206,7 +209,7 @@ const PortfolioInfo = () => {
             companiesData={companiesData}
             companiesStockData={companiesStockData}
           />
-          <TextEditor />
+          <TextEditor id={id} />
         </div>
       </main>
     </>

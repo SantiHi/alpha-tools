@@ -5,6 +5,7 @@
     "@tensorflow/tfjs": "^4.22.0",
     "@tensorflow/tfjs-node": "^4.22.0",
     "argon2": "^0.43.0",
+    "backblaze-b2": "^1.7.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -12,6 +13,8 @@
     "express-session": "^1.18.1",
     "finlight-client": "^1.4.0",
     "finnhub": "^2.0.7",
+    "fs-extra": "^11.3.0",
+    "multer": "^2.0.2",
     "yahoo-finance2": "^2.13.3"
   },
   "name": "backend",

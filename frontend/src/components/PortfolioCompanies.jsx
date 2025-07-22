@@ -16,7 +16,6 @@ const PortfolioCompanies = ({
   const handleClick = (id) => {
     navigate(`/CompanyInfo/${id}`);
   };
-
   return (
     <div className="bg-indigo-50 h-90 w-16/20 ml-40 rounded-md overflow-auto">
       <div className="flex flex-row justify-center">
