@@ -15,6 +15,13 @@ require("dotenv").config();
 const finnhub = require("finnhub");
 const finnhubClient = new finnhub.DefaultApi(process.env.finnhubKey);
 const tf = require("@tensorflow/tfjs-node");
+const fs = require("fs-extra");
+const B2 = require("backblaze-b2");
+const b2 = new B2({
+  applicationKeyId: process.env.B2_KEY_ID,
+  applicationKey: process.env.B2_APP_KEY,
+});
+const bucketId = process.env.bucket_id;
 
 const THREE_MONTH = "3Months";
 const BAD_PARAMS = "portfolio id is likely incorrect";
@@ -236,7 +243,6 @@ router.get("/curated/public", async (req, res) => {
       },
     },
   });
-
   // get companies that are in the portfolios and then score them similar to
   portfolioScores = {};
   for (let portfolio of allPortfolios) {
@@ -456,12 +462,76 @@ const cleanRawData = (historicalData, tickerArr) => {
   return { cleanData, labels, lastPrice: lastPrice, minLabel, maxLabel };
 };
 
+const saveModel = async (model, portfolioId) => {
+  await b2.authorize(); // authorization last 24 hours!
+  const uploadUrlResponse = await b2.getUploadUrl({
+    bucketId: bucketId,
+  });
+  const tempDir = `./tmp/portfolio-${portfolioId}`;
+  fs.rmSync(tempDir, { recursive: true, force: true });
+  fs.mkdirSync(tempDir, { recursive: true });
+  await model.save(`file://${tempDir}`);
+  const remoteFilePath = `models/portfolio-${portfolioId}`;
+  const endValues = ["model.json", "weights.bin"];
+  for (let ending of endValues) {
+    let data = fs.readFileSync(`${tempDir}/${ending}`);
+    // store model json file
+    await b2.uploadFile({
+      uploadUrl: uploadUrlResponse.data.uploadUrl,
+      uploadAuthToken: uploadUrlResponse.data.authorizationToken,
+      fileName: `${remoteFilePath}/${ending}`,
+      data,
+    });
+
+    // remove old versions of the file from b2
+    const response = await b2.listFileVersions({
+      bucketId,
+      prefix: `models/portfolio-${portfolioId}/${ending}`,
+    });
+
+    const fileVersions = response.data.files
+      .filter((file) => file.fileName === `${remoteFilePath}/${ending}`)
+      .sort((a, b) => a.uploadTimestamp - b.uploadTimestamp); // sort the files by time uploaded.
+
+    for (const deleteFile of fileVersions.slice(0, -1)) {
+      await b2.deleteFileVersion({
+        fileId: deleteFile.fileId,
+        fileName: deleteFile.fileName,
+      });
+    }
+  }
+  fs.rmSync(tempDir, { recursive: true, force: true });
+};
+
+const getModel = async (portfolioId) => {
+  const downloadUrl = (await b2.authorize()).data.downloadUrl; // authorization last 24 hours!
+  const remoteFilePath = `models/portfolio-${portfolioId}`;
+  const response = await b2.getDownloadAuthorization({
+    bucketId,
+    fileNamePrefix: remoteFilePath,
+    validDurationInSeconds: 3600,
+  });
+  const authorizationToken = response.data.authorizationToken;
+  const url = `${downloadUrl}/file/${process.env.bucket_name}/${remoteFilePath}/model.json?Authorization=${authorizationToken}`;
+  return tf.loadLayersModel(url);
+};
+
+const getCachedIfExists = async (portfolioId) => {
+  try {
+    const model = await getModel(portfolioId);
+    return model;
+  } catch (err) {
+    return null;
+  }
+};
+
 /* create and run model! */
 router.post("/model/:id", async (req, res) => {
   const FUTURE_DAYS = 30; // how many days we predict **these can be turned into params and specified by users later!"
   const WINDOW = 40; // how far in the past we look in total
   const portfolioId = parseInt(req.params.id);
   const currentCost = parseInt(req.body.currentPrice);
+  const isNewModel = JSON.parse(req.body.newModel);
   const portfolio = await prisma.portfolio.findUnique({
     where: {
       id: portfolioId,
@@ -492,44 +562,52 @@ router.post("/model/:id", async (req, res) => {
     historicalData,
     tickerArr
   );
-  // data is now cleaned, so we create vectors for our model\
-  const X = []; // shape is ( #datapoints X WINDOW x NUM_FEATURES) - 80 past datapoints (can add more if needed), we have WINDOW inputs (past cost) and NUM_FEATURES features each (high, volume, open, low, adjclose)
-  const Y = []; // this is size (1 x FUTURE_DAYS)
-  for (let i = 0; i + WINDOW + FUTURE_DAYS <= cleanData.length; i++) {
-    X.push(cleanData.slice(i, i + WINDOW));
-    Y.push(labels.slice(i + WINDOW, i + WINDOW + FUTURE_DAYS));
+  let lastDays = cleanData.slice(-WINDOW);
+  let model = await getCachedIfExists(portfolioId);
+  let isCachedModel = true;
+  if (model == null || isNewModel == true) {
+    isCachedModel = false;
+    // data is now cleaned, so we create vectors for our model\
+    const X = []; // shape is ( #datapoints X WINDOW x NUM_FEATURES) - 80 past datapoints (can add more if needed), we have WINDOW inputs (past cost) and NUM_FEATURES features each (high, volume, open, low, adjclose)
+    const Y = []; // this is size (1 x FUTURE_DAYS)
+    for (let i = 0; i + WINDOW + FUTURE_DAYS <= cleanData.length; i++) {
+      X.push(cleanData.slice(i, i + WINDOW));
+      Y.push(labels.slice(i + WINDOW, i + WINDOW + FUTURE_DAYS));
+    }
+    const X_values = tf.tensor3d(X, [X.length, WINDOW, 4]);
+    const Y_values = tf.tensor2d(Y, [Y.length, FUTURE_DAYS]);
+    // model inspired by https://codelabs.developers.google.com/codelabs/tfjs-training-regression/index.html#8,
+    // but heavily modified with own data and using lstm instead of only dense
+    model = tf.sequential();
+    model.add(
+      tf.layers.lstm({
+        units: 30,
+        inputShape: [WINDOW, NUM_FEATURES],
+        returnSequences: true,
+      })
+    );
+    model.add(
+      tf.layers.lstm({
+        units: 16,
+        returnSequences: false,
+      })
+    );
+    model.add(tf.layers.dense({ units: FUTURE_DAYS, activation: "tanh" }));
+    model.compile({
+      optimizer: tf.train.adam(),
+      loss: tf.losses.meanSquaredError,
+      metrics: ["mse"], // val w mse validation / loss
+    });
+    await model.fit(X_values, Y_values, {
+      epochs: 10,
+      batchSize: 32,
+      validationSplit: 0.2,
+      verbose: 1,
+    });
+    await saveModel(model, portfolioId);
+    tf.dispose([X_values, Y_values]);
   }
-  const X_values = tf.tensor3d(X, [X.length, WINDOW, 4]);
-  const Y_values = tf.tensor2d(Y, [Y.length, FUTURE_DAYS]);
-  // model inspired by https://codelabs.developers.google.com/codelabs/tfjs-training-regression/index.html#8,
-  // but heavily modified with own data and using lstm instead of only dense
-  const model = tf.sequential();
-  model.add(
-    tf.layers.lstm({
-      units: 30,
-      inputShape: [WINDOW, NUM_FEATURES],
-      returnSequences: true,
-    })
-  );
-  model.add(
-    tf.layers.lstm({
-      units: 16,
-      returnSequences: false,
-    })
-  );
-  model.add(tf.layers.dense({ units: FUTURE_DAYS, activation: "tanh" }));
-  model.compile({
-    optimizer: tf.train.adam(),
-    loss: tf.losses.meanSquaredError,
-    metrics: ["mse"], // val w mse validation / loss
-  });
-  await model.fit(X_values, Y_values, {
-    epochs: 10,
-    batchSize: 32,
-    validationSplit: 0.2,
-    verbose: 1,
-  });
-  const lastDays = cleanData.slice(-WINDOW);
+  lastDays = cleanData.slice(-WINDOW);
   const input = tf.tensor3d([lastDays], [1, WINDOW, NUM_FEATURES]);
   const prediction = model.predict(input);
   const predictionArray = (await prediction.array())[0];
@@ -545,7 +623,7 @@ router.post("/model/:id", async (req, res) => {
       price: parseFloat(lastPrice) + offset,
     };
   });
-  tf.dispose([X_values, Y_values, input, prediction]);
+  tf.dispose([input, prediction]);
   const finalValues = await additionalModelFactors(
     tickerArr,
     valuePredict,
