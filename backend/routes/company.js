@@ -6,10 +6,9 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 
 // constants
-const CONST_LOCKEDOUT_TIME = 10;
-const CONST_INDUSTRY_REWARD = 1;
-const CONST_SECTOR_REWARD = 0.5;
-const CONST_LAMBDA = 0.1;
+const INDUSTRY_REWARD = 1;
+const SECTOR_REWARD = 0.5;
+const LAMBDA = 0.1;
 // getting companies by multiple ids
 router.post("/", async (req, res, next) => {
   const possibleIds = req.body.ids;
@@ -27,6 +26,8 @@ router.post("/", async (req, res, next) => {
 });
 
 const LOWER_THAN_CHANGE = 0.05;
+const INIT_IND_REWARD = 0.2;
+const INIT_SECT_REWARD = 0.1;
 
 // user has seen company so we add to search_history. if already in search history,
 // it returns to the beginning of the array. Also updated all weight vectors accordingly
@@ -50,29 +51,35 @@ router.put("/companyhist/:companyId", async (req, res) => {
       },
     },
   });
-  const newIndWeights = user.industryWeights;
-  newIndWeights[company.industryId] =
-    newIndWeights[company.industryId] +
-    Math.pow(CONST_LAMBDA, newIndWeights[company.industryId]) *
-      CONST_INDUSTRY_REWARD;
-  const newSectorWeights = user.sectorWeights;
-  newSectorWeights[company.industry.sector.id] =
-    newSectorWeights[company.industry.sector.id] +
-    Math.pow(CONST_LAMBDA, newIndWeights[company.industry.sector.id]) *
-      CONST_SECTOR_REWARD;
+  let newIndWeights = user.industryWeights;
+  if (newIndWeights[company.industryId] == 0) {
+    newIndWeights[company.industryId] = INIT_IND_REWARD;
+  } else {
+    newIndWeights[company.industryId] =
+      newIndWeights[company.industryId] +
+      Math.pow(LAMBDA, newIndWeights[company.industryId]) * INDUSTRY_REWARD;
+  }
+  let newSectorWeights = user.sectorWeights;
+  if (newIndWeights[company.industry.sector.id] == 0) {
+    newIndWeights[company.industry.sector.id] = INIT_SECT_REWARD;
+  } else {
+    newIndWeights[company.industryId] =
+      newIndWeights[company.industryId] +
+      Math.pow(LAMBDA, newIndWeights[company.industryId]) * INDUSTRY_REWARD;
+  }
   // all other sectors who weren't clicked on get lowered, proportional to how large their weights are (we want larger weights to go down faster! )
-  newIndWeights.map((value, ind) => {
+  newIndWeights = newIndWeights.map((value, ind) => {
     if (ind === company.industryId || value <= LOWER_THAN_CHANGE) {
       return value;
     } else {
-      return value - Math.pow(CONST_LAMBDA, 1.5) * value;
+      return value - Math.pow(LAMBDA, 1.5) * value;
     }
   });
-  newSectorWeights.map((value, ind) => {
+  newSectorWeights = newSectorWeights.map((value, ind) => {
     if (ind === company.industry.sector.id || value <= LOWER_THAN_CHANGE) {
       return value;
     } else {
-      return value - Math.pow(CONST_LAMBDA, 1.5) * value;
+      return value - Math.pow(LAMBDA, 1.5) * value;
     }
   });
   await prisma.user.update({

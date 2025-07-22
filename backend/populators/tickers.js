@@ -6,6 +6,8 @@ const app = express();
 app.use(express.json());
 const router = express.Router({ mergeParams: true });
 const yahooFinance = require("yahoo-finance2").default;
+const { formatDate, getBeforeDate } = require("../lib/utils");
+const { div } = require("@tensorflow/tfjs");
 
 const wait = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms)); // needed to not go over api call limit
@@ -36,7 +38,7 @@ router.get("/tickers", async (req, res) => {
   res.status(200).json({ message: "got all the way here" });
 });
 
-CONST_FORM_TYPE = { tenk: "10-K", eightk: "8-K", tenq: "10-Q" };
+const FORM_TYPE = { tenk: "10-K", eightk: "8-K", tenq: "10-Q" };
 
 router.post("/companyfill", async (req, res) => {
   const companies = await prisma.company.findMany();
@@ -74,9 +76,9 @@ router.post("/companyfill/:cik_number", async (req, res) => {
   const length = data.filings.recent.accessionNumber.length;
   for (let i = 0; i < length; i++) {
     if (
-      filings.form[i] === CONST_FORM_TYPE.tenk ||
-      filings.form[i] === CONST_FORM_TYPE.eightk ||
-      filings.form[i] === CONST_FORM_TYPE.tenq
+      filings.form[i] === FORM_TYPE.tenk ||
+      filings.form[i] === FORM_TYPE.eightk ||
+      filings.form[i] === FORM_TYPE.tenq
     ) {
       const newDocument = await prisma.document.create({
         data: {
@@ -112,9 +114,9 @@ const companyFillHelper = async (cik) => {
   const length = data.filings.recent.accessionNumber.length;
   for (let i = 0; i < length; i++) {
     if (
-      filings.form[i] === CONST_FORM_TYPE.tenk ||
-      filings.form[i] === CONST_FORM_TYPE.eightk ||
-      filings.form[i] === CONST_FORM_TYPE.tenq
+      filings.form[i] === FORM_TYPE.tenk ||
+      filings.form[i] === FORM_TYPE.eightk ||
+      filings.form[i] === FORM_TYPE.tenq
     ) {
       const url = `https://www.sec.gov/Archives/edgar/data/${cik}/${filings.accessionNumber[
         i
@@ -211,19 +213,23 @@ router.post("/industry-sector-desc-fill", async (req, res) => {
 
 // batch calls for companies, used for TC 1:
 
-CONST_BATCH_SIZE = 500;
-CONST_MAX_BETWEEN_TIME = 1000 * 60 * 15;
+const BATCH_SIZE = 100;
+const MAX_BETWEEN_TIME_PRICE = 1000 * 60 * 90; // 1.5 hr update cycle, don't want to get ip banned from yfinance -> no batch call for yfinance js unfortunately
 router.post("/", async (req, res) => {
   await updateAllCompanies();
   res.json({ message: "prices updated" });
 });
 
 const updateAllCompanies = async () => {
-  const mostRecent = await prisma.company.findFirst();
+  const mostRecent = await prisma.company.findFirst({
+    orderBy: {
+      lastUpdate: "desc",
+    },
+  });
   const currentTime = new Date();
   if (
     Math.abs(mostRecent.lastUpdate.getTime() - currentTime.getTime()) <
-    CONST_MAX_BETWEEN_TIME
+    MAX_BETWEEN_TIME_PRICE
   ) {
     return;
   }
@@ -231,7 +237,8 @@ const updateAllCompanies = async () => {
   const onlyTickers = allCompanies.map((value) => value.ticker);
   let currentInd = 0;
   while (true) {
-    batchSplit = onlyTickers.slice(currentInd, currentInd + CONST_BATCH_SIZE);
+    // to prevent yfinance crash
+    batchSplit = onlyTickers.slice(currentInd, currentInd + BATCH_SIZE);
     if (batchSplit.length == 0) {
       break;
     }
@@ -240,18 +247,54 @@ const updateAllCompanies = async () => {
       { modules: ["price"] },
       { validateResult: false }
     );
-    currentInd += CONST_BATCH_SIZE;
-    for (let company of prices) {
-      await prisma.company.update({
-        where: {
-          ticker: company.symbol,
-        },
-        data: {
-          daily_price: company.regularMarketPrice,
-          daily_price_change: company.regularMarketChangePercent,
-          lastUpdate: new Date(),
-        },
-      });
+    const firstDate = formatDate(getBeforeDate(""));
+    const secondDate = formatDate(new Date());
+    const options = {
+      period1: firstDate,
+      period2: secondDate,
+      events: "dividends",
+    };
+    const dividends = [];
+    for (let ticker of batchSplit) {
+      await wait(200);
+      try {
+        const rep = (await yahooFinance.chart(ticker, options)).events
+          .dividends;
+        dividends.push(rep);
+      } catch (err) {
+        dividends.push(null);
+      }
+    }
+    currentInd += BATCH_SIZE;
+    for (let i = 0; i < prices.length; i++) {
+      const company = prices[i];
+      if (dividends[i] == null) {
+        await prisma.company.update({
+          where: {
+            ticker: company.symbol,
+          },
+          data: {
+            daily_price: company.regularMarketPrice,
+            daily_price_change: company.regularMarketChangePercent,
+            lastUpdate: new Date(),
+          },
+        });
+      } else {
+        const dividendsDateList = dividends[i].map((val) => val.date);
+        const dividendsAmountList = dividends[i].map((val) => val.amount);
+        await prisma.company.update({
+          where: {
+            ticker: company.symbol,
+          },
+          data: {
+            daily_price: company.regularMarketPrice,
+            daily_price_change: company.regularMarketChangePercent,
+            lastUpdate: new Date(),
+            dividends: dividendsAmountList,
+            dividendsDates: dividendsDateList,
+          },
+        });
+      }
     }
   }
 };

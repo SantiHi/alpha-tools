@@ -9,10 +9,9 @@ app.use(express.json());
 const router = express.Router({ mergeParams: true });
 const argon2 = require("argon2");
 const rateLimit = require("express-rate-limit");
-
-const CONST_LOCKEDOUT_TIME = 10;
-const CONST_INDUSTRY_LENGTH = 160; // slightly more than # of industries, used to index industry lengths.
-const CONST_SECTOR_LENGTH = 15; // agian longer than # of sectors, used for easy indexing.
+const LOCKEDOUT_TIME = 10;
+const INDUSTRY_LENGTH = 160; // slightly more than # of industries, used to index industry lengths.
+const SECTOR_LENGTH = 15; // agian longer than # of sectors, used for easy indexing.
 
 router.post("/signup", async (req, res) => {
   const { username, password, email, name, interestedIndustries, sectors } =
@@ -47,13 +46,13 @@ router.post("/signup", async (req, res) => {
   }
   const hashedPassword = await argon2.hash(password);
 
-  const industryArray = new Array(CONST_INDUSTRY_LENGTH).fill(0);
+  const industryArray = new Array(INDUSTRY_LENGTH).fill(0);
   for (let industryIndex of interestedIndustries) {
     industryArray[industryIndex] = 1;
   } // use exploration to then modify algorithim. Use user interaction as "labels",
   // so positive indicators mean clicking on correct industries vs incorrect industries, with gD
 
-  const sectorArray = new Array(CONST_SECTOR_LENGTH).fill(0);
+  const sectorArray = new Array(SECTOR_LENGTH).fill(0);
   for (let sectorIndex of sectors) {
     sectorArray[sectorIndex] = 0.5;
   }
@@ -132,10 +131,10 @@ router.post("/change-settings", async (req, res) => {
 // login routes!
 
 const loginLimiter = rateLimit({
-  windowMs: CONST_LOCKEDOUT_TIME * 60 * 1000, // 15 minutes
+  windowMs: LOCKEDOUT_TIME * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to xx login attempts per windowMs
   message: {
-    error: `Too many failed login attempts. Try again in ${CONST_LOCKEDOUT_TIME} minutes`,
+    error: `Too many failed login attempts. Try again in ${LOCKEDOUT_TIME} minutes`,
   },
 });
 

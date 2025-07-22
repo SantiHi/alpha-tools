@@ -13,8 +13,9 @@ const newsApiToken = process.env.news;
 const client = new FinlightApi({ apiKey: newsApiToken });
 const { updateAllCompanies } = require("../populators/tickers");
 
-const CONST_DISCOUNT_FACTOR = 0.85;
-const CONST_NUMBER_RECOMMENDED = 8;
+const DISCOUNT_FACTOR = 0.5;
+const NUMBER_RECOMMENDED = 8;
+const QUERY_AMOUNT = 3;
 
 router.get("/search/:query", async (req, res) => {
   const query = req.params.query;
@@ -30,7 +31,7 @@ router.get("/search/:query", async (req, res) => {
       ],
     },
     orderBy: { id: "asc" },
-    take: 3,
+    take: QUERY_AMOUNT,
   });
   if (searchResults.length < 3) {
     const portfolioResults = await prisma.portfolio.findMany({
@@ -139,24 +140,31 @@ router.get("/curated", async (req, res) => {
   });
 
   const validCompanies = allCompanies.filter(
-    (c) => c.industryId !== null && c.industry !== null
+    (c) => c.industryId !== null && c.industry !== null && c.daily_price > 1 // dont recomend penny stocks...
   );
   const scoresDictionary = {};
   for (let company of validCompanies) {
     let totalCompanyWeight = 0;
     totalCompanyWeight += user.industryWeights[company.industryId];
     totalCompanyWeight += user.sectorWeights[company.industry.sector.id];
-    totalCompanyWeight += CHANGE_WEIGHT * company.daily_price_change;
+    totalCompanyWeight += CHANGE_WEIGHT * (company.daily_price_change * 0.05); // change to percentage
     if (user.search_history.includes(company.id)) {
       const indexOf = user.search_history.indexOf(company.id);
-      totalCompanyWeight += Math.pow(CONST_DISCOUNT_FACTOR, indexOf);
+      totalCompanyWeight += Math.pow(DISCOUNT_FACTOR, indexOf);
+    }
+    /* if check how long the company has returned dividends. Several sources
+    suggest that companies consistently returning dividends are higher preforming / "secure"
+    stocks. 
+    */
+    if (company.dividends) {
+      totalCompanyWeight += Math.pow(1.05, company.dividends.length) * 0.25; // small weightings initially
     }
 
     scoresDictionary[company.id] = totalCompanyWeight;
   }
   const bestCompanies = validCompanies
     .sort((a, b) => scoresDictionary[b.id] - scoresDictionary[a.id])
-    .slice(0, CONST_NUMBER_RECOMMENDED);
+    .slice(0, NUMBER_RECOMMENDED);
   res.json(bestCompanies);
 });
 
@@ -166,7 +174,7 @@ router.get("/explore", async (req, res) => {
       orderBy: {
         created_at: "asc",
       },
-      take: CONST_NUMBER_RECOMMENDED,
+      take: NUMBER_RECOMMENDED,
     })
   );
 });

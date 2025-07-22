@@ -6,6 +6,7 @@ const { all } = require("./auth");
 
 const { BadParams, DoesNotExist } = require("./middleware/CustomErrors");
 const { default: yahooFinance } = require("yahoo-finance2");
+const { formatDate, getBeforeDate } = require("../lib/utils");
 
 const app = express();
 app.use(express.json());
@@ -15,9 +16,6 @@ const finnhub = require("finnhub");
 const finnhubClient = new finnhub.DefaultApi(process.env.finnhubKey);
 const tf = require("@tensorflow/tfjs-node");
 
-const MODE_DAY = "Day";
-const MODE_WEEK = "Week";
-const MODE_MONTH = "Month";
 const THREE_MONTH = "3Months";
 const BAD_PARAMS = "portfolio id is likely incorrect";
 const DOES_NOT_EXIST = "portfolio doesn't exist";
@@ -214,8 +212,8 @@ router.get("/swings/:portfolioId/:timeFrame", async (req, res, next) => {
   res.json(retArray);
 });
 
-/* get all public portfolios, sort by top X_number - get best recommended by preformance 
-your interest, here preformance will be weighted more than before! 
+/* get all public portfolios, sort by top X_number - get best recommended by performance 
+your interest, here performance will be weighted more than before! 
 */
 
 const PREFORMANCE_CONST = 0.6;
@@ -319,8 +317,8 @@ router.get("/permissions/user/:id", async (req, res) => {
   res.json({ owner: false, public: portfolio.isPublic });
 });
 
-/* Technical challenge #2, preformance prediction, using LSTM model and historical data on 
-each stock to train and then predict the preformance each day for each company
+/* Technical challenge #2, performance prediction, using LSTM model and historical data on 
+each stock to train and then predict the performance each day for each company
 
 This endpoint gets ALL earnings calls in the next month, and puts them in the db so that we have 
 quick access for model. 
@@ -403,38 +401,7 @@ router.post("/setNotes/:id", async (req, res, next) => {
   res.json(portfolio.notesDoc);
 });
 
-/* create and run model! */
-router.post("/model/:id", async (req, res) => {
-  const FUTURE_DAYS = 30; // how many days we predict **these can be turned into params and specified by users later!"
-  const WINDOW = 40; // how far in the past we look in total
-  const portfolioId = parseInt(req.params.id);
-  const currentCost = parseInt(req.body.currentPrice);
-  const portfolio = await prisma.portfolio.findUnique({
-    where: {
-      id: portfolioId,
-    },
-  });
-  const companyArrays = await prisma.company.findMany({
-    where: {
-      id: {
-        in: portfolio.companiesIds,
-      },
-    },
-  });
-  const tickerArr = companyArrays.map((val) => val.ticker);
-  const todayString = new Date();
-  const earlierString = getBeforeDate(THREE_MONTH);
-  const historicalData = {};
-  for (let tick of tickerArr) {
-    const prices = await yahooFinance.chart(tick, {
-      period1: formatDate(earlierString),
-      period2: formatDate(todayString),
-      interval: "1h",
-    });
-    historicalData[tick] = prices;
-  }
-  // clean data for model! we will add each of the values together and then get out
-  // we will start by adding together each value and then later normalizing
+const cleanRawData = (historicalData, tickerArr) => {
   let cleanData = []; // earliest dates are earliest in the index!
   let dates = [];
   let labels = [];
@@ -486,9 +453,46 @@ router.post("/model/:id", async (req, res) => {
   let lastPrice = labels[labels.length - 1];
   let minLabel = [Math.min(...labels)];
   normalize(labels, minLabel, maxLabel, false);
+  return { cleanData, labels, lastPrice: lastPrice, minLabel, maxLabel };
+};
 
-  // data is now cleaned, so we create vectors for our model
-
+/* create and run model! */
+router.post("/model/:id", async (req, res) => {
+  const FUTURE_DAYS = 30; // how many days we predict **these can be turned into params and specified by users later!"
+  const WINDOW = 40; // how far in the past we look in total
+  const portfolioId = parseInt(req.params.id);
+  const currentCost = parseInt(req.body.currentPrice);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+  const companyArrays = await prisma.company.findMany({
+    where: {
+      id: {
+        in: portfolio.companiesIds,
+      },
+    },
+  });
+  const tickerArr = companyArrays.map((val) => val.ticker);
+  const todayString = new Date();
+  const earlierString = getBeforeDate(THREE_MONTH);
+  const historicalData = {};
+  for (let tick of tickerArr) {
+    const prices = await yahooFinance.chart(tick, {
+      period1: formatDate(earlierString),
+      period2: formatDate(todayString),
+      interval: "1h",
+    });
+    historicalData[tick] = prices;
+  }
+  // clean data for model! we will add each of the values together and then get out
+  // we will start by adding together each value and then later normalizing
+  let { cleanData, labels, lastPrice, minLabel, maxLabel } = cleanRawData(
+    historicalData,
+    tickerArr
+  );
+  // data is now cleaned, so we create vectors for our model\
   const X = []; // shape is ( #datapoints X WINDOW x NUM_FEATURES) - 80 past datapoints (can add more if needed), we have WINDOW inputs (past cost) and NUM_FEATURES features each (high, volume, open, low, adjclose)
   const Y = []; // this is size (1 x FUTURE_DAYS)
   for (let i = 0; i + WINDOW + FUTURE_DAYS <= cleanData.length; i++) {
@@ -525,7 +529,6 @@ router.post("/model/:id", async (req, res) => {
     validationSplit: 0.2,
     verbose: 1,
   });
-
   const lastDays = cleanData.slice(-WINDOW);
   const input = tf.tensor3d([lastDays], [1, WINDOW, NUM_FEATURES]);
   const prediction = model.predict(input);
@@ -543,7 +546,7 @@ router.post("/model/:id", async (req, res) => {
     };
   });
   tf.dispose([X_values, Y_values, input, prediction]);
-  finalValues = await additionalModelFactors(
+  const finalValues = await additionalModelFactors(
     tickerArr,
     valuePredict,
     companyArrays
@@ -558,12 +561,7 @@ router.post("/model/:id", async (req, res) => {
 const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
   const data = await yahooFinance.quote(tickers, { validateResult: false });
   let getEarnings = companyArrays.map((value) => value.UpcomingEarnings); // when are the next earnings calls?
-  getEarnings = getEarnings.filter((value) => {
-    if (value.length == 0) {
-      return false;
-    }
-    return true;
-  });
+  getEarnings = getEarnings.filter((value) => value.length != 0);
   let analystsum = 0;
   for (let companydata of data) {
     if (companydata.averageAnalystRating == null) {
@@ -583,7 +581,7 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
   const dateNow = formatDate(new Date());
   let prevDate = new Date(dateNow);
   prevDate.setFullYear(prevDate.getFullYear() - 1);
-  const factorChange = determineFactor(averageAnalystRating);
+  let factorChange = determineFactor(averageAnalystRating);
   let sentimentCost = 0;
   for (let tick of tickers) {
     finnhubClient.insiderSentiment(
@@ -601,12 +599,7 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
       }
     );
   }
-  if (sentimentCost < 0) {
-    factorChange = factorChange - 0.001;
-  }
-  if (sentimentCost > 0) {
-    factorChange = factorChange + 0.001;
-  }
+  factorChange += Math.sign(sentimentCost) * 0.001;
   const newPredict = valuePredict.map((value, ind) => {
     const factor = Math.pow(factorChange, ind);
     return { date: value.date, price: value.price * factor };
@@ -618,8 +611,7 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
 const determineFactor = (averageAnalystRating) => {
   const factorRange = 0.008;
   const dilution = (3 - averageAnalystRating) / 4;
-  const factor = 1 + factorRange * dilution;
-  return factor;
+  return 1 + factorRange * dilution;
 };
 
 // normalize data using xi - min(x) / (max(x) - min(x)) to get data with mean=0 and std 1,
@@ -644,32 +636,6 @@ const normalize = (arrToNormalize, minvalues, maxvalues, double) => {
 const unNormalize = (value, min, max) => {
   return value * (max - min) + min;
 };
-
-const formatDate = (dateObj) => {
-  const formattedDate = `${dateObj.getFullYear()}-${String(
-    dateObj.getMonth() + 1
-  ).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
-  return formattedDate;
-};
-//helper functions below
-
-const getBeforeDate = (timeFrame) => {
-  const today = new Date();
-  let prevDate = new Date(today);
-  if (timeFrame === MODE_DAY) {
-    prevDate.setDate(prevDate.getDate() - 2);
-  } else if (timeFrame === MODE_WEEK) {
-    dateNow;
-  } else if (timeFrame === MODE_MONTH) {
-    prevDate.setMonth(prevDate.getMonth() - 1);
-  } else if (timeFrame === THREE_MONTH) {
-    prevDate.setMonth(prevDate.getMonth() - 3);
-  } else {
-    prevDate.setFullYear(prevDate.getFullYear() - 1);
-  }
-  return prevDate;
-};
-
 const compareByPercentChange = (a, b) => {
   if (Math.abs(a.percentChange) > Math.abs(b.percentChange)) {
     return -1;

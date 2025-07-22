@@ -35,6 +35,8 @@ model Company {
   industryId          Int?
   description         String  @default("")
   lastUpdate          DateTime    @default(now())
+  dividends           Float[]        @default([])
+  dividendsDates      Int[]   @default([])
   UpcomingEarnings    String[]    @default([])
 }
 
