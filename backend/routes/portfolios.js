@@ -581,7 +581,7 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
   const dateNow = formatDate(new Date());
   let prevDate = new Date(dateNow);
   prevDate.setFullYear(prevDate.getFullYear() - 1);
-  const factorChange = determineFactor(averageAnalystRating);
+  let factorChange = determineFactor(averageAnalystRating);
   let sentimentCost = 0;
   for (let tick of tickers) {
     finnhubClient.insiderSentiment(
