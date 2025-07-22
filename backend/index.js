@@ -8,10 +8,6 @@ const express = require("express");
 const PORT = process.env.PORT || 3000;
 require("dotenv").config();
 const ORIGIN = process.env.origin;
-const multer = require("multer");
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
 const isProd = process.env.NODE_ENV === "production";
 
 const cors = require("cors");
@@ -26,7 +22,7 @@ if (isProd) {
 const session = require("express-session");
 app.use(
   cors({
-    origin: ORIGIN,
+    origin: [ORIGIN, process.env.devorigin],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
