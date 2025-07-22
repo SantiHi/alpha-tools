@@ -21,7 +21,8 @@ const TextEditor = () => {
   };
   const { id } = useParams();
   const [value, setValue] = useState("");
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const getCurrentDoc = async () => {
@@ -42,10 +43,10 @@ const TextEditor = () => {
     setValue(editor.getHTML());
   };
 
-  const SaveChanges = async () => {
-    setIsSaved(true);
+  const saveChanges = async () => {
+    setIsSaving(true);
     const sendToDatabase = { html: value };
-    await fetch(`${BASE_URL}/portfolios/setNotes/${id}`, {
+    const response = await fetch(`${BASE_URL}/portfolios/setNotes/${id}`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -53,6 +54,10 @@ const TextEditor = () => {
       },
       body: JSON.stringify(sendToDatabase),
     });
+    if (response.ok) {
+      setIsSaved(true);
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -67,14 +72,19 @@ const TextEditor = () => {
             modules={modules}
             className="h-full w-full"
           />
-          <button
-            className="absolute right-2 top-2 z-10 bg-blue-500 h-8 flex items-center justify-center hover:brightness-80 hover:scale-115"
-            onClick={SaveChanges}
-          >
-            Save
-          </button>
+          {!isSaved && (
+            <button
+              className="absolute right-2 top-2 z-10 bg-blue-500 h-8 flex items-center justify-center hover:brightness-80 hover:scale-115"
+              onClick={saveChanges}
+            >
+              Save
+            </button>
+          )}
           {isSaved && (
-            <CheckLine className="absolute right-3 top-2 z-10  h-8 flex items-center justify-center hover:brightness-80 hover:scale-115 mr-20" />
+            <CheckLine className="absolute right-3 top-2 z-10  h-8 flex items-center justify-center hover:brightness-80 hover:scale-115 " />
+          )}
+          {isSaving && (
+            <div className="absolute right-20 top-0 z-10 rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-blue-200 animate-spin"></div>
           )}
         </div>
       </div>

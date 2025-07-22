@@ -11,7 +11,7 @@ const PredictionTools = ({
   const [realData, setRealData] = useState(null);
   const [predictionsClicked, setPredictionsClicked] = useState(false);
   const [sum, setSum] = useState(0);
-  async function getMode() {
+  async function getModel() {
     setPredictionsClicked(true);
     const response = await fetch(
       `${BASE_URL}/portfolios/model/${portfolioData.id}`,
@@ -56,7 +56,7 @@ const PredictionTools = ({
           {predictionsClicked == false && (
             <button
               className=" bg-green-700 text-white hover:brightness-80 mx-5 m-2"
-              onClick={getMode}
+              onClick={getModel}
             >
               Get Future Predictions
             </button>
@@ -65,8 +65,7 @@ const PredictionTools = ({
             <>
               <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-green-200 animate-spin"></div>
               <h2 className="w-50 mr-auto ml-auto pl-3 pr-2">
-                Predictions take time, and are computationally demanding. We'll
-                message you when they're done!
+                Predictions take time, and are computationally demanding...
               </h2>
             </>
           )}
@@ -85,11 +84,7 @@ const PredictionTools = ({
           )}
         </div>
         <div className="bg-gray-300 w-225 h-4/5 rounded-lg">
-          <LineChart
-            portfolioData={portfolioData}
-            companiesData={companiesData}
-            realData={realData}
-          />
+          <LineChart portfolioData={portfolioData} realData={realData} />
         </div>
       </div>
     </div>
