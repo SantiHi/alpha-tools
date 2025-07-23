@@ -12,7 +12,6 @@ const PortfolioCompanies = ({
   permission,
 }) => {
   const navigate = useNavigate();
-
   const handleClick = (id) => {
     navigate(`/CompanyInfo/${id}`);
   };
@@ -22,14 +21,16 @@ const PortfolioCompanies = ({
         <h3 className="font-bold text-2xl text-center mt-3">
           Portfolio Companies
         </h3>
-        {permission === EDITOR_PERMS && (
-          <Pencil
-            className="mt-5 ml-4 border-2 h-5 w-5 rounded-sm hover:scale-110 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90"
-            onClick={() => {
-              setIsEditingMode((prev) => !prev);
-            }}
-          />
-        )}
+        {permission === EDITOR_PERMS &&
+          companiesData != null &&
+          companiesData.length != 0 && (
+            <Pencil
+              className="mt-5 ml-4 border-2 h-5 w-5 rounded-sm hover:scale-110 transition-transform duration-300 ease-in-out hover:cursor-pointer hover:brightness-90"
+              onClick={() => {
+                setIsEditingMode((prev) => !prev);
+              }}
+            />
+          )}
       </div>
       <div className="flex flex-col h-full items-center">
         {companiesStockData == null && (
@@ -40,6 +41,7 @@ const PortfolioCompanies = ({
         )}
         {companiesStockData != null &&
           companiesStockData.length !== 0 &&
+          companiesData != null &&
           companiesData.map((value, ind) => {
             if (value == null || companiesStockData[ind] == null) {
               return;

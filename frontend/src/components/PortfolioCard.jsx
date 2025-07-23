@@ -5,16 +5,33 @@ import {
   PopoverClose,
 } from "./ui/popover"; // popovers from shadcn,
 
+import cn from "classnames";
+
 import { useNavigate } from "react-router-dom";
-
 import { BASE_URL } from "../lib/utils";
+import { useParams } from "react-router-dom";
 
-const DeleteButton = ({ deleteCard }) => {
+export const DeleteButton = ({ deleteCard, isCard }) => {
+  const { id } = useParams();
+
+  const deletePortfolio = async () => {
+    await fetch(`${BASE_URL}/portfolios/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+  };
+
+  const navigate = useNavigate();
+  const className = cn("border-2 bg-red-400 pt-5 hover:brightness-75 m-10", {
+    "ml-auto": isCard === true,
+    "ml-auto mr-auto": isCard === false,
+  });
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="self-end border-black border-2 bg-red-400 ml-auto mr-5 pt-5 hover:brightness-75"
+          className={className}
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -22,7 +39,7 @@ const DeleteButton = ({ deleteCard }) => {
           Delete
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-60 bg-red-200 ml-10" side="right">
+      <PopoverContent className="w-60 bg-red-200 m-5" side="top">
         <div className="grid gap-4">
           <div className="grid gap-2">
             <h2 className="font-medium text-center mb-0 p-0">
@@ -35,9 +52,14 @@ const DeleteButton = ({ deleteCard }) => {
               <button
                 variant="outline"
                 className="bg-red-700 hover:scale-115 hover:brightness-120  text-white"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  deleteCard(e);
+                  if (isCard) {
+                    deleteCard(e);
+                  } else {
+                    await deletePortfolio();
+                    navigate("/portfolios");
+                  }
                 }}
               >
                 Delete All Data
@@ -83,7 +105,7 @@ const PortfolioCard = ({
           <p className="ml-5">{description}</p>
         </div>
         {canDelete === true && (
-          <DeleteButton deleteCard={deleteCard}></DeleteButton>
+          <DeleteButton deleteCard={deleteCard} isCard={true}></DeleteButton>
         )}
         {creator != null && (
           <p className="self-baseline-last ml-auto mr-5">
@@ -95,5 +117,4 @@ const PortfolioCard = ({
     </div>
   );
 };
-
 export default PortfolioCard;

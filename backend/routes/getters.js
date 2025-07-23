@@ -13,9 +13,8 @@ const newsApiToken = process.env.news;
 const client = new FinlightApi({ apiKey: newsApiToken });
 const { updateAllCompanies } = require("../populators/tickers");
 
-const DISCOUNT_FACTOR = 0.5;
-const NUMBER_RECOMMENDED = 8;
-const QUERY_AMOUNT = 3;
+//constants
+const QUERY_AMOUNT = 3; // number of companies to show in search results
 
 router.get("/search/:query", async (req, res) => {
   const query = req.params.query;
@@ -61,7 +60,6 @@ router.get("/checker/:companyTick", async (req, res) => {
 });
 
 // get many companies info!
-
 router.post("/manycompanies", async (req, res) => {
   const tickers = req.body;
   const prices = await yahooFinance.quote(
@@ -80,103 +78,6 @@ router.get("/stats/:companyTick", async (req, res) => {
     res.status(404).json({ message: "ticker does not exist" });
   }
   res.status(200).json(result);
-});
-
-const CHANGE_WEIGHT = 0.25; // how much weight is given to well preforming stocks?
-
-/* 
-Algorithim as Stand, very similar for portfolio with *slight* differences:
-  New User:
-      - User Inputs Interest, Weight array initialized for both Sectors and Industries. 
- 
-  Iteration:
-
-    User Interaction: - code located at /companyhist/:companyId endpoint in company.js 
-
-      -  On user interaction with app, each time user clicks on a profile, 
-      that companies' sector / industry have weight's increased slightly. This increase 
-      slows down depending on how much the user has clicked on the profile, so can be 
-      thought of as logorithmic growth. 
-      - at the same, industries / sectors that are not clicked have their weights reduced, 
-      to allow for changing preferences!. 
-      - The user also has that company brought to the front of their search history, increasing 
-      it's likelyhood of being recommended
-      -  *note*, company search history matters less as time goes on. the most recent company gets 
-      .85 "points" to its score, next .85^2, next .85^3, etc. 
-
-  Other Factors: 
-
-      - Stocks preforming better (based on percentage) are also given additional score depending on 
-      how well they are preforming. However, it is costly to get realtime data each time the explore 
-      page is queried, so instead this percentage is only updated every 20 minutes. -- see post populators/ for details. 
-      - this matters more for portfolios than for companies, and is factored more into that particular version. 
-
-  Score Detail: 
-    - Companies are each given a utility score based on the above criteria and top eight per user are recommended. 
-
-  TODO in later iterations: 
-  - give additional attention to companies with high page interaction "clicks" of the entire userbase 
-*/
-
-// specific algorithim for company recommendations list. the portfolio algorithim is in the portfolios file.
-
-router.get("/curated", async (req, res) => {
-  updateAllCompanies();
-  const userId = req.session.userId;
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
-  const allCompanies = await prisma.company.findMany({
-    include: {
-      industry: {
-        select: {
-          id: true,
-          sector: { select: { id: true } },
-        },
-      },
-    },
-  });
-
-  const validCompanies = allCompanies.filter(
-    (c) => c.industryId !== null && c.industry !== null && c.daily_price > 1 // dont recomend penny stocks...
-  );
-  const scoresDictionary = {};
-  for (let company of validCompanies) {
-    let totalCompanyWeight = 0;
-    totalCompanyWeight += user.industryWeights[company.industryId];
-    totalCompanyWeight += user.sectorWeights[company.industry.sector.id];
-    totalCompanyWeight += CHANGE_WEIGHT * (company.daily_price_change * 0.05); // change to percentage
-    if (user.search_history.includes(company.id)) {
-      const indexOf = user.search_history.indexOf(company.id);
-      totalCompanyWeight += Math.pow(DISCOUNT_FACTOR, indexOf);
-    }
-    /* if check how long the company has returned dividends. Several sources
-    suggest that companies consistently returning dividends are higher preforming / "secure"
-    stocks. 
-    */
-    if (company.dividends) {
-      totalCompanyWeight += Math.pow(1.05, company.dividends.length) * 0.25; // small weightings initially
-    }
-
-    scoresDictionary[company.id] = totalCompanyWeight;
-  }
-  const bestCompanies = validCompanies
-    .sort((a, b) => scoresDictionary[b.id] - scoresDictionary[a.id])
-    .slice(0, NUMBER_RECOMMENDED);
-  res.json(bestCompanies);
-});
-
-router.get("/explore", async (req, res) => {
-  res.json(
-    await prisma.company.findMany({
-      orderBy: {
-        created_at: "asc",
-      },
-      take: NUMBER_RECOMMENDED,
-    })
-  );
 });
 
 // getting companies by ID!

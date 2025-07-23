@@ -2,6 +2,7 @@ import LineChart from "./predictiontools/LineChart";
 import { useState } from "react";
 import { BASE_URL } from "../lib/utils";
 import { useEffect } from "react";
+import WeightingTab from "./WeightingTab";
 
 import {
   Popover,
@@ -16,7 +17,7 @@ const NewModelButton = ({ getModel }) => {
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="bg-orange-400 hover:brightness-75 text-white px-10 ml-auto mr-auto m-2"
+          className="bg-orange-400 hover:brightness-75 text-white px-10 ml-auto mr-auto m-2 hover:scale-105"
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -61,20 +62,17 @@ const PredictionTools = ({
   const [sum, setSum] = useState(0);
   async function getModel(isNewModel) {
     setPredictionsClicked(true);
-    const response = await fetch(
-      `${BASE_URL}/portfolios/model/${portfolioData.id}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentPrice: sum,
-          newModel: isNewModel,
-        }),
-      }
-    );
+    const response = await fetch(`${BASE_URL}/models/${portfolioData.id}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        currentPrice: sum,
+        newModel: isNewModel,
+      }),
+    });
     const data = await response.json();
     setRealData(data);
     setPredictionsClicked(false);
@@ -100,12 +98,12 @@ const PredictionTools = ({
       <div className="flex flex-row w-full h-full items-center -mt-12">
         <div className="flex flex-col justify-center">
           <button
-            className=" bg-green-700 text-white hover:brightness-80 mx-5 m-2"
+            className=" bg-green-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105"
             onClick={() => getModel(false)}
           >
             Get Future Predictions
           </button>
-          <button className=" bg-red-700 text-white hover:brightness-80 mx-5 m-2">
+          <button className=" bg-red-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105">
             Risk Analysis
           </button>
           {predictionsClicked == false && (
@@ -132,6 +130,7 @@ const PredictionTools = ({
               loading...
             </h2>
           )}
+          <WeightingTab />
         </div>
         <div className="bg-gray-300 w-225 h-4/5 rounded-lg">
           <LineChart portfolioData={portfolioData} realData={realData} />

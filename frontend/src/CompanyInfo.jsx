@@ -40,6 +40,7 @@ const AddToPortfolio = ({ companyId }) => {
       if (response.ok) {
         const data = await response.json();
         setPortfolios(data);
+        setPortfoliosToAddToo([]);
       }
     } catch {
       return;
@@ -133,7 +134,7 @@ const CompanyInfo = () => {
   const [isDetailRevealed, setIsDetailRevealed] = useState(null);
 
   const addToHistory = async () => {
-    await fetch(`${BASE_URL}/company/companyhist/${selectedId}`, {
+    await fetch(`${BASE_URL}/recommendations/companyhist/${selectedId}`, {
       method: "PUT",
       credentials: "include",
     });

@@ -6,10 +6,13 @@ const PublicPortfolios = () => {
   const [PublicPortfolios, setPublicPortfolios] = useState(null);
 
   const getPublicPortfolios = async () => {
-    const response = await fetch(`${BASE_URL}/portfolios/curated/public`, {
-      method: "GET",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${BASE_URL}/recommendations/curated-portfolios/public`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
     if (response.ok) {
       const data = await response.json();
       setPublicPortfolios(data);
