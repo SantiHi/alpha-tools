@@ -8,6 +8,7 @@ import cn from "classnames";
 import { EDITOR_PERMS } from "./lib/constants";
 import PredictionTools from "./components/PredictionTools";
 import TextEditor from "./components/TextEditor";
+import { DeleteButton } from "./components/PortfolioCard";
 
 const MODE_DAY = "Day";
 const VIEWER_PERMS = "viewer";
@@ -19,7 +20,7 @@ const PortfolioInfo = () => {
   const [companiesStockData, setCompaniesStockData] = useState(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [historicalMode, setHistoricalMode] = useState(MODE_DAY);
-  const [sortedSwings, setSortedSwings] = useState([]);
+  const [sortedSwings, setSortedSwings] = useState(null);
   const { id } = useParams();
   const [isPublic, setPublicButton] = useState(null);
   const [viewerPermissions, setViewerPermissions] = useState(null);
@@ -85,13 +86,20 @@ const PortfolioInfo = () => {
     const data = await response.json();
     setPortfolioData(data);
     setPublicButton(data.isPublic);
-    if (companyIds.length == 0 || !sameValues(data.companiesIds, companyIds))
+    if (companyIds.length == 0 || !sameValues(data.companiesIds, companyIds)) {
       setCompanyIds(data.companiesIds);
+      await getCompaniesData(data.companiesIds);
+    }
   };
 
   const sameValues = (arr1, arr2) => {
     for (let val of arr1) {
       if (!arr2.includes(val)) {
+        return false;
+      }
+    }
+    for (let val of arr2) {
+      if (!arr1.includes(val)) {
         return false;
       }
     }
@@ -107,16 +115,16 @@ const PortfolioInfo = () => {
     setCompanyIds((self) => self.filter((cid) => cid !== companyId));
   };
 
-  const getCompaniesData = async () => {
+  const getCompaniesData = async (companiesIds) => {
     const newArray = [];
-    if (companyIds) {
+    if (companiesIds) {
       const response = await fetch(`${BASE_URL}/company`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ids: companyIds }),
+        body: JSON.stringify({ ids: companiesIds }),
       });
       if (response.ok) {
         const data = await response.json();
@@ -147,12 +155,12 @@ const PortfolioInfo = () => {
   // TODO: Refactor to fix extraneous calls! next PR this will be addressed.
   useEffect(() => {
     const getAllInfo = async () => {
-      getUserPermissions();
-      getPortfolioData();
-      getCompaniesData();
+      setCompaniesData(null);
+      await getUserPermissions();
+      await getPortfolioData();
     };
     getAllInfo();
-  }, [companyIds, id]);
+  }, [id]);
 
   if (portfolioData == null) {
     return (
@@ -210,6 +218,7 @@ const PortfolioInfo = () => {
             companiesStockData={companiesStockData}
           />
           <TextEditor id={id} />
+          <DeleteButton className="justify-center" isCard={false} />
         </div>
       </main>
     </>

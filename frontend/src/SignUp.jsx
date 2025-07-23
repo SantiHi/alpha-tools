@@ -17,7 +17,6 @@ const SignUp = () => {
   });
   const { sectorsSelected, industriesSelected } = SignUpInfoContext();
   const [signUpPressed, setSignUpPressed] = useState(false);
-
   const [submitResult, setSubmitResult] = useState(null);
 
   const handleFormChange = (event) => {
@@ -25,7 +24,7 @@ const SignUp = () => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (
       formData.name == "" ||
       formData.password == "" ||
@@ -36,11 +35,29 @@ const SignUp = () => {
       return;
     }
 
+    const response = await fetch(`${BASE_URL}/auth/check-signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        password: formData.password,
+        username: formData.username,
+        email: formData.email,
+      }),
+    });
+    const { isUserExisting } = await response.json();
+    if (isUserExisting) {
+      setSubmitResult("username or email already in use");
+      return;
+    } else {
+      setSignUpPressed(true);
+    }
     if (formData.password.length < MIN_PASSWORD_LENGTH) {
       alert("Please make sure passwords are longer than 8 characters");
       return;
     }
-    setSignUpPressed(true);
   };
 
   const createUser = async (event) => {
@@ -96,7 +113,7 @@ const SignUp = () => {
         </div>
       </header>
       {!signUpPressed && (
-        <form className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 w-150 m-auto">
+        <div className="flex flex-col bg-indigo-50 p-8 rounded-md shadow-xl/40 w-150 m-auto">
           <h3 className="font-bold text-3xl p-1 text-center">Sign Up</h3>
           <p className="font-bold text-sm p-0 text-center">
             Please sign up to continue{" "}
@@ -122,6 +139,7 @@ const SignUp = () => {
             name="password"
             value={formData.password}
             handleFormChange={handleFormChange}
+            isPassword={true}
           />
           <InputBox
             placeholder="Username"
@@ -139,7 +157,7 @@ const SignUp = () => {
             Next
           </button>
           {submitResult != null && (
-            <p className="text-center font-bold ">{submitResult}</p>
+            <p className="text-center font-bold text-red-600">{submitResult}</p>
           )}
 
           <button
@@ -151,7 +169,7 @@ const SignUp = () => {
           >
             Back to login
           </button>
-        </form>
+        </div>
       )}
       {signUpPressed && (
         <SignUpPreferences createUser={createUser} changeMode={false} />

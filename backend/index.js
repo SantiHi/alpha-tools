@@ -55,7 +55,8 @@ app.use((req, res, next) => {
     path.includes("/signup") ||
     path.includes("/auth/me") ||
     path.includes("/sectors") ||
-    path.includes("/industries")
+    path.includes("/industries") ||
+    path.includes("/check-signup")
   ) {
     next();
     return;
@@ -71,11 +72,15 @@ const getterRoutes = require("./routes/getters");
 const { router } = require("./populators/tickers");
 const portfolioRoutes = require("./routes/portfolios");
 const companyRoutes = require("./routes/company");
+const modelRoutes = require("./routes/model");
+const recommendationRoutes = require("./routes/recommendations");
+app.use("/models", modelRoutes);
 app.use("/getters", getterRoutes);
 app.use("/auth", authRoutes);
 app.use("/populators", router);
 app.use("/portfolios", portfolioRoutes);
 app.use("/company", companyRoutes);
+app.use("/recommendations", recommendationRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

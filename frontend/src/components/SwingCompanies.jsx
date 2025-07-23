@@ -56,6 +56,13 @@ const SwingCompanies = ({
           </Box>
         </ThemeProvider>
       </div>
+      {sortedSwings == null ||
+        (companiesStockData == null && (
+          <img
+            className="h-20 w-20 ml-auto mr-auto mt-10"
+            src="https://i.gifer.com/ZKZg.gif"
+          />
+        ))}
       <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-100 overflow-auto w-8/10">
         {sortedSwings &&
           companiesStockData != null &&

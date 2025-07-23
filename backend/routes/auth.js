@@ -9,9 +9,31 @@ app.use(express.json());
 const router = express.Router({ mergeParams: true });
 const argon2 = require("argon2");
 const rateLimit = require("express-rate-limit");
-const LOCKEDOUT_TIME = 10;
+const LOCKED_OUT_MINUTES = 10; // how long a user is locked out of their account for too many wrong passwords
 const INDUSTRY_LENGTH = 160; // slightly more than # of industries, used to index industry lengths.
 const SECTOR_LENGTH = 15; // agian longer than # of sectors, used for easy indexing.
+
+router.post("/check-signup", async (req, res) => {
+  const { username, password, email, name } = req.body;
+
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        {
+          username,
+        },
+        {
+          email,
+        },
+      ],
+    },
+  });
+  if (existingUser != null) {
+    res.json({ isUserExisting: true });
+    return;
+  }
+  res.json({ isUserExisting: false });
+});
 
 router.post("/signup", async (req, res) => {
   const { username, password, email, name, interestedIndustries, sectors } =
@@ -131,7 +153,7 @@ router.post("/change-settings", async (req, res) => {
 // login routes!
 
 const loginLimiter = rateLimit({
-  windowMs: LOCKEDOUT_TIME * 60 * 1000, // 15 minutes
+  windowMs: LOCKED_OUT_MINUTES * 60 * 1000, //  LOCKED_OUT_MINUTES minutes
   max: 100, // Limit each IP to xx login attempts per windowMs
   message: {
     error: `Too many failed login attempts. Try again in ${LOCKEDOUT_TIME} minutes`,
