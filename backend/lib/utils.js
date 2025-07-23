@@ -8,6 +8,10 @@ const MODE_WEEK = "Week";
 const MODE_MONTH = "Month";
 const THREE_MONTH = "3Months";
 
+const wait = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 const formatDate = (dateObj) => {
   const formattedDate = `${dateObj.getFullYear()}-${String(
     dateObj.getMonth() + 1
