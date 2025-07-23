@@ -156,7 +156,7 @@ const loginLimiter = rateLimit({
   windowMs: LOCKED_OUT_MINUTES * 60 * 1000, //  LOCKED_OUT_MINUTES minutes
   max: 100, // Limit each IP to xx login attempts per windowMs
   message: {
-    error: `Too many failed login attempts. Try again in ${LOCKEDOUT_TIME} minutes`,
+    error: `Too many failed login attempts. Try again in ${LOCKED_OUT_MINUTES} minutes`,
   },
 });
 

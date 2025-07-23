@@ -2,6 +2,10 @@ const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
 const { default: yahooFinance } = require("yahoo-finance2");
 
+const wait = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 // constants for getBefore Date
 const MODE_DAY = "Day";
 const MODE_WEEK = "Week";
