@@ -42,7 +42,7 @@ AlphaEdge aims to simplify the process of portfolio management and financial mod
 
   Original Complex Visual Styling: [link](https://www.loom.com/share/b7ab1745d88d457d885f406db3b9ac4c). [Code Link](https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project/blob/main/frontend/src/index.css)
   
-  Cursor Interaction: [video link](https://www.loom.com/share/55e9c67ab85349a3a10978280b4f251a)
+  Cursor Interaction: [video link](https://www.loom.com/share/55e9c67ab85349a3a10978280b4f251a) [example 1](https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project/blob/main/frontend/src/components/PortfolioCard.jsx), [example 2](https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project/blob/main/frontend/src/components/Company.jsx)
     - 
 ## 🛠️ Getting Started (if you would like a local run) 
 
