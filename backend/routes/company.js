@@ -5,10 +5,6 @@ const { BadParams } = require("./middleware/CustomErrors");
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 
-// constants
-const INDUSTRY_REWARD = 1;
-const LAMBDA = 0.1;
-
 // getting companies by multiple ids
 router.post("/", async (req, res, next) => {
   const possibleIds = req.body.ids;
@@ -20,6 +16,14 @@ router.post("/", async (req, res, next) => {
     await prisma.company.findMany({
       where: {
         id: { in: ids },
+      },
+      include: {
+        industry: {
+          select: {
+            name: true,
+            sector: { select: { name: true } },
+          },
+        },
       },
     })
   );

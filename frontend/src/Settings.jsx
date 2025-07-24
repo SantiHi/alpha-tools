@@ -22,7 +22,7 @@ const Settings = () => {
     <main className="w-full">
       <div className="flex flex-col items-center">
         <Searchbar />
-        <h3 className="self-center text-center text-6xl mt-30 mb-10 text-indigo-50 font-semibold  z-10">
+        <h3 className="self-center text-center text-6xl mt-30 mb-10 text-indigo-50 font-semibold -z-10">
           Settings
         </h3>
         <button

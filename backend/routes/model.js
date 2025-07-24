@@ -271,7 +271,7 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
   }
   const averageAnalystRating = analystsum / parseFloat(data.length); // analyst rating goes from 1-5. Add to predictions based on this!, up to 10% swing at the end.
   // we choose 1.003 as constant for 1.0 as a 10% (30 day timeframe) total increase for having a perfect analyst rating, or a rating of 1 (ie -- 1.003^30 = 1.09 )
-  // likewise we choose 0.996 as a constant for 5.0, for a total 10% DECREASE (30 day timeframe )for having a horrible analyst rating of 5. Everything else is evenly between!
+  // likewise we choose 0.997 as a constant for 5.0, for a total 10% DECREASE (30 day timeframe )for having a horrible analyst rating of 5. Everything else is evenly between!
 
   // get insider trading transactions as well!
   const dateNow = formatDate(new Date());
@@ -295,7 +295,8 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
       }
     );
   }
-  factorChange += Math.sign(sentimentCost) * 0.001;
+  factorChange += Math.sign(sentimentCost) * 0.0005;
+  console.log(factorChange);
   const newPredict = valuePredict.map((value, ind) => {
     const factor = Math.pow(factorChange, ind);
     return { date: value.date, price: value.price * factor };
@@ -306,7 +307,7 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
 
 const determineFactor = (averageAnalystRating) => {
   const factorRange = 0.008;
-  const dilution = (3 - averageAnalystRating) / 4;
+  const dilution = (3 - (averageAnalystRating + 0.5)) / 4; // subtracting .5 factor as the analyst ratings are always skewed towards buy.
   return 1 + factorRange * dilution;
 };
 

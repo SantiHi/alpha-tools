@@ -66,6 +66,7 @@ const SwingCompanies = ({
       <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-100 overflow-auto w-8/10">
         {sortedSwings &&
           companiesStockData != null &&
+          companiesData != null &&
           companiesStockData.length !== 0 &&
           sortedSwings.map((value) => {
             const ind = companyIds.indexOf(parseInt(value.id));

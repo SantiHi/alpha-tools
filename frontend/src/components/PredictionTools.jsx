@@ -1,9 +1,6 @@
 import LineChart from "./predictiontools/LineChart";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BASE_URL } from "../lib/utils";
-import { useEffect } from "react";
-import WeightingTab from "./WeightingTab";
-
 import {
   Popover,
   PopoverContent,
@@ -52,14 +49,10 @@ const NewModelButton = ({ getModel }) => {
   );
 };
 
-const PredictionTools = ({
-  portfolioData,
-  companiesData,
-  companiesStockData,
-}) => {
-  const [realData, setRealData] = useState(null);
+const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
+  const [predictionData, setPredictionData] = useState(null);
   const [predictionsClicked, setPredictionsClicked] = useState(false);
-  const [sum, setSum] = useState(0);
+  const [predictedBalance, setPredictedBalance] = useState(null);
   async function getModel(isNewModel) {
     setPredictionsClicked(true);
     const response = await fetch(`${BASE_URL}/models/${portfolioData.id}`, {
@@ -69,31 +62,23 @@ const PredictionTools = ({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        currentPrice: sum,
+        currentPrice: portfolioValue,
         newModel: isNewModel,
       }),
     });
     const data = await response.json();
-    setRealData(data);
+    setPredictionData(data);
+    setPredictedBalance(data[data.length - 1].price.toFixed(2));
     setPredictionsClicked(false);
   }
-  const sumValues = () => {
-    if (companiesStockData == null) {
-      return;
-    }
-    let sum = 0;
-    for (let val of companiesStockData) {
-      sum += val.price;
-    }
-    setSum(sum);
-  };
 
   useEffect(() => {
-    sumValues();
-  }, [companiesStockData]);
+    setPredictionData(null);
+    setPredictedBalance(null);
+  }, [portfolioValue]);
 
   return (
-    <div className="bg-white h-150 w-300 mt-20 rounded-xl">
+    <div className="bg-white h-150 mt-20 rounded-xl ml-30">
       <h2 className="text-3xl p-3 text-center w-full">Analysis Tool</h2>
       <div className="flex flex-row w-full h-full items-center -mt-12">
         <div className="flex flex-col justify-center">
@@ -121,8 +106,8 @@ const PredictionTools = ({
             Total Current Balance
           </h2>
           {companiesData !== null && (
-            <h2 className="font-bold mr-auto ml-auto text-green-700">
-              {sum.toFixed(2)}
+            <h2 className="font-bold mr-auto ml-auto predictedBalance">
+              {portfolioValue}
             </h2>
           )}
           {companiesData == null && (
@@ -130,10 +115,38 @@ const PredictionTools = ({
               loading...
             </h2>
           )}
-          <WeightingTab />
+          {predictedBalance != null && (
+            <>
+              <h2 className="font-bold mr-auto ml-auto mt-10 text-center">
+                Balance Prediction
+              </h2>
+              <h2
+                className={
+                  predictedBalance - portfolioValue > 0
+                    ? "text-green-600 text-center font-bold "
+                    : "text-red-600 text-center font-bold"
+                }
+              >
+                ${predictedBalance},
+                {predictedBalance - portfolioValue > 0 ? "+" : ""}
+                {(
+                  ((predictedBalance - portfolioValue) / portfolioValue) *
+                  100
+                ).toFixed(2)}
+                %
+              </h2>
+              <h2 className="text-center px-1 mt-3">
+                {" "}
+                The S&P returns about 0.67% monthly{" "}
+              </h2>
+            </>
+          )}
         </div>
-        <div className="bg-gray-300 w-225 h-4/5 rounded-lg">
-          <LineChart portfolioData={portfolioData} realData={realData} />
+        <div className="bg-gray-300 w-full h-7/10 rounded-lg mr-10">
+          <LineChart
+            portfolioData={portfolioData}
+            predictionData={predictionData}
+          />
         </div>
       </div>
     </div>

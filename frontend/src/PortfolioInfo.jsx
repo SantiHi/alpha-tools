@@ -9,6 +9,7 @@ import { EDITOR_PERMS } from "./lib/constants";
 import PredictionTools from "./components/PredictionTools";
 import TextEditor from "./components/TextEditor";
 import { DeleteButton } from "./components/PortfolioCard";
+import Stocks from "./components/Stocks";
 
 const MODE_DAY = "Day";
 const VIEWER_PERMS = "viewer";
@@ -24,6 +25,7 @@ const PortfolioInfo = () => {
   const { id } = useParams();
   const [isPublic, setPublicButton] = useState(null);
   const [viewerPermissions, setViewerPermissions] = useState(null);
+  const [portfolioValue, setPortfolioValue] = useState(0);
   const publicButtonClass = cn(
     "border-2 border-white text-white ml-35 bg-gray-800 mt-5 hover:cursor-pointer hover:scale-110 hover:brightness-110",
     {
@@ -88,7 +90,7 @@ const PortfolioInfo = () => {
     setPublicButton(data.isPublic);
     if (companyIds.length == 0 || !sameValues(data.companiesIds, companyIds)) {
       setCompanyIds(data.companiesIds);
-      await getCompaniesData(data.companiesIds);
+      await getCompaniesData(data.companiesIds, data.companiesStocks);
     }
   };
 
@@ -113,9 +115,20 @@ const PortfolioInfo = () => {
     });
     setSortedSwings((self) => self.filter((cid) => cid.id !== companyId));
     setCompanyIds((self) => self.filter((cid) => cid !== companyId));
+    let i = 0;
+    setCompaniesData((self) =>
+      self.filter((value, ind) => {
+        if (value.id == companyId) {
+          i = ind;
+          return false;
+        }
+        return true;
+      })
+    );
+    setCompaniesStockData((self) => self.filter((value, ind) => ind !== i));
   };
 
-  const getCompaniesData = async (companiesIds) => {
+  const getCompaniesData = async (companiesIds, companiesStocks) => {
     const newArray = [];
     if (companiesIds) {
       const response = await fetch(`${BASE_URL}/company`, {
@@ -129,12 +142,20 @@ const PortfolioInfo = () => {
       if (response.ok) {
         const data = await response.json();
         for (let val of data) {
-          newArray.push({ id: val.id, name: val.name, ticker: val.ticker });
+          newArray.push({
+            id: val.id,
+            name: val.name,
+            ticker: val.ticker,
+            industry: val.industry.name,
+            sector: val.industry.sector.name,
+          });
         }
       }
     }
     setCompaniesData(newArray);
     const prices = [];
+    let i = 0;
+    let sum = 0;
     for (const company of newArray) {
       const stockResponse = await fetch(
         `${BASE_URL}/getters/stats/${company.ticker}`,
@@ -148,11 +169,13 @@ const PortfolioInfo = () => {
         price: stockData.regularMarketPrice,
         dayStart: stockData.regularMarketPreviousClose,
       });
+      sum += stockData.regularMarketPrice * companiesStocks[i];
+      i++;
     }
+    setPortfolioValue(sum.toFixed(2));
     setCompaniesStockData(prices);
   };
 
-  // TODO: Refactor to fix extraneous calls! next PR this will be addressed.
   useEffect(() => {
     const getAllInfo = async () => {
       setCompaniesData(null);
@@ -165,7 +188,7 @@ const PortfolioInfo = () => {
   if (portfolioData == null) {
     return (
       <img
-        className="w-40 h-40 mt-10 ml-auto mr-auto"
+        className="w-50 h-50 mt-50 ml-auto mr-auto"
         src="https://i.gifer.com/ZKZg.gif"
       />
     );
@@ -180,7 +203,7 @@ const PortfolioInfo = () => {
       <main className="w-full">
         <div className="flex flex-col items-center">
           <SearchBar />
-          <h3 className="self-center text-center text-6xl mt-30 mb-10 text-indigo-50 font-semibold drop-shadow-[0px_0px_39px_rgba(247,247,247,.3)] z-10">
+          <h3 className="self-center text-center text-6xl mt-30 mb-10 text-indigo-50 font-semibold drop-shadow-[0px_0px_39px_rgba(247,247,247,.3)] -z-50">
             {portfolioData.name}
           </h3>
           <div className="flex flex-row justify-start w-full">
@@ -212,13 +235,25 @@ const PortfolioInfo = () => {
               companyIds={companyIds}
             />
           </div>
-          <PredictionTools
-            portfolioData={portfolioData}
-            companiesData={companiesData}
-            companiesStockData={companiesStockData}
-          />
+          <div className="flex flex-row">
+            <PredictionTools
+              portfolioData={portfolioData}
+              companiesData={companiesData}
+              companiesStockData={companiesStockData}
+              portfolioValue={portfolioValue}
+            />
+            <Stocks
+              companiesData={companiesData}
+              companiesStockData={companiesStockData}
+              portfolioData={portfolioData}
+              portfolioValue={portfolioValue}
+              setPortfolioValue={setPortfolioValue}
+            />
+          </div>
           <TextEditor id={id} />
-          <DeleteButton className="justify-center" isCard={false} />
+          {viewerPermissions === EDITOR_PERMS && (
+            <DeleteButton className="justify-center" isCard={false} />
+          )}
         </div>
       </main>
     </>
