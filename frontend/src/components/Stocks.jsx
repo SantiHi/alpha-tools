@@ -2,6 +2,7 @@ import Box from "@mui/material/Box"; // from material ui
 import { DataGrid } from "@mui/x-data-grid"; // from material ui.
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../lib/utils";
+import { EDITOR_PERMS } from "../lib/constants";
 
 const Stocks = ({
   companiesData,
@@ -9,6 +10,7 @@ const Stocks = ({
   portfolioData,
   portfolioValue,
   setPortfolioValue,
+  viewerPermissions,
 }) => {
   const [rows, setRows] = useState([]);
   const [isSaved, setIsSaved] = useState(true);
@@ -155,15 +157,19 @@ const Stocks = ({
           processRowUpdate={rowUpdated}
         />
       </Box>
-      {!isSaved && (
-        <button className="bg-indigo-500 h-8 flex items-center justify-center hover:brightness-80 hover:scale-115 ml-auto mr-auto m-5">
-          <h2 className="font-bold text-white" onClick={saveStocks}>
-            Save
-          </h2>
-        </button>
-      )}
-      {isSaving && (
-        <div className="rounded-full w-8 h-8 ml-auto mr-auto m-3 border-3 border-t-transparent border-blue-200 animate-spin"></div>
+      {viewerPermissions === EDITOR_PERMS && (
+        <>
+          {!isSaved && (
+            <button className="bg-indigo-500 h-8 flex items-center justify-center hover:brightness-80 hover:scale-115 ml-auto mr-auto m-5">
+              <h2 className="font-bold text-white" onClick={saveStocks}>
+                Save
+              </h2>
+            </button>
+          )}
+          {isSaving && (
+            <div className="rounded-full w-8 h-8 ml-auto mr-auto m-3 border-3 border-t-transparent border-blue-200 animate-spin"></div>
+          )}
+        </>
       )}
     </div>
   );

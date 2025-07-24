@@ -52,7 +52,9 @@ model Company {
     sectors         Int[] 
     industryWeights Float[] 
     sectorWeights   Float[]
-  }
+    cachedExplore   Int[] @default([])
+    lastCached      DateTime @default(now())
+  } 
 
   model Document {
     id          Int       @id @default(autoincrement())
