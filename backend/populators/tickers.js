@@ -53,7 +53,6 @@ router.post("/companyfill", async (req, res) => {
     await wait(100);
     i++;
     const percentDone = ((i / companies.length) * 100).toFixed(3);
-    console.log(percentDone);
   }
   res.status(200).json({ message: "Successfully Populated database!" });
 });
