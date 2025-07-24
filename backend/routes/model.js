@@ -296,7 +296,6 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
     );
   }
   factorChange += Math.sign(sentimentCost) * 0.0005;
-  console.log(factorChange);
   const newPredict = valuePredict.map((value, ind) => {
     const factor = Math.pow(factorChange, ind);
     return { date: value.date, price: value.price * factor };
