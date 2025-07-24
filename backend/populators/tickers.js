@@ -6,11 +6,7 @@ const app = express();
 app.use(express.json());
 const router = express.Router({ mergeParams: true });
 const yahooFinance = require("yahoo-finance2").default;
-const { updateAllCompanies } = require("../lib/utils");
-
-const wait = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms)); // needed to not go over api call limit
-};
+const { updateAllCompanies, wait } = require("../lib/utils");
 
 router.get("/tickers", async (req, res) => {
   response = await fetch("https://www.sec.gov/files/company_tickers.json", {

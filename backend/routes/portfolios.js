@@ -102,9 +102,9 @@ router.get("/:id", async (req, res, next) => {
 // add company to portfolio -
 
 router.put("/add/:id/:companyId", async (req, res, next) => {
+  const userId = req.session.userId;
   const portfolioId = parseInt(req.params.id);
   const companyId = parseInt(req.params.companyId);
-
   const portfolio = await prisma.portfolio.findUnique({
     where: {
       id: portfolioId,
@@ -118,6 +118,11 @@ router.put("/add/:id/:companyId", async (req, res, next) => {
   if (portfolio.companiesIds.includes(companyId)) {
     next(new BadParams("id is already in portfolio"));
     return;
+  }
+  if (userId !== portfolio.userId) {
+    res
+      .status(401)
+      .json({ message: "you do not have permission to change this portfolio" });
   }
 
   const newPortfolio = await prisma.portfolio.update({
@@ -278,8 +283,19 @@ router.get("/getNotes/:id", async (req, res, next) => {
 });
 
 router.post("/setNotes/:id", async (req, res, next) => {
+  const userId = req.session.userId;
   const portfolioId = parseInt(req.params.id);
+  const portfolioCheck = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+
+  if (portfolioCheck.userId !== userId) {
+    next(new BadParams("you do not have permission to change these notes"));
+  }
   const newDoc = req.body.html;
+
   const portfolio = await prisma.portfolio.update({
     where: {
       id: portfolioId,
@@ -288,6 +304,7 @@ router.post("/setNotes/:id", async (req, res, next) => {
       notesDoc: newDoc,
     },
   });
+
   if (portfolio == null) {
     next(new BadParams("no portfolio with such Id"));
   }

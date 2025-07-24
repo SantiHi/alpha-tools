@@ -78,7 +78,7 @@ const PortfolioInfo = () => {
 
   useEffect(() => {
     getSwingData();
-  }, [historicalMode]);
+  }, [historicalMode, id]);
 
   const getPortfolioData = async () => {
     const response = await fetch(`${BASE_URL}/portfolios/${id}`, {
@@ -250,7 +250,7 @@ const PortfolioInfo = () => {
               setPortfolioValue={setPortfolioValue}
             />
           </div>
-          <TextEditor id={id} />
+          <TextEditor id={id} viewerPermissions={viewerPermissions} />
           {viewerPermissions === EDITOR_PERMS && (
             <DeleteButton className="justify-center" isCard={false} />
           )}

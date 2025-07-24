@@ -5,8 +5,9 @@ import { useParams } from "react-router-dom";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { CheckLine } from "lucide-react";
+import { EDITOR_PERMS } from "../lib/constants";
 
-const TextEditor = () => {
+const TextEditor = ({ viewerPermissions }) => {
   const modules = {
     toolbar: [
       [
@@ -33,7 +34,7 @@ const TextEditor = () => {
       setValue(await response.json());
     };
     getCurrentDoc();
-  }, []);
+  }, [id]);
 
   const setChanges = (content, delta, source, editor) => {
     if (isSaved) {
@@ -72,19 +73,23 @@ const TextEditor = () => {
             modules={modules}
             className="h-full w-full"
           />
-          {!isSaved && (
-            <button
-              className="absolute right-2 top-2 z-10 bg-blue-500 h-8 flex items-center justify-center hover:brightness-80 hover:scale-115"
-              onClick={saveChanges}
-            >
-              Save
-            </button>
-          )}
-          {isSaved && (
-            <CheckLine className="absolute right-3 top-2 z-10  h-8 flex items-center justify-center hover:brightness-80 hover:scale-115 " />
-          )}
-          {isSaving && (
-            <div className="absolute right-20 top-0 z-10 rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-blue-200 animate-spin"></div>
+          {viewerPermissions === EDITOR_PERMS && (
+            <>
+              {!isSaved && (
+                <button
+                  className="absolute right-2 top-2 z-10 bg-blue-500 h-8 flex items-center justify-center hover:brightness-80 hover:scale-115"
+                  onClick={saveChanges}
+                >
+                  Save
+                </button>
+              )}
+              {isSaved && (
+                <CheckLine className="absolute right-3 top-2 z-10  h-8 flex items-center justify-center hover:brightness-80 hover:scale-115 " />
+              )}
+              {isSaving && (
+                <div className="absolute right-20 top-0 z-10 rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-blue-200 animate-spin"></div>
+              )}
+            </>
           )}
         </div>
       </div>
