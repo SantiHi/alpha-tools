@@ -120,4 +120,4 @@ const updateAllCompanies = async () => {
   }
 };
 
-module.exports = { formatDate, getBeforeDate, updateAllCompanies };
+module.exports = { formatDate, getBeforeDate, updateAllCompanies, wait };

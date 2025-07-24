@@ -196,6 +196,25 @@ router.get("/curated", async (req, res) => {
       id: userId,
     },
   });
+  if (user.lastCached - Date.now() < 5 * 60 * 1000) {
+    const cachedCompanies = await prisma.company.findMany({
+      where: {
+        id: {
+          in: user.cachedExplore,
+        },
+      },
+      include: {
+        industry: {
+          select: {
+            id: true,
+            sector: { select: { id: true } },
+          },
+        },
+      },
+    });
+    res.json(cachedCompanies);
+    return;
+  }
   const allCompanies = await prisma.company.findMany({
     include: {
       industry: {
@@ -234,6 +253,14 @@ router.get("/curated", async (req, res) => {
   const bestCompanies = validCompanies
     .sort((a, b) => scoresDictionary[b.id] - scoresDictionary[a.id])
     .slice(0, NUMBER_RECOMMENDED);
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      cachedExplore: bestCompanies.map((value) => value.id),
+    },
+  });
   res.json(bestCompanies);
 });
 
