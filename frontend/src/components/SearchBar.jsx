@@ -12,7 +12,6 @@ const SearchResultsBar = ({ results, setSearchQuery, setSearchResults }) => {
   if (results.length === 0) {
     return;
   }
-
   return (
     <div className="-mt-4">
       {" "}
@@ -37,7 +36,7 @@ const SearchResultsBar = ({ results, setSearchQuery, setSearchResults }) => {
         return (
           <div
             key={value.id}
-            className="bg-indigo-100 ounded-b-sm hover:cursor-pointer hover:brightness-95 z-100"
+            className="bg-indigo-100 ounded-b-sm hover:cursor-pointer hover:brightness-95 z-10"
             onClick={() => {
               navigate(`/CompanyInfo/${value.id}`);
               setSelectedId(value.id);
@@ -78,7 +77,7 @@ const Searchbar = () => {
 
   return (
     <>
-      <div className="flex flex-col justify-center mt-4 mr-auto ml-auto fixed">
+      <div className="flex flex-col justify-center mt-4 mr-auto ml-auto fixed z-10">
         <div className="pb-4">
           <Input
             id="outlined-basic"

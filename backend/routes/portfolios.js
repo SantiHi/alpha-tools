@@ -124,9 +124,30 @@ router.put("/add/:id/:companyId", async (req, res, next) => {
     where: { id: portfolioId },
     data: {
       companiesIds: { push: companyId },
+      companiesStocks: { push: 1 },
     },
   });
   res.status(200).json(newPortfolio);
+});
+
+router.put("/update/:id", async (req, res) => {
+  const portfolioId = parseInt(req.params.id);
+  const { companyStocks } = req.body;
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+  if (portfolio == null) {
+    next(new BadParams("not a real portfolio id"));
+  }
+  const newPortfolio = await prisma.portfolio.update({
+    where: { id: portfolioId },
+    data: {
+      companiesStocks: companyStocks,
+    },
+  });
+  res.json(newPortfolio);
 });
 
 //add to multiple portfolio:
@@ -154,6 +175,7 @@ router.put("/addMany/:companyId", async (req, res, next) => {
       where: { id: portfolioId },
       data: {
         companiesIds: { push: companyId },
+        companiesStocks: { push: 1 },
       },
     });
   }

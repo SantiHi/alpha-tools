@@ -29,7 +29,7 @@ const TradingViewScrollArea = ({ info }) => {
   }
 
   return (
-    <ScrollArea className="h-125 rounded-md border border-white w-100">
+    <ScrollArea className="h-125 rounded-md border border-white w-100 -z-50">
       <div className="p-4">
         <h4 className="mb-4 text-sm leading-none font-bold text-white">
           Major Filings for {info.name} (by date filed)

@@ -88,6 +88,7 @@ model Portfolio {
     permittedUsers  Int[] 
     notesDoc    String  @default("")
     isPublic    Boolean @default(false)
+    companiesStocks   Int[] @default([])
     model       SavedModel? 
 }
 

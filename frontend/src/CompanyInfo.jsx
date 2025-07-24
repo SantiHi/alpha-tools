@@ -1,7 +1,6 @@
 import SearchBar from "./components/SearchBar";
 import { BASE_URL } from "./lib/utils";
 import { useState, useEffect } from "react";
-import { UserInfo } from "./context/UserContext";
 import TradingViewWidget from "./components/TradingViewWidget";
 import NewsList from "./components/NewsList";
 import { useParams } from "react-router-dom";
