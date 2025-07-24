@@ -23,7 +23,7 @@ ChartJS.register(
 
 // dummay data, mostly just to understand how to format my TC #2 data!
 
-const LineChart = ({ portfolioData, realData }) => {
+const LineChart = ({ portfolioData, predictionData }) => {
   const options = {
     responsive: true,
     ticks: {
@@ -82,8 +82,8 @@ const LineChart = ({ portfolioData, realData }) => {
     datasets: [
       {
         label: "Preformance Prediciton",
-        data: realData
-          ? realData.map((val) => ({ x: val.date, y: val.price }))
+        data: predictionData
+          ? predictionData.map((val) => ({ x: val.date, y: val.price }))
           : "",
         borderColor: "rgb(60, 220, 50)",
       },

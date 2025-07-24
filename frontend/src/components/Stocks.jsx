@@ -66,6 +66,12 @@ const Stocks = ({
       return;
     }
     const newDict = companiesData.map((company, ind) => {
+      if (
+        companiesStockData[ind] == null ||
+        portfolioData.companiesStocks[ind] == null
+      ) {
+        return;
+      }
       return {
         id: ind,
         value: (

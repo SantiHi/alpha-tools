@@ -78,7 +78,7 @@ const PortfolioInfo = () => {
 
   useEffect(() => {
     getSwingData();
-  }, [historicalMode]);
+  }, [historicalMode, id]);
 
   const getPortfolioData = async () => {
     const response = await fetch(`${BASE_URL}/portfolios/${id}`, {
@@ -115,6 +115,17 @@ const PortfolioInfo = () => {
     });
     setSortedSwings((self) => self.filter((cid) => cid.id !== companyId));
     setCompanyIds((self) => self.filter((cid) => cid !== companyId));
+    let i = 0;
+    setCompaniesData((self) =>
+      self.filter((value, ind) => {
+        if (value.id == companyId) {
+          i = ind;
+          return false;
+        }
+        return true;
+      })
+    );
+    setCompaniesStockData((self) => self.filter((value, ind) => ind !== i));
   };
 
   const getCompaniesData = async (companiesIds, companiesStocks) => {
@@ -239,8 +250,10 @@ const PortfolioInfo = () => {
               setPortfolioValue={setPortfolioValue}
             />
           </div>
-          <TextEditor id={id} />
-          <DeleteButton className="justify-center" isCard={false} />
+          <TextEditor id={id} viewerPermissions={viewerPermissions} />
+          {viewerPermissions === EDITOR_PERMS && (
+            <DeleteButton className="justify-center" isCard={false} />
+          )}
         </div>
       </main>
     </>

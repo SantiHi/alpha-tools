@@ -6,11 +6,7 @@ const app = express();
 app.use(express.json());
 const router = express.Router({ mergeParams: true });
 const yahooFinance = require("yahoo-finance2").default;
-const { updateAllCompanies } = require("../lib/utils");
-
-const wait = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms)); // needed to not go over api call limit
-};
+const { updateAllCompanies, wait } = require("../lib/utils");
 
 router.get("/tickers", async (req, res) => {
   response = await fetch("https://www.sec.gov/files/company_tickers.json", {
@@ -40,11 +36,16 @@ router.get("/tickers", async (req, res) => {
 const FORM_TYPE = { tenk: "10-K", eightk: "8-K", tenq: "10-Q" };
 
 router.post("/companyfill", async (req, res) => {
-  const companies = await prisma.company.findMany();
-  const length = companies.length;
+  const companies = await prisma.company.findMany({
+    include: {
+      _count: {
+        select: { documents: true },
+      },
+    },
+  });
   let i = 0;
   for (const company of companies) {
-    const isSuccess = await companyFillHelper(company.cik_number);
+    await companyFillHelper(company);
     await wait(100);
     i++;
     const percentDone = ((i / companies.length) * 100).toFixed(3);
@@ -94,13 +95,11 @@ router.post("/companyfill/:cik_number", async (req, res) => {
   res.status(200).json({ message: "got all the way here" });
 });
 
-const companyFillHelper = async (cik) => {
-  const company = await prisma.company.findUnique({
-    where: { cik_number: cik },
-  });
-  if (company === null) {
-    return false;
+const companyFillHelper = async (company) => {
+  if (company == null || company._count.documents > 0) {
+    return;
   }
+  const cik = company.cik_number;
   const paddedCik = cik.toString().padStart(10, "0");
   const response = await fetch(
     `https://data.sec.gov/submissions/CIK${paddedCik}.json`,
@@ -120,19 +119,15 @@ const companyFillHelper = async (cik) => {
       const url = `https://www.sec.gov/Archives/edgar/data/${cik}/${filings.accessionNumber[
         i
       ].replaceAll("-", "")}/${filings.primaryDocument[i]}`;
-      const isAlreadyIn = await prisma.document.findFirst({
-        where: { url },
+
+      const newDocument = await prisma.document.create({
+        data: {
+          type: filings.form[i],
+          url,
+          filed_date: new Date(filings.filingDate[i]),
+          companyId: company.id,
+        },
       });
-      if (!isAlreadyIn) {
-        const newDocument = await prisma.document.create({
-          data: {
-            type: filings.form[i],
-            url,
-            filed_date: new Date(filings.filingDate[i]),
-            companyId: company.id,
-          },
-        });
-      }
     }
   }
 };
