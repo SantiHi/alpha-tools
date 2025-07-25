@@ -10,7 +10,7 @@ const Stocks = ({
   portfolioData,
   portfolioValue,
   setPortfolioValue,
-  viewerPermissions,
+  perms,
 }) => {
   const [rows, setRows] = useState([]);
   const [isSaved, setIsSaved] = useState(true);
@@ -157,7 +157,7 @@ const Stocks = ({
           processRowUpdate={rowUpdated}
         />
       </Box>
-      {viewerPermissions === EDITOR_PERMS && (
+      {perms === EDITOR_PERMS && (
         <>
           {!isSaved && (
             <button className="bg-indigo-500 h-8 flex items-center justify-center hover:brightness-80 hover:scale-115 ml-auto mr-auto m-5">

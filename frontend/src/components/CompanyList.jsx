@@ -57,6 +57,9 @@ const CompanyList = () => {
   return (
     <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-4/5">
       {exploreCompanies.map((value, ind) => {
+        if (exploreCompaniesPrices[ind] == null) {
+          return;
+        }
         if (exploreCompaniesPrices[ind] != PLACEHOLDER) {
           return (
             <Company

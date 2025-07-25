@@ -248,6 +248,7 @@ const PortfolioInfo = () => {
               portfolioData={portfolioData}
               portfolioValue={portfolioValue}
               setPortfolioValue={setPortfolioValue}
+              perms={viewerPermissions}
             />
           </div>
           <TextEditor id={id} viewerPermissions={viewerPermissions} />
