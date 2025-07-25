@@ -77,7 +77,7 @@ const Searchbar = () => {
 
   return (
     <>
-      <div className="flex flex-col justify-center mt-4 mr-auto ml-auto fixed z-10">
+      <div className="flex flex-col justify-center mt-4 mr-auto ml-auto fixed z-15">
         <div className="pb-4">
           <Input
             id="outlined-basic"

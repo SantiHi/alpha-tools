@@ -196,7 +196,7 @@ router.get("/curated", async (req, res) => {
       id: userId,
     },
   });
-  if (user.lastCached - Date.now() < 5 * 60 * 1000) {
+  if (Math.abs(user.lastCached - Date.now()) < 5 * 60 * 1000) {
     const cachedCompanies = await prisma.company.findMany({
       where: {
         id: {
@@ -259,6 +259,7 @@ router.get("/curated", async (req, res) => {
     },
     data: {
       cachedExplore: bestCompanies.map((value) => value.id),
+      lastCached: new Date(),
     },
   });
   res.json(bestCompanies);

@@ -14,7 +14,7 @@ const NewModelButton = ({ getModel }) => {
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="bg-orange-400 hover:brightness-75 text-white px-10 ml-auto mr-auto m-2 hover:scale-105"
+          className="bg-orange-400 hover:brightness-75 text-white mx-2 hover:scale-105 whitespace-nowrap"
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -53,6 +53,20 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
   const [predictionData, setPredictionData] = useState(null);
   const [predictionsClicked, setPredictionsClicked] = useState(false);
   const [predictedBalance, setPredictedBalance] = useState(null);
+  const [isModelExists, setIsModelExists] = useState(false);
+
+  const getModelExists = async () => {
+    const response = await fetch(
+      `${BASE_URL}/portfolios/model-exists/${portfolioData.id}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+    const modelExists = await response.json();
+    setIsModelExists(modelExists);
+  };
+
   async function getModel(isNewModel) {
     setPredictionsClicked(true);
     const response = await fetch(`${BASE_URL}/models/${portfolioData.id}`, {
@@ -67,6 +81,7 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
       }),
     });
     const data = await response.json();
+    setIsModelExists(true);
     setPredictionData(data);
     setPredictedBalance(data[data.length - 1].price.toFixed(2));
     setPredictionsClicked(false);
@@ -75,79 +90,88 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
   useEffect(() => {
     setPredictionData(null);
     setPredictedBalance(null);
+    getModelExists();
   }, [portfolioValue]);
 
   return (
-    <div className="bg-white h-150 mt-20 rounded-xl ml-30">
+    <div className="bg-white h-150 mt-20 rounded-xl ml-30 min-w-[55%]">
       <h2 className="text-3xl p-3 text-center w-full">Analysis Tool</h2>
       <div className="flex flex-row w-full h-full items-center -mt-12">
-        <div className="flex flex-col justify-center">
-          <button
-            className=" bg-green-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105"
-            onClick={() => getModel(false)}
-          >
-            Get Future Predictions
-          </button>
-          <button className=" bg-red-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105">
-            Risk Analysis
-          </button>
-          {predictionsClicked == false && (
-            <NewModelButton getModel={getModel} />
-          )}
-          {predictionsClicked == true && (
-            <>
-              <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-orange-200 animate-spin"></div>
-              <h2 className="w-50 mr-auto ml-auto pl-3 pr-2">
-                Predictions take time, and are computationally demanding...
-              </h2>
-            </>
-          )}
-          <h2 className="font-bold mr-auto ml-auto mt-10">
-            Total Current Balance
-          </h2>
-          {companiesData !== null && (
-            <h2 className="font-bold mr-auto ml-auto predictedBalance">
-              {portfolioValue}
-            </h2>
-          )}
-          {companiesData == null && (
-            <h2 className="font-bold mr-auto ml-auto text-gray-800">
-              loading...
-            </h2>
-          )}
-          {predictedBalance != null && (
-            <>
+        {companiesData != null && companiesData.length !== 0 && (
+          <>
+            <div className="flex flex-col justify-center">
+              {isModelExists && (
+                <>
+                  <button
+                    className=" bg-green-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105"
+                    onClick={() => getModel(false)}
+                  >
+                    Get Future Predictions
+                  </button>
+                  <button className=" bg-red-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105">
+                    Risk Analysis
+                  </button>
+                </>
+              )}
+              {predictionsClicked == false && (
+                <NewModelButton getModel={getModel} />
+              )}
+              {predictionsClicked == true && (
+                <>
+                  <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-orange-200 animate-spin"></div>
+                  <h2 className="w-50 mr-auto ml-auto pl-3 pr-2">
+                    Predictions take time, and are computationally demanding...
+                  </h2>
+                </>
+              )}
               <h2 className="font-bold mr-auto ml-auto mt-10 text-center">
-                Balance Prediction
+                Total Current Balance
               </h2>
-              <h2
-                className={
-                  predictedBalance - portfolioValue > 0
-                    ? "text-green-600 text-center font-bold "
-                    : "text-red-600 text-center font-bold"
-                }
-              >
-                ${predictedBalance},
-                {predictedBalance - portfolioValue > 0 ? "+" : ""}
-                {(
-                  ((predictedBalance - portfolioValue) / portfolioValue) *
-                  100
-                ).toFixed(2)}
-                %
-              </h2>
-              <h2 className="text-center px-1 mt-3">
-                {" "}
-                The S&P returns about 0.67% monthly{" "}
-              </h2>
-            </>
-          )}
-        </div>
-        <div className="bg-gray-300 w-full h-7/10 rounded-lg mr-10">
-          <LineChart
-            portfolioData={portfolioData}
-            predictionData={predictionData}
-          />
-        </div>
+              {companiesData !== null && (
+                <h2 className="font-bold mr-auto ml-auto predictedBalance">
+                  {portfolioValue}
+                </h2>
+              )}
+              {companiesData == null && (
+                <h2 className="font-bold mr-auto ml-auto text-gray-800">
+                  loading...
+                </h2>
+              )}
+              {predictedBalance != null && (
+                <>
+                  <h2 className="font-bold mr-auto ml-auto mt-10 text-center">
+                    Balance Prediction
+                  </h2>
+                  <h2
+                    className={
+                      predictedBalance - portfolioValue > 0
+                        ? "text-green-600 text-center font-bold "
+                        : "text-red-600 text-center font-bold"
+                    }
+                  >
+                    ${predictedBalance},
+                    {predictedBalance - portfolioValue > 0 ? "+" : ""}
+                    {(
+                      ((predictedBalance - portfolioValue) / portfolioValue) *
+                      100
+                    ).toFixed(2)}
+                    %
+                  </h2>
+                  <h2 className="text-center px-1 mt-3">
+                    {" "}
+                    The S&P returns about 0.67% monthly{" "}
+                  </h2>
+                </>
+              )}
+            </div>
+            <div className="bg-gray-300 w-full h-7/10 rounded-lg mr-10">
+              <LineChart
+                portfolioData={portfolioData}
+                predictionData={predictionData}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

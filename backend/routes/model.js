@@ -222,6 +222,14 @@ router.post("/:id", async (req, res) => {
       validationSplit: 0.2,
       verbose: 1,
     });
+    await prisma.portfolio.update({
+      where: {
+        id: portfolioId,
+      },
+      data: {
+        model: true,
+      },
+    });
     await saveModel(model, portfolioId);
     tf.dispose([X_values, Y_values]);
   }

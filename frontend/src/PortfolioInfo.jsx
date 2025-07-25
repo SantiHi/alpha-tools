@@ -235,7 +235,7 @@ const PortfolioInfo = () => {
               companyIds={companyIds}
             />
           </div>
-          <div className="flex flex-row">
+          <div className="flex flex-row justify-center">
             <PredictionTools
               portfolioData={portfolioData}
               companiesData={companiesData}
@@ -248,6 +248,7 @@ const PortfolioInfo = () => {
               portfolioData={portfolioData}
               portfolioValue={portfolioValue}
               setPortfolioValue={setPortfolioValue}
+              perms={viewerPermissions}
             />
           </div>
           <TextEditor id={id} viewerPermissions={viewerPermissions} />

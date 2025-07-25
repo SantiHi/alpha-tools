@@ -91,7 +91,7 @@ model Portfolio {
     notesDoc    String  @default("")
     isPublic    Boolean @default(false)
     companiesStocks   Int[] @default([])
-    model       SavedModel? 
+    model       Boolean @default(false)
 }
 
 model Sector { 
@@ -106,14 +106,4 @@ model Industry{
   sectorId      Int 
   sector        Sector @relation(fields:[sectorId], references: [id])
   companies     Company[] 
-}
-
-model SavedModel { 
-  id            Int @id @default(autoincrement()) 
-  name          String
-  topology      Json 
-  weights       Bytes 
-  portfolio     Portfolio   @relation(fields: [portfolioId], references: [id])
-  portfolioId   Int   @unique
-  created_at  DateTime    @default(now())
 }
