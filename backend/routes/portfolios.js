@@ -44,6 +44,16 @@ router.get("/", async (req, res) => {
   res.status(200).json(allPortfolios);
 });
 
+router.get("/model-exists/:id", async (req, res) => {
+  const portfolioId = parseInt(req.params.id);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+  res.json(portfolio.model);
+});
+
 router.delete("/:id", async (req, res, next) => {
   const portfolioId = parseInt(req.params.id);
   const portfolio = await prisma.portfolio.delete({
