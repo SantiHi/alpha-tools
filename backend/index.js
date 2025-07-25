@@ -74,6 +74,7 @@ const portfolioRoutes = require("./routes/portfolios");
 const companyRoutes = require("./routes/company");
 const modelRoutes = require("./routes/model");
 const recommendationRoutes = require("./routes/recommendations");
+const notificationsRoutes = require("./routes/notifications");
 app.use("/models", modelRoutes);
 app.use("/getters", getterRoutes);
 app.use("/auth", authRoutes);
@@ -81,6 +82,7 @@ app.use("/populators", router);
 app.use("/portfolios", portfolioRoutes);
 app.use("/company", companyRoutes);
 app.use("/recommendations", recommendationRoutes);
+app.use("/notifications", notificationsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

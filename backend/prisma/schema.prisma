@@ -54,6 +54,7 @@ model Company {
     sectorWeights   Float[]
     cachedExplore   Int[] @default([])
     lastCached      DateTime @default(now())
+    notificantions  Notification[]
   } 
 
   model Document {
@@ -106,4 +107,13 @@ model Industry{
   sectorId      Int 
   sector        Sector @relation(fields:[sectorId], references: [id])
   companies     Company[] 
+}
+
+model Notification { 
+  id  Int @id @default(autoincrement())  
+  url String 
+  description String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
+  created_at DateTime @default(now())
 }

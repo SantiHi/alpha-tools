@@ -82,7 +82,7 @@ const cleanRawData = (historicalData, tickerArr) => {
   return { cleanData, labels, lastPrice: lastPrice, minLabel, maxLabel };
 };
 
-const saveModel = async (model, portfolioId) => {
+const saveModel = async (model, portfolioId, portfolio) => {
   await b2.authorize(); // authorization last 24 hours!
   const uploadUrlResponse = await b2.getUploadUrl({
     bucketId: bucketId,
@@ -120,6 +120,17 @@ const saveModel = async (model, portfolioId) => {
       });
     }
   }
+
+  // saved model! so send notification to inbox.
+
+  await prisma.notification.create({
+    data: {
+      url: `portfolios/${portfolioId}`,
+      description: `${portfolio.name} has a new model ready. Click on the "Get Future Predictions" tab to see the results.`,
+      userId: portfolio.userId,
+    },
+  });
+
   fs.rmSync(tempDir, { recursive: true, force: true });
 };
 
@@ -230,7 +241,7 @@ router.post("/:id", async (req, res) => {
         model: true,
       },
     });
-    await saveModel(model, portfolioId);
+    await saveModel(model, portfolioId, portfolio);
     tf.dispose([X_values, Y_values]);
   }
   lastDays = cleanData.slice(-WINDOW);

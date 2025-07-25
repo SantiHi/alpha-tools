@@ -3,6 +3,7 @@ import "./App.css";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Home from "./Home";
+import Inbox from "./Inbox";
 import { UserInfo } from "./context/UserContext";
 import CompanyInfo from "./CompanyInfo";
 import Portfolios from "./Portfolios";
@@ -23,7 +24,12 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
         <SidebarTrigger className="fixed top-1/2" />
       </div>
       <header className="bg-indigo-50 fixed top-0 w-full pt-4 flex flex-col items-center h-16 z-10">
-        <h2 className="fixed top-0 left-4 text-4xl pt-3 font-medium">
+        <h2
+          className="fixed top-0 left-4 text-4xl pt-3 font-medium hover:cursor-pointer"
+          onClick={() => {
+            navigate("/home");
+          }}
+        >
           Alpha-Edge
         </h2>
         <h4 className="fixed top-0 right-4 pt-5">
@@ -76,6 +82,14 @@ const App = () => {
             element={
               <LoggedInPage isLoggedIn={isLoggedIn}>
                 <Home />
+              </LoggedInPage>
+            }
+          />
+          <Route
+            path="/Inbox"
+            element={
+              <LoggedInPage isLoggedIn={isLoggedIn}>
+                <Inbox />
               </LoggedInPage>
             }
           />

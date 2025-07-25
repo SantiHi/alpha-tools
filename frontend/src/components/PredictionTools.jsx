@@ -54,6 +54,8 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
   const [predictionsClicked, setPredictionsClicked] = useState(false);
   const [predictedBalance, setPredictedBalance] = useState(null);
   const [isModelExists, setIsModelExists] = useState(false);
+  const [isCachedPredictionsClicked, setIsCachedPredictionsClicked] =
+    useState(false);
 
   const getModelExists = async () => {
     const response = await fetch(
@@ -68,7 +70,11 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
   };
 
   async function getModel(isNewModel) {
-    setPredictionsClicked(true);
+    if (!isNewModel) {
+      setIsCachedPredictionsClicked(true);
+    } else {
+      setPredictionsClicked(true);
+    }
     const response = await fetch(`${BASE_URL}/models/${portfolioData.id}`, {
       method: "POST",
       credentials: "include",
@@ -84,6 +90,7 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
     setIsModelExists(true);
     setPredictionData(data);
     setPredictedBalance(data[data.length - 1].price.toFixed(2));
+    setIsCachedPredictionsClicked(false);
     setPredictionsClicked(false);
   }
 
@@ -120,7 +127,16 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
                 <>
                   <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-orange-200 animate-spin"></div>
                   <h2 className="w-50 mr-auto ml-auto pl-3 pr-2">
-                    Predictions take time, and are computationally demanding...
+                    Predictions take time, and are computationally
+                    demanding...Check your inbox for model updates.
+                  </h2>
+                </>
+              )}{" "}
+              {isCachedPredictionsClicked == true && (
+                <>
+                  <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-3 border-t-transparent border-green-200 animate-spin"></div>
+                  <h2 className="w-50 mr-auto ml-auto pl-3 pr-2">
+                    Fetching predictions from stored model
                   </h2>
                 </>
               )}
