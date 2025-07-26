@@ -2,6 +2,8 @@
 
 import { Home, Inbox, Settings, BookText } from "lucide-react"; // lucide react library components
 
+const INBOX_TITLE = "Inbox";
+
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +23,7 @@ const items = [
     icon: Home,
   },
   {
-    title: "Inbox",
+    title: INBOX_TITLE,
     url: "/inbox",
     icon: Inbox,
   },
@@ -37,7 +39,7 @@ const items = [
   },
 ];
 
-const AppSidebar = () => {
+const AppSidebar = ({ numberOfNotifications }) => {
   return (
     <Sidebar className="bg-purple text-white p-3">
       <SidebarContent>
@@ -47,24 +49,40 @@ const AppSidebar = () => {
           </SidebarGroupLabel>
           <SidebarGroupContent className="mt-5">
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem
-                  key={item.title}
-                  className="m-1 bg-dark hover:brightness-75 rounded-b-md p-1"
-                >
-                  <SidebarMenuButton
-                    asChild
-                    className="[&>svg]:size-7 [&>svg]:ml-2"
+              {items.map((item) => {
+                return (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className="m-1 bg-dark hover:brightness-75 rounded-b-md p-1"
                   >
-                    <a href={item.url} className="flex items-center">
-                      <item.icon className="text-white" />
-                      <span className="text-white text-[15px]">
-                        {item.title}
-                      </span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                    <SidebarMenuButton
+                      asChild
+                      className="[&>svg]:size-7 [&>svg]:ml-2"
+                    >
+                      <a href={item.url} className="flex items-center">
+                        <item.icon className="text-white" />
+                        {(item.title != INBOX_TITLE ||
+                          numberOfNotifications === 0) && (
+                          <span className="text-white text-[15px]">
+                            {item.title}
+                          </span>
+                        )}
+                        {item.title == INBOX_TITLE &&
+                          numberOfNotifications !== 0 && (
+                            <div className="flex flex-row justify-center items-center">
+                              <span className="text-white text-[15px] mr-3">
+                                {item.title}
+                              </span>
+                              <div className="bg-amber-200 rounded-4xl p-1 text-black">
+                                {numberOfNotifications}
+                              </div>
+                            </div>
+                          )}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

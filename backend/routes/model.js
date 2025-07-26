@@ -131,6 +131,8 @@ const saveModel = async (model, portfolioId, portfolio) => {
     },
   });
 
+  // now send websocket to get notifications!
+
   fs.rmSync(tempDir, { recursive: true, force: true });
 };
 
@@ -163,6 +165,7 @@ router.post("/:id", async (req, res) => {
   const portfolioId = parseInt(req.params.id);
   const currentCost = parseInt(req.body.currentPrice);
   const isNewModel = JSON.parse(req.body.newModel);
+  const userId = req.session.userId;
   const portfolio = await prisma.portfolio.findUnique({
     where: {
       id: portfolioId,
@@ -241,7 +244,21 @@ router.post("/:id", async (req, res) => {
         model: true,
       },
     });
+
+    const newUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        unreadNotifications: {
+          increment: 1,
+        },
+      },
+    });
     await saveModel(model, portfolioId, portfolio);
+    const io = req.app.get("io");
+
+    io.emit("notification", newUser.unreadNotifications);
     tf.dispose([X_values, Y_values]);
   }
   lastDays = cleanData.slice(-WINDOW);

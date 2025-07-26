@@ -1,8 +1,9 @@
 const { PrismaClient } = require("./generated/prisma");
 const prisma = new PrismaClient();
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
-
 const { BadParams, DoesNotExist } = require("./routes/middleware/CustomErrors");
+const { Server } = require("socket.io");
+const http = require("http");
 
 const express = require("express");
 const PORT = process.env.PORT || 3000;
@@ -12,13 +13,13 @@ const isProd = process.env.NODE_ENV === "production";
 
 const cors = require("cors");
 const app = express();
+
 app.use(express.json());
 
 if (isProd) {
   // behind Heroku, Nginx, Cloudflare, etc.
   app.set("trust proxy", 1);
 }
-
 const session = require("express-session");
 app.use(
   cors({
@@ -46,6 +47,23 @@ app.use(
     }),
   })
 );
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: [ORIGIN, process.env.devorigin],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  },
+});
+
+io.on("connection", (socket) => {
+  socket.emit("anything", "please let this work!");
+  socket.emit("connected", "bang you connected");
+});
+
+app.set("io", io);
 
 app.use((req, res, next) => {
   const userId = req.session.userId;
@@ -84,6 +102,6 @@ app.use("/company", companyRoutes);
 app.use("/recommendations", recommendationRoutes);
 app.use("/notifications", notificationsRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
