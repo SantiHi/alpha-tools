@@ -13,13 +13,38 @@ import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"; // ma
 import AppSidebar from "./components/AppSidebar";
 import { useNavigate } from "react-router-dom";
 import Settings from "./Settings";
+import { socket } from "./socket";
+import { useEffect } from "react";
+import { BASE_URL } from "./lib/utils";
 
 const LoggedInPage = ({ isLoggedIn, children }) => {
-  const { fullName } = UserInfo();
+  const { fullName, numberOfNotifications, setNumberOfNotifications } =
+    UserInfo();
+
+  useEffect(() => {
+    const getStoredNotifications = async () => {
+      const response = await fetch(`${BASE_URL}/notifications/unread`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const notifications = await response.json();
+      setNumberOfNotifications(notifications);
+    };
+
+    const setNotification = (number) => {
+      setNumberOfNotifications(number);
+    };
+    socket.on("notification", setNotification);
+    getStoredNotifications();
+
+    return () => {
+      socket.off("notification");
+    };
+  }, []);
   const navigate = useNavigate();
   return isLoggedIn ? (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar numberOfNotifications={numberOfNotifications} />
       <div className="relative h-full flex flex-col justify-center">
         <SidebarTrigger className="fixed top-1/2" />
       </div>
@@ -86,7 +111,7 @@ const App = () => {
             }
           />
           <Route
-            path="/Inbox"
+            path="/inbox"
             element={
               <LoggedInPage isLoggedIn={isLoggedIn}>
                 <Inbox />

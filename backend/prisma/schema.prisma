@@ -55,6 +55,7 @@ model Company {
     cachedExplore   Int[] @default([])
     lastCached      DateTime @default(now())
     notificantions  Notification[]
+    unreadNotifications Int  @default(0)
   } 
 
   model Document {

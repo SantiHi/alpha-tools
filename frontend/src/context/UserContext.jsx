@@ -8,6 +8,7 @@ const UserContextProvider = ({ children }) => {
   const [selectedId, setSelectedId] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [numberOfNotifications, setNumberOfNotifications] = useState(0);
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -34,6 +35,8 @@ const UserContextProvider = ({ children }) => {
         isLoggedIn,
         setIsLoggedIn,
         authChecked,
+        numberOfNotifications,
+        setNumberOfNotifications,
       }}
     >
       {children}

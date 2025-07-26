@@ -23,4 +23,26 @@ router.get("/", async (req, res) => {
   res.json(notifications);
 });
 
+router.get("/unread", async (req, res) => {
+  const userId = req.session.userId;
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  res.json(userData.unreadNotifications);
+});
+
+router.post("/reset", async (req, res) => {
+  const userId = req.session.userId;
+  const userData = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      unreadNotifications: 0,
+    },
+  });
+});
+
 module.exports = router;

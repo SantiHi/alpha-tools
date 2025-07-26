@@ -232,7 +232,6 @@ const PortfolioInfo = () => {
               setHistoricalMode={setHistoricalMode}
               sortedSwings={sortedSwings}
               historicalMode={historicalMode}
-              companyIds={companyIds}
             />
           </div>
           <div className="flex flex-row justify-center">

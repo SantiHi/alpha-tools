@@ -15,7 +15,6 @@ const MODE_YEAR = "Year";
 const SwingCompanies = ({
   companiesStockData,
   companiesData,
-  companyIds,
   setHistoricalMode,
   sortedSwings,
   historicalMode,
@@ -69,7 +68,7 @@ const SwingCompanies = ({
           companiesData != null &&
           companiesStockData.length !== 0 &&
           sortedSwings.map((value) => {
-            const ind = companyIds.indexOf(parseInt(value.id));
+            const ind = companiesData.findIndex((item) => item.id === value.id);
             const comp = companiesData.filter((c) => c.id === value.id)[0];
             if (comp == null || companiesStockData[ind] == null) {
               return;
