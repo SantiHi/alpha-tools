@@ -59,8 +59,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.emit("anything", "please let this work!");
-  socket.emit("connected", "bang you connected");
+  socket.emit("connected", "connected");
 });
 
 app.set("io", io);
