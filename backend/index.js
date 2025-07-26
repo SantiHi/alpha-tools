@@ -30,23 +30,23 @@ app.use(
   })
 );
 
-app.use(
-  session({
-    cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // ms
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
-    },
-    secret: "a santa at nasa",
-    resave: true,
-    saveUninitialized: false,
-    store: new PrismaSessionStore(new PrismaClient(), {
-      checkPeriod: 2 * 60 * 1000, //ms
-      dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
-    }),
-  })
-);
+const sessionMiddleware = session({
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000, // ms
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+  },
+  secret: "a santa at nasa",
+  resave: true,
+  saveUninitialized: false,
+  store: new PrismaSessionStore(new PrismaClient(), {
+    checkPeriod: 2 * 60 * 1000, //ms
+    dbRecordIdIsSessionId: true,
+    dbRecordIdFunction: undefined,
+  }),
+});
+
+app.use(sessionMiddleware);
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -58,9 +58,12 @@ const io = new Server(server, {
   },
 });
 
+io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next);
+});
+
 io.on("connection", (socket) => {
-  socket.emit("anything", "please let this work!");
-  socket.emit("connected", "bang you connected");
+  socket.emit("connected", "connected");
 });
 
 app.set("io", io);

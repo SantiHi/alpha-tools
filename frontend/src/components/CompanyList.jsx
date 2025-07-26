@@ -29,14 +29,16 @@ const CompanyList = () => {
     const data = await response.json();
     setExploreCompanies(data);
     const tickers = data.map((value) => value.ticker);
-    const stockResponse = await fetch(`${BASE_URL}/getters/manycompanies`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(tickers),
-    });
+    const query = tickers
+      .map((t) => `tickers[]=${encodeURIComponent(t)}`)
+      .join("&");
+    const stockResponse = await fetch(
+      `${BASE_URL}/getters/manycompanies?${query}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
     const stockData = await stockResponse.json();
     setExploreCompaniesPrices(stockData);
   };

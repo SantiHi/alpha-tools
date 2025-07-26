@@ -8,7 +8,6 @@ import {
   PopoverClose,
 } from "./ui/popover"; // popovers from shadcn,
 
-//TODO: refactor popups into a customizable component so as to not repeat code
 const NewModelButton = ({ getModel }) => {
   return (
     <Popover>
@@ -56,6 +55,8 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
   const [isModelExists, setIsModelExists] = useState(false);
   const [isCachedPredictionsClicked, setIsCachedPredictionsClicked] =
     useState(false);
+  const [predictedShifts, setPredictedShifts] = useState([]);
+  const [noEarningsUpcoming, setNoEarningsUpcoming] = useState(false);
 
   const getModelExists = async () => {
     const response = await fetch(
@@ -67,6 +68,28 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
     );
     const modelExists = await response.json();
     setIsModelExists(modelExists);
+  };
+  const getPredictedShifts = async () => {
+    const response = await fetch(
+      `${BASE_URL}/models/earningsdata/${portfolioData.id}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+    const data = await response.json();
+    if (data != null && data.length != 0) {
+      const shifts = data.map((value) => {
+        return {
+          date: value.UpcomingEarnings[0],
+          name: value.name,
+          description: "earnings release",
+        };
+      });
+      setPredictedShifts(shifts);
+      return;
+    }
+    setNoEarningsUpcoming(true);
   };
 
   async function getModel(isNewModel) {
@@ -115,9 +138,21 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
                   >
                     Get Future Predictions
                   </button>
-                  <button className=" bg-red-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105">
-                    Risk Analysis
-                  </button>
+                  {predictionData != null && !noEarningsUpcoming && (
+                    <button
+                      className=" bg-red-700 text-white hover:brightness-80 mx-5 m-2 hover:scale-105"
+                      onClick={getPredictedShifts}
+                    >
+                      Predict Shifts
+                    </button>
+                  )}
+                  {noEarningsUpcoming && (
+                    <>
+                      <h2 className="w-50 mr-auto ml-auto pl-3 pr-2 m-2">
+                        No Shift data available
+                      </h2>
+                    </>
+                  )}
                 </>
               )}
               {predictionsClicked == false && (
@@ -145,7 +180,7 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
               </h2>
               {companiesData !== null && (
                 <h2 className="font-bold mr-auto ml-auto predictedBalance">
-                  {portfolioValue}
+                  ${portfolioValue}
                 </h2>
               )}
               {companiesData == null && (
@@ -184,6 +219,7 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
               <LineChart
                 portfolioData={portfolioData}
                 predictionData={predictionData}
+                predictedShifts={predictedShifts}
               />
             </div>
           </>

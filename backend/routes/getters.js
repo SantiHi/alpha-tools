@@ -60,8 +60,8 @@ router.get("/checker/:companyTick", async (req, res) => {
 });
 
 // get many companies info!
-router.post("/manycompanies", async (req, res) => {
-  const tickers = req.body;
+router.get("/manycompanies", async (req, res) => {
+  const tickers = req.query["tickers[]"] || req.query.tickers;
   const prices = await yahooFinance.quote(
     tickers,
     { modules: ["price"] },

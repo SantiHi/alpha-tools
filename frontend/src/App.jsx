@@ -35,7 +35,9 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
       setNumberOfNotifications(number);
     };
     socket.on("notification", setNotification);
-    getStoredNotifications();
+    if (isLoggedIn) {
+      getStoredNotifications();
+    }
 
     return () => {
       socket.off("notification");
