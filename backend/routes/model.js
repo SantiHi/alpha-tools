@@ -341,8 +341,8 @@ const additionalModelFactors = async (tickers, valuePredict, companyArrays) => {
 };
 
 const determineFactor = (averageAnalystRating) => {
-  const factorRange = 0.008;
-  const dilution = (3 - (averageAnalystRating + 0.5)) / 4; // subtracting .5 factor as the analyst ratings are always skewed towards buy.
+  const factorRange = 0.002;
+  const dilution = 3 - (averageAnalystRating + 0.5); // subtracting .5 factor as the analyst ratings are always skewed towards buy.
   return 1 + factorRange * dilution;
 };
 
@@ -369,11 +369,10 @@ const unNormalize = (value, min, max) => {
   return value * (max - min) + min;
 };
 
-/* Technical challenge #2, performance prediction, using LSTM model and historical data on 
-each stock to train and then predict the performance each day for each company
+/* Stretch Feature / TC iteration, Risk Analysis. 
 
-This endpoint gets ALL earnings calls in the next month, and puts them in the db so that we have 
-quick access for model. 
+This endpoint gets ALL earnings releases in the next month, and puts them in the db so that we have 
+quick access for model. This is when we will see big shifts. 
 */
 
 router.get("/earnings", async (req, res) => {
@@ -382,7 +381,7 @@ router.get("/earnings", async (req, res) => {
   nextDate.setMonth(nextDate.getMonth() + 1);
   const begin = formatDate(today);
   const end = formatDate(nextDate);
-  finnhubClient.earningsCalendar(
+  await finnhubClient.earningsCalendar(
     { from: begin, to: end },
     async (error, data, response) => {
       res.json(data);
@@ -414,6 +413,26 @@ router.get("/earnings", async (req, res) => {
       }
     }
   );
+});
+
+router.get("/earningsdata/:id", async (req, res) => {
+  const portfolioId = parseInt(req.params.id);
+  const portfolio = await prisma.portfolio.findUnique({
+    where: {
+      id: portfolioId,
+    },
+  });
+
+  const companyList = await prisma.company.findMany({
+    where: {
+      id: { in: portfolio.companiesIds },
+    },
+  });
+  const earningsList = companyList.filter(
+    (value) =>
+      value.UpcomingEarnings != null && value.UpcomingEarnings.length != 0
+  );
+  res.json(earningsList);
 });
 
 module.exports = router;

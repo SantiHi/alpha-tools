@@ -9,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import annotationPlugin from "chartjs-plugin-annotation";
 
 ChartJS.register(
   CategoryScale,
@@ -17,13 +18,40 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  annotationPlugin
 );
 // above imports all using Chart-js library!
 
 // dummay data, mostly just to understand how to format my TC #2 data!
 
-const LineChart = ({ portfolioData, predictionData }) => {
+const LineChart = ({ portfolioData, predictionData, predictedShifts }) => {
+  const buildShifts = (dates) => {
+    const annotations = {};
+    dates.forEach((val, i) => {
+      annotations[`line${i}`] = {
+        type: "line",
+        scaleID: "x",
+        value: val.date,
+        borderColor: "red",
+        borderWidth: 2,
+        label: {
+          display: true,
+          enabled: true,
+          content: `${val.name}'s ${val.description}`,
+          position: "end",
+          padding: 4,
+          margin: 10,
+          color: "black",
+          backgroundColor: "white",
+          font: {
+            size: 11,
+          },
+        },
+      };
+    });
+    return annotations;
+  };
   const options = {
     responsive: true,
     ticks: {
@@ -41,6 +69,9 @@ const LineChart = ({ portfolioData, predictionData }) => {
           size: 15,
         },
         color: "black",
+      },
+      annotation: {
+        annotations: buildShifts(predictedShifts),
       },
     },
     elements: {
