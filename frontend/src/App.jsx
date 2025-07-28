@@ -40,7 +40,7 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
     }
 
     return () => {
-      socket.off("notification");
+      socket.off("notification", setNotification);
     };
   }, []);
   const navigate = useNavigate();

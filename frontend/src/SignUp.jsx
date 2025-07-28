@@ -5,6 +5,7 @@ import { MIN_PASSWORD_LENGTH } from "./lib/constants";
 import { useState } from "react";
 import { SignUpInfoContext } from "./context/SignUpContext";
 import SignUpPreferences from "./components/signup/SignUpPreferences";
+import * as EmailValidator from "email-validator";
 
 const RESULT_SUCCESS = "Thank you for signing up, redirecting to login...";
 
@@ -48,34 +49,24 @@ const SignUp = () => {
       }),
     });
     const { isUserExisting } = await response.json();
+    if (formData.password.length < MIN_PASSWORD_LENGTH) {
+      alert("Please make sure passwords are longer than 8 characters");
+      return;
+    }
+    if (!EmailValidator.validate(formData.email)) {
+      alert("Please use a real email address / correct email format");
+      return;
+    }
     if (isUserExisting) {
       setSubmitResult("username or email already in use");
       return;
     } else {
       setSignUpPressed(true);
     }
-    if (formData.password.length < MIN_PASSWORD_LENGTH) {
-      alert("Please make sure passwords are longer than 8 characters");
-      return;
-    }
   };
 
   const createUser = async (event) => {
     event.preventDefault();
-    if (
-      formData.name == "" ||
-      formData.password == "" ||
-      formData.username == "" ||
-      formData.email == ""
-    ) {
-      alert("Please do not leave any sections empty");
-      return;
-    }
-
-    if (formData.password.length < MIN_PASSWORD_LENGTH) {
-      alert("Please make sure passwords are longer than 8 characters");
-      return;
-    }
 
     const response = await fetch(`${BASE_URL}/auth/signup`, {
       method: "POST",

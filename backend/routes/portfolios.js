@@ -272,6 +272,9 @@ router.get("/permissions/user/:id", async (req, res) => {
       id: portfolioid,
     },
   });
+  if (portfolio == null) {
+    return res.json({ owner: null });
+  }
   if (req.session.userId === portfolio.userId) {
     res.json({ owner: true, public: portfolio.isPublic });
     return;

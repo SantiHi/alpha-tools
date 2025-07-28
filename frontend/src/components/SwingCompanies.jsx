@@ -62,7 +62,7 @@ const SwingCompanies = ({
             src="https://i.gifer.com/ZKZg.gif"
           />
         ))}
-      <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-100 overflow-auto w-8/10">
+      <div className="flex flex-row flex-wrap mr-30 ml-30 justify-center h-100 overflow-auto w-8/10 p-4">
         {sortedSwings &&
           companiesStockData != null &&
           companiesData != null &&

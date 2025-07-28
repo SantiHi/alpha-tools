@@ -1,7 +1,7 @@
 import SearchBar from "./components/SearchBar";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import PortfolioCompanies from "./components/PortfolioCompanies";
 import SwingCompanies from "./components/SwingCompanies";
 import cn from "classnames";
@@ -22,10 +22,12 @@ const PortfolioInfo = () => {
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [historicalMode, setHistoricalMode] = useState(MODE_DAY);
   const [sortedSwings, setSortedSwings] = useState(null);
+  const [isLoadTried, setIsLoadTried] = useState(false);
   const { id } = useParams();
   const [isPublic, setPublicButton] = useState(null);
   const [viewerPermissions, setViewerPermissions] = useState(null);
   const [portfolioValue, setPortfolioValue] = useState(0);
+  const navigate = useNavigate();
   const publicButtonClass = cn(
     "border-2 border-white text-white ml-35 bg-gray-800 mt-5 hover:cursor-pointer hover:scale-110 hover:brightness-110",
     {
@@ -43,12 +45,17 @@ const PortfolioInfo = () => {
       }
     );
     const data = await response.json();
+    if (data.owner == null) {
+      setIsLoadTried(true);
+      return false;
+    }
     if (data.owner === true) {
       setViewerPermissions(EDITOR_PERMS);
-      return;
+      return true;
     }
     if (data.public === true) {
       setViewerPermissions(VIEWER_PERMS);
+      return true;
     }
   };
 
@@ -179,11 +186,29 @@ const PortfolioInfo = () => {
   useEffect(() => {
     const getAllInfo = async () => {
       setCompaniesData(null);
-      await getUserPermissions();
+      const response = await getUserPermissions();
+      if (response == false) {
+        return;
+      }
       await getPortfolioData();
+      setIsLoadTried(true);
     };
     getAllInfo();
   }, [id]);
+
+  if (viewerPermissions == null && isLoadTried) {
+    return (
+      <h2 className="text-white self-center mt-15 ml-auto mr-auto">
+        Nothing for you here
+        <button
+          onClick={() => navigate("/home")}
+          className="bg-black ml-4 hover:scale-110"
+        >
+          Go Home
+        </button>
+      </h2>
+    );
+  }
 
   if (portfolioData == null) {
     return (
@@ -192,10 +217,6 @@ const PortfolioInfo = () => {
         src="https://i.gifer.com/ZKZg.gif"
       />
     );
-  }
-
-  if (viewerPermissions == null) {
-    return;
   }
 
   return (

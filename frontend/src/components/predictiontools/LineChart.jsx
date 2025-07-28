@@ -112,7 +112,7 @@ const LineChart = ({ portfolioData, predictionData, predictedShifts }) => {
   const data = {
     datasets: [
       {
-        label: "Preformance Prediciton",
+        label: "Performance Prediction",
         data: predictionData
           ? predictionData.map((val) => ({ x: val.date, y: val.price }))
           : "",
