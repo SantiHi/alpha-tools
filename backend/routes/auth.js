@@ -79,6 +79,8 @@ router.post("/signup", async (req, res) => {
     sectorArray[sectorIndex] = 0.5;
   }
 
+  const now = new Date();
+  
   const newUser = await prisma.user.create({
     data: {
       username,
@@ -89,6 +91,7 @@ router.post("/signup", async (req, res) => {
       sectors,
       industryWeights: industryArray,
       sectorWeights: sectorArray,
+      lastCached: new Date(now.getTime() - 5 * 60 * 1000),
     },
   });
 
