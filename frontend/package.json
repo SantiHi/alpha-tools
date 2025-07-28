@@ -29,6 +29,7 @@
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
+    "email-validator": "^2.0.4",
     "finlight-client": "^1.4.0",
     "lucide-react": "^0.523.0",
     "react": "19.1.0",

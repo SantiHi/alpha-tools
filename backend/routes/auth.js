@@ -80,7 +80,7 @@ router.post("/signup", async (req, res) => {
   }
 
   const now = new Date();
-  
+
   const newUser = await prisma.user.create({
     data: {
       username,

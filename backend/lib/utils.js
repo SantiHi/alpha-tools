@@ -26,7 +26,7 @@ const getBeforeDate = (timeFrame) => {
   if (timeFrame === MODE_DAY) {
     prevDate.setDate(prevDate.getDate() - 2);
   } else if (timeFrame === MODE_WEEK) {
-    dateNow;
+    prevDate.setDate(prevDate.getDate() - 7);
   } else if (timeFrame === MODE_MONTH) {
     prevDate.setMonth(prevDate.getMonth() - 1);
   } else if (timeFrame === THREE_MONTH) {

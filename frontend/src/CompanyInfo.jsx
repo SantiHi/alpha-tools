@@ -3,7 +3,7 @@ import { BASE_URL } from "./lib/utils";
 import { useState, useEffect } from "react";
 import TradingViewWidget from "./components/TradingViewWidget";
 import NewsList from "./components/NewsList";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 const logoKey = import.meta.env.VITE_LOGO_TOKEN;
 import cn from "classnames";
@@ -18,7 +18,7 @@ import {
 const AddToPortfolio = ({ companyId }) => {
   const [portfolios, setPortfolios] = useState(null);
   const [portfoliosToAddToo, setPortfoliosToAddToo] = useState([]);
-
+  const navigate = useNavigate();
   const AddToPortfolios = async () => {
     await fetch(`${BASE_URL}/portfolios/addMany/${companyId}`, {
       method: "PUT",
@@ -101,11 +101,20 @@ const AddToPortfolio = ({ companyId }) => {
               );
             })}
           {portfoliosToAddToo.length === 0 && (
-            <p className="text-sm font-bold text-center">
-              {" "}
-              either no selected portfolios or this company is already in all
-              portfolios
-            </p>
+            <>
+              <p className="text-sm font-bold text-center">
+                {" "}
+                either no selected portfolios or this company is already in all
+                portfolios.
+              </p>
+              <button
+                onClick={() => navigate("/portfolios")}
+                className="hover:scale-110 bg-green-700 text-white"
+              >
+                {" "}
+                Make New Portfolio
+              </button>
+            </>
           )}
           <PopoverClose asChild>
             {portfoliosToAddToo.length !== 0 && (
@@ -251,12 +260,16 @@ const CompanyInfo = () => {
               )}
             </>
           )}
-          <h2 className="text-white text-5xl font-bold text-center mt-10">
-            Recent Company News
-          </h2>
-          <div>
-            <NewsList newsData={newsData} />
-          </div>
+          {newsData != null && newsData.length != 0 && (
+            <>
+              <h2 className="text-white text-5xl font-bold text-center mt-10">
+                Recent Company News
+              </h2>
+              <div>
+                <NewsList newsData={newsData} />
+              </div>
+            </>
+          )}
         </div>
       </main>
     </>

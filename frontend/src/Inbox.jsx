@@ -1,5 +1,5 @@
 import SearchBar from "./components/SearchBar";
-import NotificationsList from "./components/NotificationsList";
+import InboxList from "./components/InboxList";
 import { BASE_URL } from "./lib/utils";
 import { useEffect } from "react";
 import { UserInfo } from "./context/UserContext";
@@ -20,7 +20,7 @@ const Inbox = () => {
       <main className="w-full">
         <div className="flex flex-col items-center">
           <SearchBar />
-          <NotificationsList />
+          <InboxList />
         </div>
       </main>
     </>
