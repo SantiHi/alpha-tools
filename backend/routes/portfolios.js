@@ -232,9 +232,10 @@ router.get("/swings/:portfolioId/:timeFrame", async (req, res, next) => {
       retArray.push({
         id: company.id,
         firstVal,
-        finalVal,
         percentChange:
-          ((finalVal.close - firstVal.close) / firstVal.close) * 100,
+          firstVal != null && finalVal != null
+            ? ((finalVal.close - firstVal.close) / firstVal.close) * 100
+            : 0,
       });
     }
   }
