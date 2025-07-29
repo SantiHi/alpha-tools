@@ -29,7 +29,7 @@ const SearchResultsBar = ({ results, setSearchQuery, setSearchResults }) => {
                 setSearchResults([]);
               }}
             >
-              <p className="ml-2">{`${value.name} (portfolio)`}</p>
+              <p className="ml-2">{`${value.name} (portfolio - by ${value.user.username})`}</p>
             </div>
           );
         }
@@ -74,7 +74,6 @@ const Searchbar = () => {
       }
     }
   };
-
   return (
     <>
       <div className="flex flex-col justify-center mt-4 mr-auto ml-auto fixed z-15">
@@ -83,8 +82,8 @@ const Searchbar = () => {
             id="outlined-basic"
             label="search"
             size="large"
-            placeholder="Search For Companies or Portfolios"
-            sx={{ width: "500px" }}
+            placeholder="Search For Companies (name or ticker), Portfolios (name or user)"
+            sx={{ width: "550px" }}
             startAdornment={
               <InputAdornment position="start">
                 <SearchIcon />

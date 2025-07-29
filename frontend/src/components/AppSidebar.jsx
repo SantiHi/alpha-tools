@@ -1,8 +1,9 @@
 // mostly shadcn library, boilerplate code from https://ui.shadcn.com/docs/components/sidebar, own formatting
 
 import { Home, Inbox, Settings, BookText } from "lucide-react"; // lucide react library components
-
+import { UserInfo } from "../context/UserContext";
 const INBOX_TITLE = "Inbox";
+const PORTFOLIO_TITLE = "My Portfolios";
 
 import {
   Sidebar,
@@ -28,7 +29,7 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "My Portfolios",
+    title: PORTFOLIO_TITLE,
     url: "/portfolios",
     icon: BookText,
   },
@@ -40,6 +41,7 @@ const items = [
 ];
 
 const AppSidebar = ({ numberOfNotifications }) => {
+  const { isGuest } = UserInfo();
   return (
     <Sidebar className="bg-purple text-white p-3">
       <SidebarContent>
@@ -50,6 +52,13 @@ const AppSidebar = ({ numberOfNotifications }) => {
           <SidebarGroupContent className="mt-5">
             <SidebarMenu>
               {items.map((item) => {
+                if (
+                  (item.title == INBOX_TITLE ||
+                    item.title == PORTFOLIO_TITLE) &&
+                  isGuest == true
+                ) {
+                  return;
+                }
                 return (
                   <SidebarMenuItem
                     key={item.title}

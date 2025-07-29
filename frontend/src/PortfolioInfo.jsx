@@ -88,7 +88,7 @@ const PortfolioInfo = () => {
   }, [historicalMode, id]);
 
   const getPortfolioData = async () => {
-    const response = await fetch(`${BASE_URL}/portfolios/${id}`, {
+    const response = await fetch(`${BASE_URL}/portfolios/basic/${id}`, {
       method: "GET",
       credentials: "include",
     });

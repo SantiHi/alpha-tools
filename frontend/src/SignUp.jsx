@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL, wait } from "./lib/utils";
 import { MIN_PASSWORD_LENGTH } from "./lib/constants";
 import { useState } from "react";
+import { handleLogin } from "./lib/utils";
 import { SignUpInfoContext } from "./context/SignUpContext";
+import { UserInfo } from "./context/UserContext";
 import SignUpPreferences from "./components/signup/SignUpPreferences";
 import * as EmailValidator from "email-validator";
 
@@ -16,6 +18,7 @@ const SignUp = () => {
     username: "",
     email: "",
   });
+  const { setIsLoggedIn, setFullName } = UserInfo();
   const { sectorsSelected, industriesSelected } = SignUpInfoContext();
   const [signUpPressed, setSignUpPressed] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
@@ -85,6 +88,7 @@ const SignUp = () => {
     if (response.ok) {
       setSubmitResult(RESULT_SUCCESS);
       await wait(500);
+      await handleLogin(formData, setSubmitResult, setIsLoggedIn, setFullName);
       navigate("/");
     } else {
       const s = await response.json();
@@ -125,19 +129,19 @@ const SignUp = () => {
             handleFormChange={handleFormChange}
           />
           <InputBox
+            placeholder="Username"
+            label="Username"
+            name="username"
+            value={formData.username}
+            handleFormChange={handleFormChange}
+          />
+          <InputBox
             placeholder="Password"
             label="Password"
             name="password"
             value={formData.password}
             handleFormChange={handleFormChange}
             isPassword={true}
-          />
-          <InputBox
-            placeholder="Username"
-            label="Username"
-            name="username"
-            value={formData.username}
-            handleFormChange={handleFormChange}
           />
           <button
             type="submit"

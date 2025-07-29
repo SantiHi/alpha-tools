@@ -11,8 +11,9 @@ const Login = () => {
     password: "",
     username: "",
   });
-
-  const { setIsLoggedIn, setFullName } = UserInfo();
+  const [isInSubmission, setIsInSubmission] = useState(false);
+  const [isGuestInSubmission, setIsGuestInSubmission] = useState(false);
+  const { setIsLoggedIn, setFullName, setIsGuest } = UserInfo();
   const [submitResult, setSubmitResult] = useState(null);
   const navigate = useNavigate();
 
@@ -21,10 +22,20 @@ const Login = () => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
+  const submitGuestLogin = async (e) => {
+    e.preventDefault();
+    setIsGuestInSubmission(true);
+    setIsGuest(true);
+    navigate("/");
+    setIsGuestInSubmission(false);
+  };
+
   const submitLoginAttempt = async (e) => {
     e.preventDefault();
+    setIsInSubmission(true);
     if (formData.password == "" || formData.username == "") {
       setSubmitResult("Please fill out all forms");
+      setIsInSubmission(false);
       return;
     }
     const loginSuccesful = await handleLogin(
@@ -36,6 +47,8 @@ const Login = () => {
     if (loginSuccesful === true) {
       navigate("/");
     }
+    setIsInSubmission(false);
+    setIsGuest(false);
   };
 
   return (
@@ -64,13 +77,29 @@ const Login = () => {
           handleFormChange={handleFormChange}
           isPassword={true}
         />
-        <button
-          id="login"
-          className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900  hover:brightness-110"
-          onClick={submitLoginAttempt}
-        >
-          Login
-        </button>
+        {!isInSubmission && (
+          <button
+            id="login"
+            className="m-2 bg-fuchsia-950 text-white shadow-xl/10 shadow-slate-900  hover:brightness-110"
+            onClick={submitLoginAttempt}
+          >
+            Login
+          </button>
+        )}
+        {
+          <button
+            id="guest"
+            className="m-2 bg-pink-400 text-white shadow-xl/10
+            shadow-slate-900 hover:brightness-110"
+            onClick={submitGuestLogin}
+          >
+            Continue as Guest
+          </button>
+        }
+        {isInSubmission ||
+          (isGuestInSubmission && (
+            <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-10 border-t-transparent border-purple-500 animate-spin"></div>
+          ))}
         {submitResult != null && (
           <p
             className={`text-center font-bold ${

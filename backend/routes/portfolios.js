@@ -90,7 +90,7 @@ router.delete("/:id/:companyId", async (req, res, next) => {
   res.json(updatedPortfolio);
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/basic/:id", async (req, res, next) => {
   const portfolioId = parseInt(req.params.id);
   const userId = req.session.userId;
   const portfolio = await prisma.portfolio.findUnique({

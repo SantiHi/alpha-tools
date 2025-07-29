@@ -69,16 +69,31 @@ io.on("connection", (socket) => {
 app.set("io", io);
 
 app.use((req, res, next) => {
+  if (req.session.isGuest == null) {
+    req.session.isGuest = true;
+  }
   const userId = req.session.userId;
   const path = req.path;
-  if (
-    path.includes("/login") ||
-    path.includes("/signup") ||
-    path.includes("/auth/me") ||
-    path.includes("/sectors") ||
-    path.includes("/industries") ||
-    path.includes("/check-signup")
-  ) {
+  const publicRoutes = [
+    "/login",
+    "/signup",
+    "/search",
+    "/auth/me",
+    "/sectors",
+    "/industries",
+    "/check-signup",
+    "/public",
+    "/curated",
+    "/getters",
+    "/swings",
+    "/permissions",
+    "/model-exists",
+    "/basic",
+    "/company",
+    "/getNotes",
+    "/models",
+  ];
+  if (publicRoutes.some((route) => path.includes(route))) {
     next();
     return;
   }
@@ -96,6 +111,7 @@ const companyRoutes = require("./routes/company");
 const modelRoutes = require("./routes/model");
 const recommendationRoutes = require("./routes/recommendations");
 const notificationsRoutes = require("./routes/notifications");
+const excelRoutes = require("./routes/excel");
 app.use("/models", modelRoutes);
 app.use("/getters", getterRoutes);
 app.use("/auth", authRoutes);
@@ -104,6 +120,7 @@ app.use("/portfolios", portfolioRoutes);
 app.use("/company", companyRoutes);
 app.use("/recommendations", recommendationRoutes);
 app.use("/notifications", notificationsRoutes);
+app.use("/excel", excelRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -5,9 +5,28 @@ import { UserInfo } from "./context/UserContext";
 import SignUpPreferences from "./components/signup/SignUpPreferences";
 
 const Settings = () => {
-  const { setIsLoggedIn, setAuthChecked } = UserInfo();
+  const { setIsLoggedIn, setAuthChecked, isGuest, setFullName } = UserInfo();
 
   const navigate = useNavigate();
+
+  if (isGuest) {
+    return (
+      <div className=" flex flex-col items-center w-full">
+        <h2 className="text-white mt-40 ml-auto mr-auto mb-5">
+          Log in to create and use portfolio tools, personalized
+          recommendations, excel checkout, and more!
+        </h2>
+        <button
+          className="m-3 bg-yellow-500 ml-auto mr-auto  h-12 hover:scale-110 hover:brightness-80"
+          onClick={() => {
+            navigate("/login");
+          }}
+        >
+          Log in
+        </button>
+      </div>
+    );
+  }
 
   const signOut = async () => {
     await fetch(`${BASE_URL}/auth/signout`, {
@@ -15,6 +34,7 @@ const Settings = () => {
       credentials: "include",
     });
     setIsLoggedIn(false);
+    setFullName("");
     setAuthChecked(false);
     navigate("/login");
   };
