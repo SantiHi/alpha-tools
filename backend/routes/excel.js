@@ -15,11 +15,9 @@ router.put("/generate-model-tcm/:id", async (req, res) => {
       id: 1,
     },
   });
-  console.log(company.ticker);
   finnhubClient.financialsReported(
     { symbol: company.ticker },
     (error, data, response) => {
-      console.log(data);
       res.json(data);
     }
   );
