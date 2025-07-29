@@ -31,23 +31,33 @@ const TradingViewScrollArea = ({ info }) => {
   return (
     <ScrollArea className="h-125 rounded-md border border-white w-100 ">
       <div className="p-4">
-        <h4 className="mb-4 text-sm leading-none font-bold text-white">
-          Major Filings for {info.name} (by date filed)
-        </h4>
-        {allDocuments != null &&
-          allDocuments.map((document) => {
-            const date = new Date(document.filed_date);
-            return (
-              <React.Fragment key={document.id}>
-                <a href={document.url} target="_blank">
-                  <div className="text-sm text-white hover:brightness-40 hover:cursor-pointer">
-                    {document.type} | {date.toDateString()}
-                  </div>
-                </a>
-                <Separator className="my-2" />
-              </React.Fragment>
-            );
-          })}
+        {allDocuments.length == 0 && (
+          <img
+            className="w-20 h-20 mr-auto ml-auto mt-20"
+            src="https://i.gifer.com/ZKZg.gif"
+          />
+        )}
+        {allDocuments.length != 0 && (
+          <>
+            <h4 className="mb-4 text-sm leading-none font-bold text-white">
+              Major Filings for {info.name} (by date filed)
+            </h4>
+            {allDocuments != null &&
+              allDocuments.map((document) => {
+                const date = new Date(document.filed_date);
+                return (
+                  <React.Fragment key={document.id}>
+                    <a href={document.url} target="_blank">
+                      <div className="text-sm text-white hover:brightness-40 hover:cursor-pointer">
+                        {document.type} | {date.toDateString()}
+                      </div>
+                    </a>
+                    <Separator className="my-2" />
+                  </React.Fragment>
+                );
+              })}
+          </>
+        )}
       </div>
     </ScrollArea>
   );
@@ -128,9 +138,11 @@ function TradingViewWidget({ info }) {
           style={{ width: "100%", height: "100%" }}
           ref={container}
         ></div>
-        <div className="ml-10">
-          <TradingViewScrollArea info={info} />
-        </div>
+        {info && (
+          <div className="ml-10">
+            <TradingViewScrollArea info={info} />
+          </div>
+        )}
       </div>
     </>
   );

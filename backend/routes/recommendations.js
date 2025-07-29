@@ -25,6 +25,24 @@ const DIVIDENDS_BASE = 1.05; // base number to be multiplied bt dividends in the
 your interest, here performance will be weighted more than before! 
 */
 router.get("/curated-portfolios/public", async (req, res) => {
+  if (req.session.isGuest == true) {
+    res.json(
+      await prisma.portfolio.findMany({
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+        orderBy: {
+          id: "asc",
+        },
+        take: 6,
+      })
+    );
+    return;
+  }
   const userId = req.session.userId;
   const user = await prisma.user.findUnique({
     where: {
@@ -189,6 +207,25 @@ Algorithim as Stand, very similar for portfolio with *slight* differences:
 // specific algorithim for company recommendations list. the portfolio algorithim is in the portfolios file.
 
 router.get("/curated", async (req, res) => {
+  if (req.session.isGuest == true) {
+    res.json(
+      await prisma.company.findMany({
+        include: {
+          industry: {
+            select: {
+              id: true,
+              sector: { select: { id: true } },
+            },
+          },
+        },
+        orderBy: {
+          id: "asc",
+        },
+        take: 6,
+      })
+    );
+    return;
+  }
   updateAllCompanies();
   const userId = req.session.userId;
   const user = await prisma.user.findUnique({

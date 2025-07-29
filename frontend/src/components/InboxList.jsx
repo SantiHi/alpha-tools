@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../lib/utils";
 
-const NotificationsList = () => {
+const InboxList = () => {
   const [allUserNotifications, setAllUserNotifications] = useState();
 
   useEffect(() => {
@@ -54,4 +54,4 @@ const NotificationsList = () => {
   );
 };
 
-export default NotificationsList;
+export default InboxList;

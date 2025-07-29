@@ -7,6 +7,7 @@ const UserContextProvider = ({ children }) => {
   const [fullName, setFullName] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [numberOfNotifications, setNumberOfNotifications] = useState(0);
 
@@ -16,9 +17,11 @@ const UserContextProvider = ({ children }) => {
         credentials: "include",
         method: "GET",
       });
-      if (response.ok) {
-        const { name } = await response.json();
-        setFullName(name);
+      const data = await response.json();
+      if (data.isGuest) {
+        setIsGuest(true);
+      } else {
+        setFullName(data.name);
         setIsLoggedIn(true);
       }
       setAuthChecked(true);
@@ -37,6 +40,8 @@ const UserContextProvider = ({ children }) => {
         authChecked,
         numberOfNotifications,
         setNumberOfNotifications,
+        isGuest,
+        setIsGuest,
       }}
     >
       {children}

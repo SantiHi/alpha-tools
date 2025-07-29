@@ -17,7 +17,7 @@ import { socket } from "./socket";
 import { useEffect } from "react";
 import { BASE_URL } from "./lib/utils";
 
-const LoggedInPage = ({ isLoggedIn, children }) => {
+const LoggedInPage = ({ isLoggedIn, children, isGuest }) => {
   const { fullName, numberOfNotifications, setNumberOfNotifications } =
     UserInfo();
 
@@ -44,7 +44,7 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
     };
   }, []);
   const navigate = useNavigate();
-  return isLoggedIn ? (
+  return isLoggedIn || isGuest ? (
     <SidebarProvider>
       <AppSidebar numberOfNotifications={numberOfNotifications} />
       <div className="relative h-full flex flex-col justify-center">
@@ -65,8 +65,7 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
             className="font-bold hover:cursor-pointer"
             onClick={() => navigate("/settings")}
           >
-            {" "}
-            {fullName}{" "}
+            {fullName || "Guest"}
           </span>
         </h4>
       </header>
@@ -78,7 +77,7 @@ const LoggedInPage = ({ isLoggedIn, children }) => {
 };
 
 const App = () => {
-  const { isLoggedIn, authChecked } = UserInfo();
+  const { isLoggedIn, authChecked, isGuest } = UserInfo();
 
   if (!authChecked) {
     return null;
@@ -91,7 +90,7 @@ const App = () => {
           <Route
             path="/CompanyInfo/:selectedId"
             element={
-              <LoggedInPage isLoggedIn={isLoggedIn}>
+              <LoggedInPage isLoggedIn={isLoggedIn} isGuest={isGuest}>
                 <CompanyInfo />
               </LoggedInPage>
             }
@@ -99,7 +98,7 @@ const App = () => {
           <Route
             path="/"
             element={
-              <LoggedInPage isLoggedIn={isLoggedIn}>
+              <LoggedInPage isLoggedIn={isLoggedIn} isGuest={isGuest}>
                 <Home />
               </LoggedInPage>
             }
@@ -115,7 +114,7 @@ const App = () => {
           <Route
             path="/inbox"
             element={
-              <LoggedInPage isLoggedIn={isLoggedIn}>
+              <LoggedInPage isLoggedIn={isLoggedIn} isGuest={isGuest}>
                 <Inbox />
               </LoggedInPage>
             }
@@ -123,7 +122,7 @@ const App = () => {
           <Route
             path="/home"
             element={
-              <LoggedInPage isLoggedIn={isLoggedIn}>
+              <LoggedInPage isLoggedIn={isLoggedIn} isGuest={isGuest}>
                 <Home />
               </LoggedInPage>
             }
@@ -131,7 +130,7 @@ const App = () => {
           <Route
             path="/settings"
             element={
-              <LoggedInPage isLoggedIn={isLoggedIn}>
+              <LoggedInPage isLoggedIn={isLoggedIn} isGuest={isGuest}>
                 <Settings />
               </LoggedInPage>
             }
@@ -140,7 +139,7 @@ const App = () => {
           <Route
             path="/portfolios"
             element={
-              <LoggedInPage isLoggedIn={isLoggedIn}>
+              <LoggedInPage isLoggedIn={isLoggedIn} isGuest={isGuest}>
                 <Portfolios />
               </LoggedInPage>
             }
@@ -148,7 +147,7 @@ const App = () => {
           <Route
             path="/portfolios/:id"
             element={
-              <LoggedInPage isLoggedIn={isLoggedIn}>
+              <LoggedInPage isLoggedIn={isLoggedIn} isGuest={isGuest}>
                 <PortfolioInfo />
               </LoggedInPage>
             }

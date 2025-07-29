@@ -35,8 +35,27 @@ router.get("/search/:query", async (req, res) => {
   if (searchResults.length < 3) {
     const portfolioResults = await prisma.portfolio.findMany({
       where: {
-        name: { contains: query, mode: "insensitive" },
-        isPublic: true,
+        OR: [
+          {
+            name: { contains: query, mode: "insensitive" },
+            isPublic: true,
+          },
+          {
+            user: {
+              username: {
+                contains: query,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
       },
       take: 3,
     });
@@ -61,7 +80,7 @@ router.get("/checker/:companyTick", async (req, res) => {
 
 // get many companies info!
 router.get("/manycompanies", async (req, res) => {
-  const tickers = req.query["tickers[]"] || req.query.tickers;
+  const tickers = req.query["tickers[]"] || req.query;
   const prices = await yahooFinance.quote(
     tickers,
     { modules: ["price"] },

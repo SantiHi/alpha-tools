@@ -1,5 +1,6 @@
 import Company from "./Company";
 import { useState, useEffect } from "react";
+
 import { BASE_URL, toPercentage } from "../lib/utils";
 import { UserInfo } from "../context/UserContext";
 
@@ -17,7 +18,6 @@ const CompanyList = () => {
     PLACEHOLDER,
     PLACEHOLDER,
   ]);
-  const { isLoggedIn } = UserInfo();
   const fetchExplore = async () => {
     const response = await fetch(`${BASE_URL}/recommendations/curated`, {
       method: "GET",
@@ -44,9 +44,6 @@ const CompanyList = () => {
   };
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      return;
-    }
     fetchExplore();
   }, []);
 

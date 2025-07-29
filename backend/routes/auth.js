@@ -175,6 +175,7 @@ router.post("/login", loginLimiter, async (req, res) => {
   if (!isValidPassword) {
     return res.status(400).json({ error: "Invalid username or password." });
   }
+  req.session.isGuest = false;
   req.session.userId = user.id;
   res.status(200).json({ name: user.name });
 });
@@ -183,7 +184,7 @@ router.post("/login", loginLimiter, async (req, res) => {
 router.get("/me", async (req, res) => {
   const userId = req.session.userId;
   if (userId == null) {
-    return res.status(401).json({ message: "Not logged in" });
+    return res.json({ isGuest: true });
   }
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -194,6 +195,7 @@ router.get("/me", async (req, res) => {
     id: req.session.userId,
     username: user.username,
     name: user.name,
+    isGuest: false,
   });
 });
 

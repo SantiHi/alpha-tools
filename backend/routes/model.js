@@ -3,7 +3,6 @@ const prisma = new PrismaClient();
 
 const express = require("express");
 
-const { BadParams, DoesNotExist } = require("./middleware/CustomErrors");
 const { default: yahooFinance } = require("yahoo-finance2");
 const { formatDate, getBeforeDate } = require("../lib/utils");
 

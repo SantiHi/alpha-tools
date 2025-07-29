@@ -5,6 +5,8 @@ import TradingViewWidget from "./components/TradingViewWidget";
 import NewsList from "./components/NewsList";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import { UserInfo } from "./context/UserContext";
+import ExcelTools from "./components/ExcelTools";
 const logoKey = import.meta.env.VITE_LOGO_TOKEN;
 import cn from "classnames";
 
@@ -140,8 +142,12 @@ const CompanyInfo = () => {
   const [newsData, setNewsData] = useState(null);
   const { selectedId } = useParams();
   const [isDetailRevealed, setIsDetailRevealed] = useState(null);
+  const { isGuest } = UserInfo();
 
   const addToHistory = async () => {
+    if (isGuest) {
+      return;
+    }
     await fetch(`${BASE_URL}/recommendations/companyhist/${selectedId}`, {
       method: "PUT",
       credentials: "include",
@@ -197,7 +203,7 @@ const CompanyInfo = () => {
   };
 
   const downChevronClass = cn(
-    "justify-self-center hover:scale-120 transition-transform duration-300 ease-in-out hover:cursor-pointer h-13 w-13 hover:brightness-90 animate-bounce mt-10"
+    "justify-self-center hover:scale-120 transition-transform duration-300 ease-in-out hover:cursor-pointer h-13 w-13 hover:brightness-90 animate-bounce mt-10 mr-5"
   );
 
   return (
@@ -236,7 +242,7 @@ const CompanyInfo = () => {
             )}
           {info && (
             <>
-              <AddToPortfolio companyId={info.id} />
+              {!isGuest && <AddToPortfolio companyId={info.id} />}
               {(!isDetailRevealed || isDetailRevealed == null) && (
                 <ChevronDown
                   className={downChevronClass}
@@ -270,6 +276,7 @@ const CompanyInfo = () => {
               </div>
             </>
           )}
+          {!isGuest && <ExcelTools />}
         </div>
       </main>
     </>
