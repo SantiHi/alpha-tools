@@ -1,6 +1,7 @@
 import LineChart from "./predictiontools/LineChart";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../lib/utils";
+import { UserInfo } from "../context/UserContext";
 import {
   Popover,
   PopoverContent,
@@ -49,6 +50,7 @@ const NewModelButton = ({ getModel }) => {
 };
 
 const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
+  const { isGuest } = UserInfo();
   const [predictionData, setPredictionData] = useState(null);
   const [predictionsClicked, setPredictionsClicked] = useState(false);
   const [predictedBalance, setPredictedBalance] = useState(null);
@@ -155,7 +157,7 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
                   )}
                 </>
               )}
-              {predictionsClicked == false && (
+              {predictionsClicked == false && !isGuest && (
                 <NewModelButton getModel={getModel} />
               )}
               {predictionsClicked == true && (

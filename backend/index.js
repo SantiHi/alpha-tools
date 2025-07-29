@@ -74,18 +74,26 @@ app.use((req, res, next) => {
   }
   const userId = req.session.userId;
   const path = req.path;
-  if (
-    path.includes("/login") ||
-    path.includes("/signup") ||
-    path.includes("/search") ||
-    path.includes("/auth/me") ||
-    path.includes("/sectors") ||
-    path.includes("/industries") ||
-    path.includes("/check-signup") ||
-    path.includes("/public") ||
-    path.includes("/curated") ||
-    path.includes("/getters")
-  ) {
+  const publicRoutes = [
+    "/login",
+    "/signup",
+    "/search",
+    "/auth/me",
+    "/sectors",
+    "/industries",
+    "/check-signup",
+    "/public",
+    "/curated",
+    "/getters",
+    "/swings",
+    "/permissions",
+    "/model-exists",
+    "/basic",
+    "/company",
+    "/getNotes",
+    "/models",
+  ];
+  if (publicRoutes.some((route) => path.includes(route))) {
     next();
     return;
   }
