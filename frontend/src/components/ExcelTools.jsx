@@ -38,16 +38,30 @@ const ExcelTools = ({ companyId }) => {
       return;
     }
     setIsGenerating(true);
-    await fetch(`${BASE_URL}/excel/generate-model-tcm/${companyId}`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ years: formData.years }),
-    });
+    const response = await fetch(
+      `${BASE_URL}/excel/generate-model-tcm/${companyId}`,
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ years: formData.years }),
+      }
+    );
     setIsGenerating(false);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "historicals.xlsx";
+    a.click();
+    URL.revokeObjectURL(url);
   };
+
+  if (companyId == null) {
+    return;
+  }
 
   return (
     <>
@@ -76,7 +90,6 @@ const ExcelTools = ({ companyId }) => {
                   </Label>
                   <Input
                     id="years"
-                    defaultValue="5"
                     className="col-span-2 h-8"
                     onChange={handleChange}
                     value={formData.years}
