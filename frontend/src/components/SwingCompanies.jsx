@@ -70,7 +70,11 @@ const SwingCompanies = ({
           sortedSwings.map((value) => {
             const ind = companiesData.findIndex((item) => item.id === value.id);
             const comp = companiesData.filter((c) => c.id === value.id)[0];
-            if (comp == null || companiesStockData[ind] == null) {
+            if (
+              comp == null ||
+              companiesStockData[ind] == null ||
+              value == null
+            ) {
               return;
             }
             if (historicalMode === MODE_DAY) {

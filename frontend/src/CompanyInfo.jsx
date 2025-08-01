@@ -264,6 +264,7 @@ const CompanyInfo = () => {
                   </p>
                 </div>
               )}
+              {!isGuest && <ExcelTools companyId={info.id} />}
             </>
           )}
           {newsData != null && newsData.length != 0 && (
@@ -276,7 +277,6 @@ const CompanyInfo = () => {
               </div>
             </>
           )}
-          {!isGuest && <ExcelTools />}
         </div>
       </main>
     </>

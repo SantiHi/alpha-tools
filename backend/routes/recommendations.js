@@ -38,7 +38,7 @@ router.get("/curated-portfolios/public", async (req, res) => {
         orderBy: {
           id: "asc",
         },
-        take: 6,
+        take: NUMBER_RECOMMENDED,
       })
     );
     return;
@@ -221,7 +221,7 @@ router.get("/curated", async (req, res) => {
         orderBy: {
           id: "asc",
         },
-        take: 6,
+        take: NUMBER_RECOMMENDED,
       })
     );
     return;
