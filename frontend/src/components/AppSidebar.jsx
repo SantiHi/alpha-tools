@@ -43,7 +43,7 @@ const items = [
 const AppSidebar = ({ numberOfNotifications }) => {
   const { isGuest } = UserInfo();
   return (
-    <Sidebar className="bg-purple text-white p-3">
+    <Sidebar className="bg-slate-950 text-white p-3">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-4xl ml-auto mr-auto">
@@ -62,7 +62,7 @@ const AppSidebar = ({ numberOfNotifications }) => {
                 return (
                   <SidebarMenuItem
                     key={item.title}
-                    className="m-1 bg-dark hover:brightness-75 rounded-b-md p-1"
+                    className="m-1 bg-slate-900 hover:brightness-75 rounded-b-md p-1"
                   >
                     <SidebarMenuButton
                       asChild

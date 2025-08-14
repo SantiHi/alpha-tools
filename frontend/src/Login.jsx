@@ -96,10 +96,9 @@ const Login = () => {
             Continue as Guest
           </button>
         }
-        {isInSubmission ||
-          (isGuestInSubmission && (
-            <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-10 border-t-transparent border-purple-500 animate-spin"></div>
-          ))}
+        {(isInSubmission || isGuestInSubmission) && (
+          <div className="mr-auto ml-auto rounded-full w-8 h-8 m-3 border-10 border-t-transparent border-purple-500 animate-spin"></div>
+        )}
         {submitResult != null && (
           <p
             className={`text-center font-bold ${

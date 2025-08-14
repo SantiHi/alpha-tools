@@ -49,7 +49,7 @@ const CompanyList = () => {
 
   if (exploreCompaniesPrices[0] === PLACEHOLDER) {
     return (
-      <img className="w-40 h-40 mt-10" src="https://i.gifer.com/ZKZg.gif" />
+      <div className="mr-auto ml-auto rounded-full w-20 h-20 m-3 border-10 border-t-transparent border-blue-500 animate-spin"></div>
     );
   }
 
