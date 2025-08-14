@@ -1,6 +1,6 @@
 # AlphaTools 
 
-Alpha tools is a robust web application that empowers users to create and manage investment portfolios, look up company information, and model portfolio performance. AlphaEdge is designed to provide a seamless, educational, and practical experience for users interested in finance, investing, and data-driven decision making.
+Alpha-Tools is a robust web application that empowers users to create and manage investment portfolios, look up company information, and model portfolio performance. AlphaEdge is designed to provide a seamless, educational, and practical experience for users interested in finance, investing, and data-driven decision making.
 
 [Deployed Project Link](https://capstone-project-service.onrender.com/)
 
@@ -37,13 +37,7 @@ AlphaEdge aims to simplify the process of portfolio management and financial mod
   - Secure sign-up and login
   - Personal dashboard for saved portfolios
   - Works only desktop (not configured for mobile)
- 
-## Meeting Meta-U requirements: 
-
-  Original Complex Visual Styling: [link](https://www.loom.com/share/b7ab1745d88d457d885f406db3b9ac4c). [Code Link](https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project/blob/0198f1ac92a8496537b10fb22cb5792baec44f63/frontend/src/index.css#L100-L180)
   
-  Cursor Interaction: [video link](https://www.loom.com/share/55e9c67ab85349a3a10978280b4f251a) [example 1](https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project/blob/6fbac2b59084465588d9711d95dfd983cda0930d/frontend/src/components/Company.jsx#L17), [example 2](https://github.com/Capston-Meta-Project-Santiago-Criado/Capstone-Project/blob/6fbac2b59084465588d9711d95dfd983cda0930d/frontend/src/components/PortfolioCard.jsx#L77))
-    - 
 ## 🛠️ Getting Started (if you would like a local run) 
 
 backend: npm install; node index.js 
