@@ -26,7 +26,7 @@ const PublicPortfolios = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       {PublicPortfolios == null ? (
-        <h2>Loading...</h2>
+        <div className="mr-auto ml-auto rounded-full w-20 h-20 m-3 border-10 border-t-transparent border-purple-500 animate-spin"></div>
       ) : (
         PublicPortfolios.map((portfolio) => {
           return (

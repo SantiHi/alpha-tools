@@ -217,7 +217,7 @@ const PredictionTools = ({ portfolioData, companiesData, portfolioValue }) => {
                 </>
               )}
             </div>
-            <div className="bg-gray-300 w-full h-7/10 rounded-lg mr-10">
+            <div className="bg-gray-300 w-4/5 h-7/10 rounded-lg mr-10">
               <LineChart
                 portfolioData={portfolioData}
                 predictionData={predictionData}

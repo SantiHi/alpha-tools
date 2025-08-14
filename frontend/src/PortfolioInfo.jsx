@@ -212,10 +212,7 @@ const PortfolioInfo = () => {
 
   if (portfolioData == null) {
     return (
-      <img
-        className="w-50 h-50 mt-50 ml-auto mr-auto"
-        src="https://i.gifer.com/ZKZg.gif"
-      />
+      <div className="mr-auto ml-auto rounded-full w-20 h-20 m-3 border-10 border-t-transparent border-purple-500 animate-spin mt-auto mb-auto"></div>
     );
   }
 
@@ -261,6 +258,7 @@ const PortfolioInfo = () => {
               companiesData={companiesData}
               companiesStockData={companiesStockData}
               portfolioValue={portfolioValue}
+              className="w-10/20"
             />
             <Stocks
               companiesData={companiesData}

@@ -20,9 +20,10 @@ const Company = ({ companyFacts, mode }) => {
       "mb-5": mode === MODE_FIT,
       "mb-15": mode !== MODE_FIT,
       "w-80s": mode !== MODE_FIT,
-      "bg-indigo-50": mode !== MODE_FIT,
-      "bg-green-300": mode === MODE_FIT && companyFacts.dailyChange >= 0,
-      "bg-red-300": mode === MODE_FIT && companyFacts.dailyChange < 0,
+      "bg-green-300": companyFacts.dailyChange >= 1,
+      "bg-red-300": companyFacts.dailyChange < -1,
+      "bg-indigo-50":
+        companyFacts.dailyChange <= 1 && companyFacts.dailyChange >= -1,
     }
   );
   const titleSize = cn("font-bold w-.6 ml-6", {
