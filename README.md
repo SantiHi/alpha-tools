@@ -26,10 +26,11 @@ AlphaEdge aims to simplify the process of portfolio management and financial mod
 - **Company Lookup**
   - Search for companies by name or ticker
   - View key financial metrics, news, and historical data
+  - Get auto-generated model with historicals
 
 - **Portfolio Modeling**
   - Simulate portfolio growth over time
-  - Model different market scenarios and asset allocations
+  - Model different market scenarios and asset allocations, using LSTM machine learning model based on historicals + future indicators
   - Analyze risk, return.
   - Search up other portfolios
 
