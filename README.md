@@ -2,7 +2,7 @@
 
 Alpha-Tools is a robust web application that empowers users to create and manage investment portfolios, look up company information, and model portfolio performance. AlphaEdge is designed to provide a seamless, educational, and practical experience for users interested in finance, investing, and data-driven decision making.
 
-[Deployed Project Link](https://capstone-project-service.onrender.com/)
+[Deployed Link](https://capstone-project-service.onrender.com/)
 
 ---
 
